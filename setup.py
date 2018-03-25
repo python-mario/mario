@@ -99,7 +99,7 @@ setup(
     # py_modules=['mypackage'],
 
     entry_points={
-        'console_scripts': ['pype=pype.__main__:cli'],
+        'console_scripts': ['pype=pype.app:cli'],
     },
     install_requires=REQUIRED,
     include_package_data=True,
