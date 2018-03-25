@@ -13,20 +13,20 @@ def get_modules(imports):
     return modules
 
 
-def make_pipeline(command):
+def make_pipeline(command, placeholder='?'):
     command_strings = command.split('||')
     pipeline = []
     for string in command_strings:
-        if '?' not in string:
-            string = string + '(?)'
-        stage = string.replace('?', 'value').strip()
+        if placeholder not in string:
+            string = string + '({placeholder})'.format(placeholder=placeholder)
+        stage = string.replace(placeholder, 'value').strip()
         pipeline.append(stage)
     return pipeline
 
 
-def main(command, in_stream, imports):
+def main(command, in_stream, imports, placeholder):
     modules = get_modules(imports)
-    pipeline = make_pipeline(command)
+    pipeline = make_pipeline(command, placeholder)
     for line in in_stream:
         value = line
         for step in pipeline:
@@ -36,10 +36,11 @@ def main(command, in_stream, imports):
 
 @click.command()
 @click.option('--import', '-i', 'imports', type=str, multiple=True)
+@click.option('--placeholder', '-p', type=str, default='?')
 @click.argument('command')
 @click.argument('in_stream', default=click.get_text_stream('stdin'), required=False)
-def cli(imports, command, in_stream):
-    gen = main(command, in_stream, imports)
+def cli(imports, command, in_stream, placeholder):
+    gen = main(command, in_stream, imports, placeholder)
     for line in gen:
         click.echo(line, nl=False)
     click.echo()

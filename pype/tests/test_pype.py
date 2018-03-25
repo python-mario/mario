@@ -13,6 +13,7 @@ import pype.app
     'args,  expected',
     [
         (['str.replace(?, ".", "!")', ('a.b.c',)], 'a!b!c\n'),
+        (['-p$', 'str.replace($, ".", "!")', ('a.b.c',)], 'a!b!c\n'),
         (
             [
                 '-icollections',
