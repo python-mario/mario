@@ -34,7 +34,7 @@ def main(command, in_stream, imports):
 @click.command()
 @click.option('--import', '-i', 'imports', type=str, multiple=True)
 @click.argument('command')
-@click.argument('in_stream', default=click.get_text_stream('stdin'), required=False, )
+@click.argument('in_stream', default=click.get_text_stream('stdin'), required=False)
 def cli(imports, command, in_stream):
     gen = main(command, in_stream, imports)
     for line in gen:
