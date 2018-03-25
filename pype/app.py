@@ -1,14 +1,5 @@
 #!/usr/bin/env python
 
-"""
-
-$ echo 'a.b.c' | pype 'str.replace(?, ".", "!")'
-a!b!c
-
-$ echo 'a.b.c' | pype 'str.replace(?, ".", "!")' | pype -i collections 'dict(collections.Counter(?))'
-{a: 1, !: 2, b: 1, c: 1, \n: 1}
-
-"""
 
 import importlib
 
@@ -22,9 +13,14 @@ def get_modules(imports):
     return modules
 
 
+def make_pipeline(command):
+    pipeline = command.replace('?', 'value').split('||')
+    return pipeline
+
+
 def main(command, in_stream, imports):
     modules = get_modules(imports)
-    pipeline = command.replace('?', 'value').split('||')
+    pipeline = make_pipeline(command)
     for line in in_stream:
         value = line
         for step in pipeline:
