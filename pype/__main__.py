@@ -2,7 +2,7 @@
 
 """
 
-$ echo 'a.b.c' | pype.py 'str.replace(?, ".", "!")'
+$ echo 'a.b.c' | pype 'str.replace(?, ".", "!")'
 a!b!c
 
 """
