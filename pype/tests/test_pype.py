@@ -31,6 +31,18 @@ import pype.app
             ],
             '{"a": 1, "!": 2, "b": 1, "c": 1}'
         ),
+        (
+            [
+                '-icollections',
+                '-ijson',
+                'str.replace(?, ".", "!") '
+                '|| collections.Counter '
+                '|| dict '
+                '|| json.dumps ',
+                ('a.b.c',)
+            ],
+            '{"a": 1, "!": 2, "b": 1, "c": 1}'
+        ),
 
     ]
 )

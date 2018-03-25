@@ -10,10 +10,7 @@ $ echo 'a.b.c' | pype 'str.replace(?, ".", "!")' | pype -i collections 'dict(col
 
 """
 
-import sys
 import importlib
-import re
-from pdb import set_trace as st
 
 import click
 
