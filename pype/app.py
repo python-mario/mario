@@ -48,7 +48,7 @@ def cli(imports, command, in_stream, placeholder):
 Pipe data through python functions.
 
 \b
-printf 'a.b.c\\nd.e.f\\n' |
+$ printf 'a.b.c\\nd.e.f\\n' |
 pype -i collections -i json 'str.replace(?, ".", "!") || str.upper || collections.Counter || dict || json.dumps '
 
 \b
@@ -56,10 +56,10 @@ pype -i collections -i json 'str.replace(?, ".", "!") || str.upper || collection
 {"D": 1, "!": 2, "E": 1, "F": 1, "\\n": 1}
 
 \b
-printf 'a.b.c\\nd.e.f\\n' | pype -i collections -i json 'str.replace(?, ".", "!") || str.upper || collections.Counter || {v:k for k,v in ?.items()} || json.dumps'
+$ printf 'aa.bbb\\n' | pype -i collections -i json 'str.replace(?, ".", "!") || str.upper || collections.Counter || {v:k for k,v in ?.items()} || json.dumps'
 
 \b
-{"1": "F", "4": "!", "2": "N"}
+{"2": "A", "1": "\\n", "3": "B"}
 
 
     """
