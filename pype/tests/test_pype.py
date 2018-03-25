@@ -1,4 +1,3 @@
-import io
 
 import pytest
 from click.testing import CliRunner
@@ -8,14 +7,14 @@ import pype.app
 
 
 @pytest.mark.parametrize(
-    'args, stdin, expected',
+    'args,  expected',
     [
-        (['str.replace(?, ".", "!")'], 'a.b.c\n', 'a!b!c!'),
+        (['str.replace(?, ".", "!")', ('a.b.c',)], 'a!b!c\n'),
     ]
 )
-def test_cli(args, stdin, expected):
+def test_cli(args, expected):
 
     runner = CliRunner()
-    result = runner.invoke(pype.app.cli, args, input=stdin)
+    result = runner.invoke(pype.app.cli, args)
     assert not result.exception
     assert result.output == expected
