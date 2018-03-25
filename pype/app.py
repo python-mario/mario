@@ -14,7 +14,13 @@ def get_modules(imports):
 
 
 def make_pipeline(command):
-    pipeline = command.replace('?', 'value').split('||')
+    command_strings = command.split('||')
+    pipeline = []
+    for string in command_strings:
+        if '?' not in string:
+            string = string + '(?)'
+        stage = string.replace('?', 'value')
+        pipeline.append(stage)
     return pipeline
 
 
