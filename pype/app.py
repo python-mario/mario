@@ -27,6 +27,7 @@ def get_modules(imports):
 def main(command, in_stream, imports):
     for line in in_stream:
         out = command.replace('?', 'line')
+
         modules = get_modules(imports)
         yield eval(out, modules, {'line': line})
 
