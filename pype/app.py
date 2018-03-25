@@ -12,6 +12,7 @@ $ echo 'a.b.c' | pype 'str.replace(?, ".", "!")' | pype -i collections 'dict(col
 
 import sys
 import importlib
+import re
 from pdb import set_trace as st
 
 import click
@@ -25,11 +26,13 @@ def get_modules(imports):
 
 
 def main(command, in_stream, imports):
+    modules = get_modules(imports)
+    pipeline = command.replace('?', 'value').split('||')
     for line in in_stream:
-        out = command.replace('?', 'line')
-
-        modules = get_modules(imports)
-        yield eval(out, modules, {'line': line})
+        value = line
+        for step in pipeline:
+            value = eval(step, modules, {'value': value})
+        yield value
 
 
 @click.command()
