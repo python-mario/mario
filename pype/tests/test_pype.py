@@ -57,14 +57,12 @@ def test_cli(args, expected):
     assert result.output.strip() == expected.strip()
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize(
     'command, expected',
     [
-        ('str.upper(?)', str.upper),
-        ('str.upper', str.upper),
+        ('str.upper(?)', ['str.upper(value)']),
+        ('str.upper', ['str.upper(value)']),
     ]
 )
-@given(line=text())
-def test_make_pipeline(command, line, expected):
-    assert toolz.pipe(line, pype.app.make_pipeline(command)) == expected(line)
+def test_make_pipeline(command, expected):
+    assert pype.app.make_pipeline(command) == expected
