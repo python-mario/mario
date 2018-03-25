@@ -42,3 +42,4 @@ def cli(imports, command, in_stream):
     gen = main(command, in_stream, imports)
     for line in gen:
         click.echo(line, nl=False)
+    click.echo()
