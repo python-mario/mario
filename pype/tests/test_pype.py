@@ -62,6 +62,7 @@ def test_cli(args, expected):
     [
         ('str.upper(?)', ['str.upper(value)']),
         ('str.upper', ['str.upper(value)']),
+        ('str.upper(?) || "X".join', ['str.upper(value)', '"X".join(value)']),
     ]
 )
 def test_make_pipeline(command, expected):

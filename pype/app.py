@@ -19,7 +19,7 @@ def make_pipeline(command):
     for string in command_strings:
         if '?' not in string:
             string = string + '(?)'
-        stage = string.replace('?', 'value')
+        stage = string.replace('?', 'value').strip()
         pipeline.append(stage)
     return pipeline
 
