@@ -67,4 +67,4 @@ def test_cli(args, expected):
     ]
 )
 def test_make_pipeline(command, expected):
-    assert pype.app.make_pipeline(command) == expected
+    assert pype.app.make_pipeline_strings(command) == expected

@@ -7,13 +7,15 @@ import click
 
 
 def get_modules(imports):
+    """Import modules into dict mapping name to module."""
     modules = {}
     for module_name in imports:
         modules[module_name] = importlib.import_module(module_name)
     return modules
 
 
-def make_pipeline(command, placeholder='?'):
+def make_pipeline_strings(command, placeholder='?'):
+    """Parse pipeline into individual components."""
     command_strings = command.split('||')
     pipeline = []
     for string in command_strings:
@@ -26,7 +28,7 @@ def make_pipeline(command, placeholder='?'):
 
 def main(command, in_stream, imports, placeholder):
     modules = get_modules(imports)
-    pipeline = make_pipeline(command, placeholder)
+    pipeline = make_pipeline_strings(command, placeholder)
     for line in in_stream:
         value = line
         for step in pipeline:
@@ -40,6 +42,7 @@ def main(command, in_stream, imports, placeholder):
 @click.argument('command')
 @click.argument('in_stream', default=click.get_text_stream('stdin'), required=False)
 def cli(imports, command, in_stream, placeholder):
+    """Pipe data through python functions."""
     gen = main(command, in_stream, imports, placeholder)
     for line in gen:
         click.echo(line, nl=False)
