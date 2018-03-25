@@ -2,12 +2,11 @@
 
 """
 
-$ echo 'a.b.c' | python pype -i 'collections' -- 'collections.Counter(str.replace(?, ".", "!"))'
-Counter({'!': 2, 'a': 1, 'b': 1, 'c': 1, '\n': 1})
+$ echo 'a.b.c' | pype 'str.replace(?, ".", "!")'
+a!b!c
 
-$ echo 'a.b.c' | python pype 'str.replace(?, ".", "!")' | python pype -i collections 'collections.Counter(?)'
-Counter({'!': 2, 'a': 1, 'b': 1, 'c': 1, '\n': 1})
-Counter({'\n': 1})
+$ echo 'a.b.c' | pype 'str.replace(?, ".", "!")' | pype -i collections 'dict(collections.Counter(?))'
+{a: 1, !: 2, b: 1, c: 1, \n: 1}
 
 """
 
@@ -38,7 +37,7 @@ def main(command, in_stream, imports):
 def cli(imports, command, in_stream):
     gen = main(command, in_stream, imports)
     for line in gen:
-        print(line)
+        print(line, end='')
 
 
 if __name__ == '__main__':

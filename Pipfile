@@ -11,7 +11,7 @@ click = "*"
 pylint = "*"
 pyflakes = "*"
 "flake8" = "*"
-"e1839a8" = {path = ".", editable = true}
+"e1839a8" = {editable = true, path = "."}
 
 
 [requires]
