@@ -4,6 +4,7 @@
 import importlib
 
 import click
+from pdb import set_trace as st
 
 
 def get_modules(imports):
@@ -19,6 +20,7 @@ def make_pipeline_strings(command, placeholder='?'):
     command_strings = command.split('||')
     pipeline = []
     for string in command_strings:
+        string = string.strip()
         if placeholder not in string:
             string = string + '({placeholder})'.format(placeholder=placeholder)
         stage = string.replace(placeholder, 'value').strip()
@@ -53,6 +55,11 @@ pype -i collections -i json 'str.replace(?, ".", "!") || str.upper || collection
 {"A": 1, "!": 2, "B": 1, "C": 1, "\\n": 1}
 {"D": 1, "!": 2, "E": 1, "F": 1, "\\n": 1}
 
+\b
+printf 'a.b.c\\nd.e.f\\n' | pype -i collections -i json 'str.replace(?, ".", "!") || str.upper || collections.Counter || {v:k for k,v in ?.items()} || json.dumps'
+
+\b
+{"1": "F", "4": "!", "2": "N"}
 
 
     """

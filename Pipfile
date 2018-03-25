@@ -15,6 +15,7 @@ pytest = "*"
 "e1839a8" = {path = ".", editable = true}
 hypothesis = "*"
 toolz = "*"
+pudb = "*"
 
 
 [requires]
