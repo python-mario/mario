@@ -12,15 +12,10 @@ import sys
 import click
 
 
-def parse_command(command):
-    fnstr = 'lambda placeholder: ' + command.replace('?', 'placeholder')
-    return eval(fnstr)
-
-
 def main(in_stream, command):
-    process = parse_command(command)
     for line in in_stream:
-        yield process(line)
+        out = command.replace('?', 'line')
+        yield eval(out)
 
 
 @click.command()
