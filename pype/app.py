@@ -49,7 +49,7 @@ Pipe data through python functions.
 
 \b
 $ printf 'a.b.c\\nd.e.f\\n' |
-pype -i collections -i json 'str.replace(?, ".", "!") || str.upper || collections.Counter || dict || json.dumps '
+pype -i collections -i json 'str.replace(?, ".", "!") || str.upper || collections.Counter || json.dumps '
 
 \b
 {"A": 1, "!": 2, "B": 1, "C": 1, "\\n": 1}
