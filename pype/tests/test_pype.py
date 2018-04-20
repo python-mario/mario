@@ -68,3 +68,14 @@ def test_cli(args, expected):
 )
 def test_make_pipeline(command, expected):
     assert pype.app.make_pipeline_strings(command) == expected
+
+
+@pytest.mark.skip
+def test_newlines():
+    input_string = """
+
+    """
+
+    runner = CliRunner()
+    result = runner.invoke(pype.app.cli, args)
+    assert result.output == expected

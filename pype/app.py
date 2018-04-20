@@ -2,9 +2,15 @@
 
 
 import importlib
+from pprint import pprint as pp
 
 import click
 from pdb import set_trace as st
+
+
+def identity(x):
+    "Identity function."
+    return x
 
 
 def get_modules(imports):
@@ -28,21 +34,44 @@ def make_pipeline_strings(command, placeholder='?'):
     return pipeline
 
 
-def main(command, in_stream, imports, placeholder):
+def apply_command_pipeline(value, modules, pipeline):
+    for step in pipeline:
+        value = eval(step, modules, {'value': value})
+    return value
+
+
+def apply_map(command, in_stream, imports, placeholder):
     modules = get_modules(imports)
     pipeline = make_pipeline_strings(command, placeholder)
     for line in in_stream:
-        value = line
-        for step in pipeline:
-            value = eval(step, modules, {'value': value})
-        yield value
+        yield apply_command_pipeline(line, modules, pipeline)
+
+
+def apply_reduce(command, in_stream, imports, placeholder):
+    modules = get_modules(imports)
+    pipeline = make_pipeline_strings(command, placeholder)
+    yield from apply_command_pipeline(in_stream, modules, pipeline)
+
+
+def main(mapper, in_stream, imports, placeholder, reducer=identity):
+    mapped = apply_map(mapper, in_stream, imports, placeholder)
+    reduced = mapped  # apply_reduce(reducer, mapped, imports, placeholder)
+    yield from reduced
 
 
 @click.command()
-@click.option('--import', '-i', 'imports', type=str, multiple=True, help='Modules to import')
-@click.option('--placeholder', '-p', type=str, default='?', help='String to replace with data. Defaults to ?')
+@click.option(
+    '--import', '-i', 'imports', type=str, multiple=True,
+    help='Modules to import',
+)
+@click.option(
+    '--placeholder', '-p', type=str, default='?',
+    help='String to replace with data. Defaults to ?',
+)
 @click.argument('command', type=str)
-@click.argument('in_stream', default=click.get_text_stream('stdin'), required=False)
+@click.argument(
+    'in_stream', default=click.get_text_stream('stdin'), required=False
+)
 def cli(imports, command, in_stream, placeholder):
     """
 Pipe data through python functions.
