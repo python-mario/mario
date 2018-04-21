@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
-
+import functools
 import importlib
 from pprint import pprint as pp
 
 import click
-from pdb import set_trace as st
 
 
 def identity(x):
@@ -21,14 +20,16 @@ def get_modules(imports):
     return modules
 
 
-def make_pipeline_strings(command, placeholder='?'):
+def make_pipeline_strings(command, placeholder='?', star_args=False):
     """Parse pipeline into individual components."""
     command_strings = command.split('||')
     pipeline = []
     for string in command_strings:
         string = string.strip()
         if placeholder not in string:
-            string = string + '({placeholder})'.format(placeholder=placeholder)
+            string = string + '({star}{placeholder})'.format(
+                star='*' if star_args else '', placeholder=placeholder
+            )
         stage = string.replace(placeholder, 'value').strip()
         pipeline.append(stage)
     return pipeline
@@ -40,7 +41,16 @@ def apply_command_pipeline(value, modules, pipeline):
     return value
 
 
+def apply_total(command, in_stream, imports, placeholder):
+    modules = get_modules(imports)
+    pipeline = make_pipeline_strings(command, placeholder)
+    string = in_stream.read()
+    result = apply_command_pipeline(string, modules, pipeline)
+    yield result
+
+
 def apply_map(command, in_stream, imports, placeholder):
+
     modules = get_modules(imports)
     pipeline = make_pipeline_strings(command, placeholder)
     for line in in_stream:
@@ -48,14 +58,25 @@ def apply_map(command, in_stream, imports, placeholder):
 
 
 def apply_reduce(command, in_stream, imports, placeholder):
+
     modules = get_modules(imports)
-    pipeline = make_pipeline_strings(command, placeholder)
-    yield from apply_command_pipeline(in_stream, modules, pipeline)
+    pipeline = make_pipeline_strings(command, placeholder, star_args=True)
+
+    value = next(in_stream)
+    for item in in_stream:
+        for step in pipeline:
+            value = eval(step, modules, {'value': (value, item)})
+    yield value
 
 
-def main(mapper, in_stream, imports, placeholder, reducer=identity):
+def main(mapper, reducer, in_stream, imports, placeholder, total):
+    if total:
+        yield from apply_total(mapper, in_stream, imports, placeholder)
+
+    if reducer is None:
+        reducer = placeholder
     mapped = apply_map(mapper, in_stream, imports, placeholder)
-    reduced = mapped  # apply_reduce(reducer, mapped, imports, placeholder)
+    reduced = apply_reduce(reducer, mapped, imports, placeholder)
     yield from reduced
 
 
@@ -69,10 +90,13 @@ def main(mapper, in_stream, imports, placeholder, reducer=identity):
     help='String to replace with data. Defaults to ?',
 )
 @click.argument('command', type=str)
+@click.argument('reducer', type=str, default=None, required=False,
+                )
 @click.argument(
     'in_stream', default=click.get_text_stream('stdin'), required=False
 )
-def cli(imports, command, in_stream, placeholder):
+@click.option('--total', '-t', is_flag=True)
+def cli(imports, command, reducer, in_stream, placeholder, total):
     """
 Pipe data through python functions.
 
@@ -92,7 +116,7 @@ $ printf 'aa.bbb\\n' | pype -i collections -i json 'str.replace(?, ".", "!") || 
 
 
     """
-    gen = main(command, in_stream, imports, placeholder)
+    gen = main(command, reducer, in_stream, imports, placeholder, total)
     for line in gen:
         click.echo(line, nl=True)
     click.echo()
