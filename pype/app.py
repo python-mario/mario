@@ -155,17 +155,6 @@ def main(mapper, reducer, postmap, in_stream, imports, placeholder, total, autoi
 
 
 @click.command()
-@click.option('--autoimport/--no-autoimport', '-a/-A', is_flag=True)
-@click.option(
-    '--import', '-i', 'imports', type=str, multiple=True,
-    help='Modules to import',
-
-
-)
-@click.option(
-    '--placeholder', '-p', type=str, default='?',
-    help='String to replace with data. Defaults to ?',
-)
 @click.argument('command', type=str)
 @click.argument('reducer', type=str, default=None, required=False,)
 @click.argument('postmap', default=None, required=False)
@@ -173,7 +162,17 @@ def main(mapper, reducer, postmap, in_stream, imports, placeholder, total, autoi
     'in_stream', default=click.get_text_stream('stdin'), required=False
 )
 @click.option('--total', '-t', is_flag=True, help='Apply function to entire input together.')
-def cli(imports, command, reducer, in_stream, placeholder, total, postmap, autoimport):
+@click.option('--newlines', '-n', type=click.Choice(['auto', 'yes', 'no']), default='auto', help='Add newlines.')
+@click.option('--autoimport/--no-autoimport', '-a/-A', is_flag=True, default=True, help='Automatically import modules.')
+@click.option(
+    '--import', '-i', 'imports', type=str, multiple=True,
+    help='Modules to import explicitly.',
+)
+@click.option(
+    '--placeholder', '-p', type=str, default='?',
+    help='String to replace with data. Defaults to ?',
+)
+def cli(imports, command, reducer, in_stream, placeholder, total, postmap, autoimport, newlines):
     """
 Pipe data through python functions.
 
@@ -207,5 +206,12 @@ $ printf 'a\\nab\\nabc\\n' | pype -t -i json -i toolz -i collections 'collection
     """
     gen = main(command, reducer, postmap, in_stream,
                imports, placeholder, total, autoimport)
+
+    if newlines == 'auto':
+        first, gen = toolz.peek(gen)
+        add_newlines = not str(first).endswith('\n')
+    else:
+        add_newlines = {'yes': True, 'no': False}[newlines]
+
     for line in gen:
-        click.echo(line, nl=True)
+        click.echo(line, nl=add_newlines)
