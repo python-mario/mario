@@ -17,6 +17,7 @@ import toolz
 
 
 BUILTIN = object()
+PYPE_VALUE = '_PYPE_VALUE_'
 
 
 def get_identifiers(string):
@@ -77,7 +78,7 @@ def make_pipeline_strings(command, placeholder, star_args=False):
             string = string + '({star}{placeholder})'.format(
                 star='*' if star_args else '', placeholder=placeholder
             )
-        stage = string.replace(placeholder, '_pype_value_').strip()
+        stage = string.replace(placeholder, f'{PYPE_VALUE}').strip()
         pipeline.append(stage)
     return pipeline
 
@@ -85,7 +86,7 @@ def make_pipeline_strings(command, placeholder, star_args=False):
 def apply_command_pipeline(value, modules, pipeline):
     assert modules is not None
     for step in pipeline:
-        value = eval(step, modules, {'_pype_value_': value})
+        value = eval(step, modules, {f'{PYPE_VALUE}': value})
     return value
 
 
@@ -134,7 +135,7 @@ def apply_reduce(command, in_stream, imports, placeholder, autoimport):
     value = next(in_stream)
     for item in in_stream:
         for step in pipeline:
-            value = eval(step, modules, {'_pype_value_': (value, item)})
+            value = eval(step, modules, {f'{PYPE_VALUE}': (value, item)})
     yield value
 
 

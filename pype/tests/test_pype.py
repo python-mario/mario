@@ -10,6 +10,7 @@ import toolz
 
 import pype
 import pype.app
+from pype.app import PYPE_VALUE
 
 
 @pytest.mark.parametrize(
@@ -106,12 +107,12 @@ def test_cli(args, expected):
 @pytest.mark.parametrize(
     'command, expected',
     [
-        ('str.upper(?)', ['str.upper(_pype_value_)']),
-        ('str.upper', ['str.upper(_pype_value_)']),
+        ('str.upper(?)', [f'str.upper({PYPE_VALUE})']),
+        ('str.upper', [f'str.upper({PYPE_VALUE})']),
         (
             'str.upper(?) || "X".join',
             [
-                'str.upper(_pype_value_)', '"X".join(_pype_value_)'
+                f'str.upper({PYPE_VALUE})', f'"X".join({PYPE_VALUE})'
             ]),
     ]
 )
@@ -122,7 +123,6 @@ def test_make_pipeline(command, expected):
 @pytest.mark.parametrize(
     'name, expected',
     [
-
         ('str.upper', {}),
         ('os.path.join', {'os.path': os.path}),
         ('map', {}),
