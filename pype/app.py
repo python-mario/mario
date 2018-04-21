@@ -5,7 +5,8 @@
 
 from __future__ import generator_stop
 
-from pprint import pprint as pp
+from pdb import set_trace as st
+from pprint import pprint
 import collections
 import functools
 import importlib
@@ -16,6 +17,7 @@ import sys
 
 
 import click
+import toolz
 
 
 def get_identifiers(string):
@@ -103,13 +105,17 @@ def get_autoimports(string):
     return name_to_function
 
 
-def apply_map(command, in_stream, imports, placeholder):
-
-    named_modules = get_named_modules(imports)
-    autoimports = get_autoimports(command)
+def get_modules(commands, named_imports):
+    named_modules = get_named_modules(named_imports)
+    autoimports = toolz.merge(get_autoimports(command) for command in commands)
     # named modules have priority
-    modules = autoimports.copy()
-    modules = modules.update(**named_modules)
+    modules = {**autoimports, **named_modules}
+    pprint(modules)
+    return modules
+
+
+def apply_map(command, in_stream, imports, placeholder):
+    modules = get_modules([command], imports)
     pipeline = make_pipeline_strings(command, placeholder)
     for line in in_stream:
         result = apply_command_pipeline(line, modules, pipeline)
@@ -149,6 +155,8 @@ def main(mapper, reducer, postmap, in_stream, imports, placeholder, total):
 @click.option(
     '--import', '-i', 'imports', type=str, multiple=True,
     help='Modules to import',
+
+
 )
 @click.option(
     '--placeholder', '-p', type=str, default='?',
