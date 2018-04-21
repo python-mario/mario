@@ -58,6 +58,21 @@ import pype.app
         ),
         (
             [
+                '-icollections',
+                '-ijson',
+                'str.replace(?, ".", "!") '
+                '|| collections.Counter '
+                '|| dict '
+                '|| json.dumps ',
+                '?',
+                '?',
+                'a.b.c\nd.e.f\n',
+            ],
+            '{"a": 1, "!": 4, "b": 1, "c": 1}\n{"d": 1, "e": 1, "f": 1}',
+        ),
+
+        (
+            [
                 "-i", "toolz",
                 "-i", "collections",
                 ' str.replace(?, ".", "!") || collections.Counter',
