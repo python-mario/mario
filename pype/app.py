@@ -95,7 +95,7 @@ def main(mapper, reducer, in_stream, imports, placeholder, total):
 @click.argument(
     'in_stream', default=click.get_text_stream('stdin'), required=False
 )
-@click.option('--total', '-t', is_flag=True)
+@click.option('--total', '-t', is_flag=True, help='Apply function to entire input together.')
 def cli(imports, command, reducer, in_stream, placeholder, total):
     """
 Pipe data through python functions.
