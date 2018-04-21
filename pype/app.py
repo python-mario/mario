@@ -6,6 +6,7 @@
 from __future__ import generator_stop
 
 from pprint import pprint as pp
+import collections
 import functools
 import importlib
 import importlib
@@ -91,9 +92,24 @@ def apply_total(command, in_stream, imports, placeholder):
     yield result
 
 
+def get_autoimports(string):
+    components = [comp.strip() for comp in string.split('||')]
+    name_to_function = {}
+    for component in components:
+        identifiers = get_identifiers(component)
+        for identifier in identifiers:
+            function = get_function(identifier)
+            name_to_function[component] = function
+    return name_to_function
+
+
 def apply_map(command, in_stream, imports, placeholder):
 
-    modules = get_named_modules(imports)
+    named_modules = get_named_modules(imports)
+    autoimports = get_autoimports(command)
+    # named modules have priority
+    modules = autoimports.copy()
+    modules = modules.update(**named_modules)
     pipeline = make_pipeline_strings(command, placeholder)
     for line in in_stream:
         result = apply_command_pipeline(line, modules, pipeline)
