@@ -76,7 +76,7 @@ from pype.app import PYPE_VALUE
         (
             ['str.replace(?, ".", "!") || collections.Counter(?) || json.dumps(?) ', ],
             'a.b.c\n',
-            '{"a": 1, "!": 2, "b": 1, "c": 1}\n',
+            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
         ),
     ],
 )
