@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import json
 import functools
 import importlib
 from pprint import pprint as pp
@@ -54,7 +55,8 @@ def apply_map(command, in_stream, imports, placeholder):
     modules = get_modules(imports)
     pipeline = make_pipeline_strings(command, placeholder)
     for line in in_stream:
-        yield apply_command_pipeline(line, modules, pipeline)
+        result = apply_command_pipeline(line, modules, pipeline)
+        yield result
 
 
 def apply_reduce(command, in_stream, imports, placeholder):
@@ -69,15 +71,19 @@ def apply_reduce(command, in_stream, imports, placeholder):
     yield value
 
 
-def main(mapper, reducer, in_stream, imports, placeholder, total):
+def main(mapper, reducer, postmap, in_stream, imports, placeholder, total):
     if total:
         yield from apply_total(mapper, in_stream, imports, placeholder)
 
-    if reducer is None:
-        reducer = placeholder
     mapped = apply_map(mapper, in_stream, imports, placeholder)
+    if reducer is None:
+        yield from mapped
+        return
     reduced = apply_reduce(reducer, mapped, imports, placeholder)
-    yield from reduced
+    if postmap is None:
+        yield from reduced
+        return
+    yield from apply_map(postmap, reduced, imports, placeholder)
 
 
 @click.command()
@@ -92,11 +98,12 @@ def main(mapper, reducer, in_stream, imports, placeholder, total):
 @click.argument('command', type=str)
 @click.argument('reducer', type=str, default=None, required=False,
                 )
+@click.argument('postmap', default=None, required=False)
 @click.argument(
     'in_stream', default=click.get_text_stream('stdin'), required=False
 )
 @click.option('--total', '-t', is_flag=True, help='Apply function to entire input together.')
-def cli(imports, command, reducer, in_stream, placeholder, total):
+def cli(imports, command, reducer, in_stream, placeholder, total, postmap):
     """
 Pipe data through python functions.
 
@@ -116,7 +123,8 @@ $ printf 'aa.bbb\\n' | pype -i collections -i json 'str.replace(?, ".", "!") || 
 
 
     """
-    gen = main(command, reducer, in_stream, imports, placeholder, total)
+    gen = main(command, reducer, postmap, in_stream,
+               imports, placeholder, total)
     for line in gen:
         click.echo(line, nl=True)
     click.echo()

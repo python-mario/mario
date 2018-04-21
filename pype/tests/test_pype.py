@@ -12,17 +12,18 @@ import pype.app
 @pytest.mark.parametrize(
     'args,  expected',
     [
-        (['str.replace(?, ".", "!")', '?', ('a.b.c\n',)], 'a!b!c\n'),
-        (['-p$', 'str.replace($, ".", "!")', '$', ('a.b.c\n',)], 'a!b!c\n'),
+        (['str.replace(?, ".", "!")', '?', '?', ('a.b.c\n',)], 'a!b!c\n'),
+        (['-p$', 'str.replace($, ".", "!")', '$', '$', ('a.b.c\n',)], 'a!b!c\n'),
         (
             [
                 '-icollections',
                 '-ijson',
                 'json.dumps(dict(collections.Counter(str.replace(?, ".", "!"))))',
                 '?',
-                ('a.b.c',)
+                '?',
+                ('a.b.c',),
             ],
-            '{"a": 1, "!": 2, "b": 1, "c": 1}'
+            '{"a": 1, "!": 2, "b": 1, "c": 1}',
         ),
         (
             [
@@ -33,9 +34,10 @@ import pype.app
                 '|| dict(?) '
                 '|| json.dumps(?) ',
                 '?',
-                ('a.b.c',)
+                '?',
+                ('a.b.c',),
             ],
-            '{"a": 1, "!": 2, "b": 1, "c": 1}'
+            '{"a": 1, "!": 2, "b": 1, "c": 1}',
         ),
         (
             [
@@ -46,9 +48,10 @@ import pype.app
                 '|| dict '
                 '|| json.dumps ',
                 '?',
-                ('a.b.c',)
+                '?',
+                ('a.b.c',),
             ],
-            '{"a": 1, "!": 2, "b": 1, "c": 1}'
+            '{"a": 1, "!": 2, "b": 1, "c": 1}',
         ),
         (
             [
@@ -56,9 +59,11 @@ import pype.app
                 "-i", "collections",
                 ' str.replace(?, ".", "!") || collections.Counter',
                 'toolz.merge_with(sum, ?)',
+                '?',
                 ("a.b.c\n", "d.e.f\n",),
             ],
-            r"{'a': 1, '!': 4, 'b': 1, 'c': 1, '\n': 2, 'd': 1, 'e': 1, 'f': 1}"
+            r"{'a': 1, '!': 4, 'b': 1, 'c': 1, "
+            r"'\n': 2, 'd': 1, 'e': 1, 'f': 1}",
         )
     ],
 )
