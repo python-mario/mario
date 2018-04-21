@@ -47,8 +47,17 @@ import pype.app
             ],
             '{"a": 1, "!": 2, "b": 1, "c": 1}'
         ),
-
-    ]
+        (
+            [
+                "-i", "toolz",
+                "-i", "collections",
+                ' str.replace(?, ".", "!") || collections.Counter',
+                'toolz.merge_with(sum, ?)',
+                ("a.b.c\n", "d.e.f\n",),
+            ],
+            r"{'a': 1, '!': 4, 'b': 1, 'c': 1, '\n': 2, 'd': 1, 'e': 1, 'f': 1}"
+        )
+    ],
 )
 def test_cli(args, expected):
 
