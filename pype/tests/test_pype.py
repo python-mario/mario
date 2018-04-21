@@ -88,7 +88,7 @@ def test_cli(args, expected):
     runner = CliRunner()
     result = runner.invoke(pype.app.cli, args)
     assert not result.exception
-    assert result.output.strip() == expected.strip()
+    assert result.output == expected
 
 
 @pytest.mark.parametrize(
