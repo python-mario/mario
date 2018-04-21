@@ -121,6 +121,18 @@ $ printf 'aa.bbb\\n' | pype -i collections -i json 'str.replace(?, ".", "!") || 
 \b
 {"2": "A", "1": "\\n", "3": "B"}
 
+\b
+$ printf 'a\\nab\\nabc\\n' | pype -i json -i toolz -i collections 'collections.Counter' 'toolz.merge_with(sum, ?)' 'json.dumps'
+
+\b
+{"a": 3, "\\n": 3, "b": 2, "c": 1}
+
+\b
+$ printf 'a\\nab\\nabc\\n' | pype -t -i json -i toolz -i collections 'collections.Counter || json.dumps'
+
+\b
+{"a": 3, "\\n": 3, "b": 2, "c": 1}
+
 
     """
     gen = main(command, reducer, postmap, in_stream,
