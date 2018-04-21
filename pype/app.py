@@ -159,9 +159,6 @@ def main(mapper, reducer, postmap, in_stream, imports, placeholder, total, autoi
 @click.argument('command', type=str)
 @click.argument('reducer', type=str, default=None, required=False,)
 @click.argument('postmap', default=None, required=False)
-@click.argument(
-    'in_stream', default=click.get_text_stream('stdin'), required=False
-)
 @click.option('--total', '-t', is_flag=True, help='Apply function to entire input together.')
 @click.option('--newlines', '-n', type=click.Choice(['auto', 'yes', 'no']), default='auto', help='Add newlines.')
 @click.option('--autoimport/--no-autoimport', '-a/-A', is_flag=True, default=True, help='Automatically import modules.')
@@ -173,7 +170,7 @@ def main(mapper, reducer, postmap, in_stream, imports, placeholder, total, autoi
     '--placeholder', '-p', type=str, default='?',
     help='String to replace with data. Defaults to ?',
 )
-def cli(imports, command, reducer, in_stream, placeholder, total, postmap, autoimport, newlines):
+def cli(imports, command, reducer, placeholder, total, postmap, autoimport, newlines):
     """
 Pipe data through python functions.
 
@@ -205,6 +202,7 @@ $ printf 'a\\nab\\nabc\\n' | pype -t -i json -i toolz -i collections 'collection
 
 
     """
+    in_stream = click.get_text_stream('stdin')
     gen = main(command, reducer, postmap, in_stream,
                imports, placeholder, total, autoimport)
 
