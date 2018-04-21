@@ -31,11 +31,13 @@ def get_identifiers(string):
     return set(matches)
 
 
+BUILTIN = object()
+
+
 def get_named_module(name):
-    try:
-        return getattr(sys.modules['builtins'], '.'.join(name.rsplit('.')[:-1]))
-    except AttributeError:
-        pass
+    builtins = sys.modules['builtins']
+    if hasattr(builtins, name):
+        return builtins
     try:
         return importlib.import_module(name)
     except ImportError:
@@ -55,6 +57,8 @@ def get_autoimport_modules(fullname):
         except LookupError:
             pass
         else:
+            if module is sys.modules['builtins']:
+                return {}
             return {name: module}
     raise RuntimeError(f'Could not find {fullname}')
 
