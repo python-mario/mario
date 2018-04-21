@@ -16,6 +16,9 @@ import click
 import toolz
 
 
+BUILTIN = object()
+
+
 def get_identifiers(string):
     identifier_pattern = r'[^\d\W]\w*'
     namespaced_identifier_pattern = r'\b{id}(?:\.{id})*'.format(
@@ -25,9 +28,6 @@ def get_identifiers(string):
         namespaced_identifier_pattern, string.strip(), re.UNICODE
     )
     return set(matches)
-
-
-BUILTIN = object()
 
 
 def get_named_module(name):
