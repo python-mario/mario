@@ -3,6 +3,7 @@ import importlib
 
 
 def get_function(fullname):
+    # TODO use identifier regex to avoid problems with HOFs like map(json.dumps)
     name_parts = fullname.split('.')
     try_names = []
     for idx in range(len(name_parts)):

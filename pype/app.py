@@ -9,7 +9,7 @@ import click
 
 
 def identity(x):
-    "Identity function."
+    """Identity function."""
     return x
 
 
