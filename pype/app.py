@@ -81,6 +81,7 @@ def make_pipeline_strings(command, placeholder, star_args=False):
 
 
 def apply_command_pipeline(value, modules, pipeline):
+    assert modules is not None
     for step in pipeline:
         value = eval(step, modules, {'_pype_value_': value})
     return value
