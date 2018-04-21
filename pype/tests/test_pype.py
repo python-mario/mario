@@ -1,3 +1,6 @@
+import collections
+import os
+import urllib
 
 import pytest
 from click.testing import CliRunner
@@ -93,20 +96,45 @@ def test_cli(args, expected):
     [
         ('str.upper(?)', ['str.upper(_pype_value_)']),
         ('str.upper', ['str.upper(_pype_value_)']),
-        ('str.upper(?) || "X".join', [
-         'str.upper(_pype_value_)', '"X".join(_pype_value_)']),
+        (
+            'str.upper(?) || "X".join',
+            [
+                'str.upper(_pype_value_)', '"X".join(_pype_value_)'
+            ]),
     ]
 )
 def test_make_pipeline(command, expected):
     assert pype.app.make_pipeline_strings(command, '?') == expected
 
 
-@pytest.mark.skip
-def test_newlines():
-    input_string = """
+@pytest.mark.parametrize(
+    'name',
+    [
 
-    """
+        ('str.upper', str.upper),
+        ('os.path.join', os.path.join),
+        ('map', map),
+        ('collections.Counter', collections.Counter),
+        ('urllib.parse.urlparse', urllib.parse.urlparse),
+    ],
+)
+def test_get_function(name, expected):
+    assert pype.app.get_function(name) == expected
 
-    runner = CliRunner()
-    result = runner.invoke(pype.app.cli, args)
-    assert result.output == expected
+
+@pytest.mark.parametrize(
+    'string, expected',
+    [
+        ('map', {'map'}),
+        ('map(json.dumps)', {'map', 'json.dumps'}),
+        ('collections.Counter(?)', {'collections.Counter'}),
+        ('urllib.parse.urlparse', {'urllib.parse.urlparse'}),
+        ('1 + 2', set()),
+        (
+            'json.dumps(collections.Counter)',
+            {'json.dumps', 'collections.Counter'}
+        )
+    ],
+)
+def test_get_identifiers(string, expected):
+    assert pype.app.get_identifiers(string) == expected

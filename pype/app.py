@@ -1,11 +1,54 @@
 #!/usr/bin/env python
 
+import re
 import json
 import functools
 import importlib
 from pprint import pprint as pp
 
 import click
+
+import sys
+import importlib
+
+
+def get_identifiers(string):
+    identifier_pattern = r'[^\d\W]\w*'
+    namespaced_identifier_pattern = r'\b{id}(?:\.{id})*'.format(
+        id=identifier_pattern
+    )
+
+    print('nidp: ', namespaced_identifier_pattern)
+    matches = re.findall(
+        namespaced_identifier_pattern, string.strip(), re.UNICODE
+    )
+    return set(matches)
+
+
+def get_function(fullname):
+    name_parts = fullname.split('.')
+    try_names = []
+    for idx in range(len(name_parts)):
+        try_names.insert(0, '.'.join(name_parts[:idx + 1]))
+
+    for name in try_names:
+        if hasattr(sys.modules['builtins'], name):
+            obj = getattr(sys.modules['builtins'], name)
+            break
+        try:
+            obj = importlib.import_module(name)
+            break
+        except ImportError:
+            pass
+    else:
+        raise RuntimeError('could not find %s' % fullname)
+
+    remainder = fullname[len(name) + 1:]
+    if remainder:
+        for remainder_part in remainder.split('.'):
+            obj = getattr(obj, remainder_part)
+
+    return obj
 
 
 def identity(x):
@@ -97,8 +140,7 @@ def main(mapper, reducer, postmap, in_stream, imports, placeholder, total):
     help='String to replace with data. Defaults to ?',
 )
 @click.argument('command', type=str)
-@click.argument('reducer', type=str, default=None, required=False,
-                )
+@click.argument('reducer', type=str, default=None, required=False,)
 @click.argument('postmap', default=None, required=False)
 @click.argument(
     'in_stream', default=click.get_text_stream('stdin'), required=False
