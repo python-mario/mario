@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 
-import re
-import json
+# TODO Consider what happens with quoting when using autoimport.
+# TODO Prefix private functions with _.
+
+from pprint import pprint as pp
 import functools
 import importlib
-from pprint import pprint as pp
+import importlib
+import json
+import re
+import sys
+
 
 import click
-
-import sys
-import importlib
 
 
 def get_identifiers(string):
@@ -56,7 +59,7 @@ def identity(x):
     return x
 
 
-def get_modules(imports):
+def get_named_modules(imports):
     """Import modules into dict mapping name to module."""
     modules = {}
     for module_name in imports:
@@ -86,7 +89,7 @@ def apply_command_pipeline(value, modules, pipeline):
 
 
 def apply_total(command, in_stream, imports, placeholder):
-    modules = get_modules(imports)
+    modules = get_named_modules(imports)
     pipeline = make_pipeline_strings(command, placeholder)
     string = in_stream.read()
     result = apply_command_pipeline(string, modules, pipeline)
@@ -95,7 +98,7 @@ def apply_total(command, in_stream, imports, placeholder):
 
 def apply_map(command, in_stream, imports, placeholder):
 
-    modules = get_modules(imports)
+    modules = get_named_modules(imports)
     pipeline = make_pipeline_strings(command, placeholder)
     for line in in_stream:
         result = apply_command_pipeline(line, modules, pipeline)
@@ -104,7 +107,7 @@ def apply_map(command, in_stream, imports, placeholder):
 
 def apply_reduce(command, in_stream, imports, placeholder):
 
-    modules = get_modules(imports)
+    modules = get_named_modules(imports)
     pipeline = make_pipeline_strings(command, placeholder, star_args=True)
 
     value = next(in_stream)
