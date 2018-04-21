@@ -107,16 +107,15 @@ def test_make_pipeline(command, expected):
     assert pype.app.make_pipeline_strings(command, '?') == expected
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize(
     'name, expected',
     [
 
-        ('str.upper', str.upper),
-        ('os.path.join', os.path),
-        ('map', map),
-        ('collections.Counter', collections),
-        ('urllib.parse.urlparse', urllib.parse),
+        ('str.upper', {}),
+        ('os.path.join', {'os.path': os.path}),
+        ('map', {}),
+        ('collections.Counter', {'collections': collections}),
+        ('urllib.parse.urlparse', {'urllib.parse': urllib.parse}),
     ],
 )
 def test_get_module(name, expected):
