@@ -65,7 +65,19 @@ import pype.app
             r"{'a': 1, '!': 4, 'b': 1, 'c': 1, "
             r"'\n': 2, 'd': 1, 'e': 1, 'f': 1}",
         ),
-
+        (
+            [
+                '-a '
+                'str.replace(?, ".", "!") '
+                '|| collections.Counter(?) '
+                '|| dict(?) '
+                '|| json.dumps(?) ',
+                '?',
+                '?',
+                ('a.b.c',),
+            ],
+            '{"a": 1, "!": 2, "b": 1, "c": 1}',
+        ),
     ],
 )
 def test_cli(args, expected):

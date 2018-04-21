@@ -87,6 +87,7 @@ def main(mapper, reducer, postmap, in_stream, imports, placeholder, total):
 
 
 @click.command()
+@click.option('--autoimport', '-a', is_flag=True)
 @click.option(
     '--import', '-i', 'imports', type=str, multiple=True,
     help='Modules to import',
@@ -103,7 +104,7 @@ def main(mapper, reducer, postmap, in_stream, imports, placeholder, total):
     'in_stream', default=click.get_text_stream('stdin'), required=False
 )
 @click.option('--total', '-t', is_flag=True, help='Apply function to entire input together.')
-def cli(imports, command, reducer, in_stream, placeholder, total, postmap):
+def cli(imports, command, reducer, in_stream, placeholder, total, postmap, autoimport):
     """
 Pipe data through python functions.
 
