@@ -3,6 +3,8 @@
 # TODO Consider what happens with quoting when using autoimport.
 # TODO Prefix private functions with _.
 
+from __future__ import generator_stop
+
 from pprint import pprint as pp
 import functools
 import importlib
