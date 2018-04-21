@@ -6,7 +6,7 @@
 from __future__ import generator_stop
 
 from pdb import set_trace as st
-from pprint import pprint
+from pprint import pprint as pp
 import collections
 import functools
 import importlib
@@ -31,30 +31,32 @@ def get_identifiers(string):
     return set(matches)
 
 
-def get_function(fullname):
+def get_named_module(name):
+    try:
+        return getattr(sys.modules['builtins'], '.'.join(name.rsplit('.')[:-1]))
+    except AttributeError:
+        pass
+    try:
+        return importlib.import_module(name)
+    except ImportError:
+        pass
+    raise LookupError(f'Could not find {name}')
+
+
+def get_autoimport_modules(fullname):
     name_parts = fullname.split('.')
     try_names = []
     for idx in range(len(name_parts)):
         try_names.insert(0, '.'.join(name_parts[:idx + 1]))
 
     for name in try_names:
-        if hasattr(sys.modules['builtins'], name):
-            obj = getattr(sys.modules['builtins'], name)
-            break
         try:
-            obj = importlib.import_module(name)
-            break
-        except ImportError:
+            module = get_named_module(name)
+        except LookupError:
             pass
-    else:
-        raise RuntimeError('could not find %s' % fullname)
-
-    remainder = fullname[len(name) + 1:]
-    if remainder:
-        for remainder_part in remainder.split('.'):
-            obj = getattr(obj, remainder_part)
-
-    return obj
+        else:
+            return {name: module}
+    raise RuntimeError(f'Could not find {fullname}')
 
 
 def get_named_modules(imports):
@@ -97,21 +99,21 @@ def apply_total(command, in_stream, imports, placeholder):
 
 def get_autoimports(string):
     components = [comp.strip() for comp in string.split('||')]
-    name_to_function = {}
+    name_to_module = {}
     for component in components:
         identifiers = get_identifiers(component)
         for identifier in identifiers:
-            function = get_function(identifier)
-            name_to_function[component] = function
-    return name_to_function
+            name_module = get_autoimport_modules(identifier)
+            name_to_module.update(name_module)
+    return name_to_module
 
 
 def get_modules(commands, named_imports):
     named_modules = get_named_modules(named_imports)
     autoimports = toolz.merge(get_autoimports(command) for command in commands)
+    autoimport_modules = {k: v for k, v in autoimports.items()}
     # named modules have priority
     modules = {**autoimports, **named_modules}
-    pprint(modules)
     return modules
 
 

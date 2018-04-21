@@ -112,14 +112,14 @@ def test_make_pipeline(command, expected):
     [
 
         ('str.upper', str.upper),
-        ('os.path.join', os.path.join),
+        ('os.path.join', os.path),
         ('map', map),
-        ('collections.Counter', collections.Counter),
-        ('urllib.parse.urlparse', urllib.parse.urlparse),
+        ('collections.Counter', collections),
+        ('urllib.parse.urlparse', urllib.parse),
     ],
 )
-def test_get_function(name, expected):
-    assert pype.app.get_function(name) == expected
+def test_get_module(name, expected):
+    assert pype.app.get_autoimport_modules(name) == expected
 
 
 @pytest.mark.parametrize(
