@@ -122,7 +122,6 @@ def test_get_module(name, expected):
     assert pype.app.get_autoimport_modules(name) == expected
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize(
     'string, expected',
     [
