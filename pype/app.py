@@ -31,14 +31,14 @@ def make_pipeline_strings(command, placeholder, star_args=False):
             string = string + '({star}{placeholder})'.format(
                 star='*' if star_args else '', placeholder=placeholder
             )
-        stage = string.replace(placeholder, 'value').strip()
+        stage = string.replace(placeholder, '_pype_value_').strip()
         pipeline.append(stage)
     return pipeline
 
 
 def apply_command_pipeline(value, modules, pipeline):
     for step in pipeline:
-        value = eval(step, modules, {'value': value})
+        value = eval(step, modules, {'_pype_value_': value})
     return value
 
 
@@ -67,7 +67,7 @@ def apply_reduce(command, in_stream, imports, placeholder):
     value = next(in_stream)
     for item in in_stream:
         for step in pipeline:
-            value = eval(step, modules, {'value': (value, item)})
+            value = eval(step, modules, {'_pype_value_': (value, item)})
     yield value
 
 

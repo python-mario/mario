@@ -64,7 +64,8 @@ import pype.app
             ],
             r"{'a': 1, '!': 4, 'b': 1, 'c': 1, "
             r"'\n': 2, 'd': 1, 'e': 1, 'f': 1}",
-        )
+        ),
+
     ],
 )
 def test_cli(args, expected):
@@ -78,9 +79,10 @@ def test_cli(args, expected):
 @pytest.mark.parametrize(
     'command, expected',
     [
-        ('str.upper(?)', ['str.upper(value)']),
-        ('str.upper', ['str.upper(value)']),
-        ('str.upper(?) || "X".join', ['str.upper(value)', '"X".join(value)']),
+        ('str.upper(?)', ['str.upper(_pype_value_)']),
+        ('str.upper', ['str.upper(_pype_value_)']),
+        ('str.upper(?) || "X".join', [
+         'str.upper(_pype_value_)', '"X".join(_pype_value_)']),
     ]
 )
 def test_make_pipeline(command, expected):
