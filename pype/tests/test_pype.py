@@ -27,7 +27,7 @@ from pype.app import PYPE_VALUE
                 '?',
             ],
             'a.b.c\n',
-            '{"a": 1, "!": 2, "b": 1, "c": 1}\n',
+            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
         ),
         (
             [
@@ -49,20 +49,16 @@ from pype.app import PYPE_VALUE
                 '?',
             ],
             'a.b.c\n',
-            '{"a": 1, "!": 2, "b": 1, "c": 1}\n',
+            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
         ),
         (
             [
                 '-icollections',
                 '-ijson',
-                'str.replace(?, ".", "!") '
-                '|| collections.Counter '
-                '|| json.dumps ',
-                '?',
-                '?',
+                'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
             ],
             'a.b.c\nd.e.f\n',
-            '{"a": 1, "!": 2, "b": 1, "c": 1}\n{"d": 1, "e": 1, "f": 1,  "!": 2,}',
+            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n{"d": 1, "!": 2, "e": 1, "f": 1, "\\n": 1}\n',
         ),
 
         (
