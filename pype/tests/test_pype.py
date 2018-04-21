@@ -108,7 +108,7 @@ def test_make_pipeline(command, expected):
 
 
 @pytest.mark.parametrize(
-    'name',
+    'name, expected',
     [
 
         ('str.upper', str.upper),
