@@ -74,7 +74,7 @@ def apply_reduce(command, in_stream, imports, placeholder):
 def main(mapper, reducer, postmap, in_stream, imports, placeholder, total):
     if total:
         yield from apply_total(mapper, in_stream, imports, placeholder)
-
+        return
     mapped = apply_map(mapper, in_stream, imports, placeholder)
     if reducer is None:
         yield from mapped
