@@ -33,10 +33,7 @@ from pype.app import PYPE_VALUE
             [
                 '-icollections',
                 '-ijson',
-                'str.replace(?, ".", "!") '
-                '|| collections.Counter(?) '
-                '|| dict(?) '
-                '|| json.dumps(?) ',
+                'str.replace(?, ".", "!") || collections.Counter(?) || dict(?) || json.dumps(?) ',
                 '?',
                 '?',
                 ('a.b.c',),
@@ -47,10 +44,7 @@ from pype.app import PYPE_VALUE
             [
                 '-icollections',
                 '-ijson',
-                'str.replace(?, ".", "!") '
-                '|| collections.Counter '
-                '|| dict '
-                '|| json.dumps ',
+                'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
                 '?',
                 '?',
                 ('a.b.c',),
@@ -85,9 +79,7 @@ from pype.app import PYPE_VALUE
         (
             [
                 '-a',
-                'str.replace(?, ".", "!") '
-                '|| collections.Counter(?) '
-                '|| json.dumps(?) ',
+                'str.replace(?, ".", "!") || collections.Counter(?) || json.dumps(?) ',
                 '?',
                 '?',
                 ('a.b.c',),
