@@ -83,21 +83,6 @@ def make_pipeline_strings(command, placeholder, star_args=False):
     return pipeline
 
 
-def apply_command_pipeline(value, modules, pipeline):
-    assert modules is not None
-    for step in pipeline:
-        value = eval(step, modules, {f'{PYPE_VALUE}': value})
-    return value
-
-
-def apply_total(command, in_stream, imports, placeholder):
-    modules = get_named_modules(imports)
-    pipeline = make_pipeline_strings(command, placeholder)
-    string = in_stream.read()
-    result = apply_command_pipeline(string, modules, pipeline)
-    yield result
-
-
 def get_autoimports(string):
     components = [comp.strip() for comp in string.split('||')]
     name_to_module = {}
@@ -117,6 +102,21 @@ def get_modules(commands, named_imports, autoimport):
     # named modules have priority
     modules = {**autoimports, **named_modules}
     return modules
+
+
+def apply_command_pipeline(value, modules, pipeline):
+    assert modules is not None
+    for step in pipeline:
+        value = eval(step, modules, {f'{PYPE_VALUE}': value})
+    return value
+
+
+def apply_total(command, in_stream, imports, placeholder):
+    modules = get_named_modules(imports)
+    pipeline = make_pipeline_strings(command, placeholder)
+    string = in_stream.read()
+    result = apply_command_pipeline(string, modules, pipeline)
+    yield result
 
 
 def apply_map(command, in_stream, imports, placeholder, autoimport):
