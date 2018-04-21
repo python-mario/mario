@@ -20,8 +20,6 @@ def get_identifiers(string):
     namespaced_identifier_pattern = r'\b{id}(?:\.{id})*'.format(
         id=identifier_pattern
     )
-
-    print('nidp: ', namespaced_identifier_pattern)
     matches = re.findall(
         namespaced_identifier_pattern, string.strip(), re.UNICODE
     )
@@ -52,11 +50,6 @@ def get_function(fullname):
             obj = getattr(obj, remainder_part)
 
     return obj
-
-
-def identity(x):
-    """Identity function."""
-    return x
 
 
 def get_named_modules(imports):
@@ -130,6 +123,7 @@ def main(mapper, reducer, postmap, in_stream, imports, placeholder, total):
         yield from reduced
         return
     yield from apply_map(postmap, reduced, imports, placeholder)
+    return
 
 
 @click.command()
