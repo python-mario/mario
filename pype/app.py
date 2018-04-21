@@ -108,25 +108,27 @@ def get_autoimports(string):
     return name_to_module
 
 
-def get_modules(commands, named_imports):
+def get_modules(commands, named_imports, autoimport):
     named_modules = get_named_modules(named_imports)
+    if not autoimport:
+        return named_modules
     autoimports = toolz.merge(get_autoimports(command) for command in commands)
     # named modules have priority
     modules = {**autoimports, **named_modules}
     return modules
 
 
-def apply_map(command, in_stream, imports, placeholder):
-    modules = get_modules([command], imports)
+def apply_map(command, in_stream, imports, placeholder, autoimport):
+    modules = get_modules([command], imports, autoimport)
     pipeline = make_pipeline_strings(command, placeholder)
     for line in in_stream:
         result = apply_command_pipeline(line, modules, pipeline)
         yield result
 
 
-def apply_reduce(command, in_stream, imports, placeholder):
+def apply_reduce(command, in_stream, imports, placeholder, autoimport):
 
-    modules = get_named_modules(imports)
+    modules = get_modules([command], imports, autoimport)
     pipeline = make_pipeline_strings(command, placeholder, star_args=True)
 
     value = next(in_stream)
@@ -136,24 +138,24 @@ def apply_reduce(command, in_stream, imports, placeholder):
     yield value
 
 
-def main(mapper, reducer, postmap, in_stream, imports, placeholder, total):
+def main(mapper, reducer, postmap, in_stream, imports, placeholder, total, autoimport):
     if total:
         yield from apply_total(mapper, in_stream, imports, placeholder)
         return
-    mapped = apply_map(mapper, in_stream, imports, placeholder)
+    mapped = apply_map(mapper, in_stream, imports, placeholder, autoimport)
     if reducer is None:
         yield from mapped
         return
-    reduced = apply_reduce(reducer, mapped, imports, placeholder)
+    reduced = apply_reduce(reducer, mapped, imports, placeholder, autoimport)
     if postmap is None:
         yield from reduced
         return
-    yield from apply_map(postmap, reduced, imports, placeholder)
+    yield from apply_map(postmap, reduced, imports, placeholder, autoimport)
     return
 
 
 @click.command()
-@click.option('--autoimport', '-a', is_flag=True)
+@click.option('--autoimport/--no-autoimport', '-a/-A', is_flag=True)
 @click.option(
     '--import', '-i', 'imports', type=str, multiple=True,
     help='Modules to import',
@@ -204,7 +206,7 @@ $ printf 'a\\nab\\nabc\\n' | pype -t -i json -i toolz -i collections 'collection
 
     """
     gen = main(command, reducer, postmap, in_stream,
-               imports, placeholder, total)
+               imports, placeholder, total, autoimport)
     for line in gen:
         click.echo(line, nl=True)
     click.echo()
