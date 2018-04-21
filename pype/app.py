@@ -208,5 +208,4 @@ $ printf 'a\\nab\\nabc\\n' | pype -t -i json -i toolz -i collections 'collection
     gen = main(command, reducer, postmap, in_stream,
                imports, placeholder, total, autoimport)
     for line in gen:
-        click.echo(line, nl=True)
-    click.echo()
+        click.echo(line, nl=False)
