@@ -115,7 +115,6 @@ def get_autoimports(string):
 def get_modules(commands, named_imports):
     named_modules = get_named_modules(named_imports)
     autoimports = toolz.merge(get_autoimports(command) for command in commands)
-    autoimport_modules = {k: v for k, v in autoimports.items()}
     # named modules have priority
     modules = {**autoimports, **named_modules}
     return modules
