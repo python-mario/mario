@@ -70,7 +70,7 @@ import pype.app
         ),
         (
             [
-                '-a ',
+                '-a',
                 'str.replace(?, ".", "!") '
                 '|| collections.Counter(?) '
                 '|| dict(?) '
