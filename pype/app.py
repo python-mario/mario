@@ -20,7 +20,7 @@ def get_modules(imports):
     return modules
 
 
-def make_pipeline_strings(command, placeholder='?', star_args=False):
+def make_pipeline_strings(command, placeholder, star_args=False):
     """Parse pipeline into individual components."""
     command_strings = command.split('||')
     pipeline = []

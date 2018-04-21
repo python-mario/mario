@@ -12,13 +12,14 @@ import pype.app
 @pytest.mark.parametrize(
     'args,  expected',
     [
-        (['str.replace(?, ".", "!")', ('a.b.c',)], 'a!b!c\n'),
-        (['-p$', 'str.replace($, ".", "!")', ('a.b.c',)], 'a!b!c\n'),
+        (['str.replace(?, ".", "!")', '?', ('a.b.c\n',)], 'a!b!c\n'),
+        (['-p$', 'str.replace($, ".", "!")', '$', ('a.b.c\n',)], 'a!b!c\n'),
         (
             [
                 '-icollections',
                 '-ijson',
                 'json.dumps(dict(collections.Counter(str.replace(?, ".", "!"))))',
+                '?',
                 ('a.b.c',)
             ],
             '{"a": 1, "!": 2, "b": 1, "c": 1}'
@@ -31,6 +32,7 @@ import pype.app
                 '|| collections.Counter(?) '
                 '|| dict(?) '
                 '|| json.dumps(?) ',
+                '?',
                 ('a.b.c',)
             ],
             '{"a": 1, "!": 2, "b": 1, "c": 1}'
@@ -43,6 +45,7 @@ import pype.app
                 '|| collections.Counter '
                 '|| dict '
                 '|| json.dumps ',
+                '?',
                 ('a.b.c',)
             ],
             '{"a": 1, "!": 2, "b": 1, "c": 1}'
@@ -76,7 +79,7 @@ def test_cli(args, expected):
     ]
 )
 def test_make_pipeline(command, expected):
-    assert pype.app.make_pipeline_strings(command) == expected
+    assert pype.app.make_pipeline_strings(command, '?') == expected
 
 
 @pytest.mark.skip
