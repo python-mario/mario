@@ -10,7 +10,7 @@ import toolz
 
 import pype
 import pype.app
-from pype.app import PYPE_VALUE
+from pype.app import _PYPE_VALUE
 
 
 @pytest.mark.parametrize(
@@ -81,18 +81,18 @@ def test_cli(args, input, expected):
 @pytest.mark.parametrize(
     'command, expected',
     [
-        ('str.upper(?)', [f'str.upper({PYPE_VALUE})']),
-        ('str.upper', [f'str.upper({PYPE_VALUE})']),
+        ('str.upper(?)', [f'str.upper({_PYPE_VALUE})']),
+        ('str.upper', [f'str.upper({_PYPE_VALUE})']),
         (
             'str.upper(?) || "X".join',
             [
-                f'str.upper({PYPE_VALUE})', f'"X".join({PYPE_VALUE})'
+                f'str.upper({_PYPE_VALUE})', f'"X".join({_PYPE_VALUE})'
             ]
         ),
     ]
 )
 def test_make_pipeline(command, expected):
-    assert pype.app.make_pipeline_strings(command, '?') == expected
+    assert pype.app._make_pipeline_strings(command, '?') == expected
 
 
 @pytest.mark.parametrize(
@@ -106,7 +106,7 @@ def test_make_pipeline(command, expected):
     ],
 )
 def test_get_module(name, expected):
-    assert pype.app.get_autoimport_modules(name) == expected
+    assert pype.app._get_autoimport_modules(name) == expected
 
 
 @pytest.mark.parametrize(
@@ -124,4 +124,4 @@ def test_get_module(name, expected):
     ],
 )
 def test_get_identifiers(string, expected):
-    assert pype.app.get_identifiers(string) == expected
+    assert pype.app._get_identifiers(string) == expected

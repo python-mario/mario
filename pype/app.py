@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 # TODO Consider what happens with quoting when using autoimport.
-# TODO Prefix private functions with _.
 
 
 from __future__ import generator_stop
@@ -16,11 +15,10 @@ import click
 import toolz
 
 
-BUILTIN = object()
-PYPE_VALUE = '_PYPE_VALUE_'
+_PYPE_VALUE = '__PYPE_VALUE_'
 
 
-def get_identifiers(string):
+def _get_identifiers(string):
     identifier_pattern = r'[^\d\W]\w*'
     namespaced_identifier_pattern = r'\b{id}(?:\.{id})*'.format(
         id=identifier_pattern
@@ -31,7 +29,7 @@ def get_identifiers(string):
     return set(matches)
 
 
-def get_named_module(name):
+def _get_named_module(name):
     builtins = sys.modules['builtins']
     if hasattr(builtins, name):
         return builtins
@@ -42,7 +40,7 @@ def get_named_module(name):
     raise LookupError(f'Could not find {name}')
 
 
-def get_autoimport_modules(fullname):
+def _get_autoimport_modules(fullname):
     name_parts = fullname.split('.')
     try_names = []
     for idx in range(len(name_parts)):
@@ -50,7 +48,7 @@ def get_autoimport_modules(fullname):
 
     for name in try_names:
         try:
-            module = get_named_module(name)
+            module = _get_named_module(name)
         except LookupError:
             pass
         else:
@@ -60,7 +58,7 @@ def get_autoimport_modules(fullname):
     raise RuntimeError(f'Could not find {fullname}')
 
 
-def get_named_modules(imports):
+def _get_named_modules(imports):
     """Import modules into dict mapping name to module."""
     modules = {}
     for module_name in imports:
@@ -68,7 +66,7 @@ def get_named_modules(imports):
     return modules
 
 
-def make_pipeline_strings(command, placeholder, star_args=False):
+def _make_pipeline_strings(command, placeholder, star_args=False):
     """Parse pipeline into individual components."""
     command_strings = command.split('||')
     pipeline = []
@@ -78,80 +76,81 @@ def make_pipeline_strings(command, placeholder, star_args=False):
             string = string + '({star}{placeholder})'.format(
                 star='*' if star_args else '', placeholder=placeholder
             )
-        stage = string.replace(placeholder, f'{PYPE_VALUE}').strip()
+        stage = string.replace(placeholder, f'{_PYPE_VALUE}').strip()
         pipeline.append(stage)
     return pipeline
 
 
-def get_autoimports(string):
+def _get_autoimports(string):
     components = [comp.strip() for comp in string.split('||')]
     name_to_module = {}
     for component in components:
-        identifiers = get_identifiers(component)
+        identifiers = _get_identifiers(component)
         for identifier in identifiers:
-            name_module = get_autoimport_modules(identifier)
+            name_module = _get_autoimport_modules(identifier)
             name_to_module.update(name_module)
     return name_to_module
 
 
-def get_modules(commands, named_imports, autoimport):
-    named_modules = get_named_modules(named_imports)
+def _get_modules(commands, named_imports, autoimport):
+    named_modules = _get_named_modules(named_imports)
     if not autoimport:
         return named_modules
-    autoimports = toolz.merge(get_autoimports(command) for command in commands)
+    autoimports = toolz.merge(_get_autoimports(command)
+                              for command in commands)
     # named modules have priority
     modules = {**autoimports, **named_modules}
     return modules
 
 
-def apply_command_pipeline(value, modules, pipeline):
+def _apply_command_pipeline(value, modules, pipeline):
     assert modules is not None
     for step in pipeline:
-        value = eval(step, modules, {f'{PYPE_VALUE}': value})
+        value = eval(step, modules, {f'{_PYPE_VALUE}': value})
     return value
 
 
-def apply_total(command, in_stream, imports, placeholder):
-    modules = get_named_modules(imports)
-    pipeline = make_pipeline_strings(command, placeholder)
+def _apply_total(command, in_stream, imports, placeholder):
+    modules = _get_named_modules(imports)
+    pipeline = _make_pipeline_strings(command, placeholder)
     string = in_stream.read()
-    result = apply_command_pipeline(string, modules, pipeline)
+    result = _apply_command_pipeline(string, modules, pipeline)
     yield result
 
 
-def apply_map(command, in_stream, imports, placeholder, autoimport):
-    modules = get_modules([command], imports, autoimport)
-    pipeline = make_pipeline_strings(command, placeholder)
+def _apply_map(command, in_stream, imports, placeholder, autoimport):
+    modules = _get_modules([command], imports, autoimport)
+    pipeline = _make_pipeline_strings(command, placeholder)
     for line in in_stream:
-        result = apply_command_pipeline(line, modules, pipeline)
+        result = _apply_command_pipeline(line, modules, pipeline)
         yield result
 
 
-def apply_reduce(command, in_stream, imports, placeholder, autoimport):
+def _apply_reduce(command, in_stream, imports, placeholder, autoimport):
 
-    modules = get_modules([command], imports, autoimport)
-    pipeline = make_pipeline_strings(command, placeholder, star_args=True)
+    modules = _get_modules([command], imports, autoimport)
+    pipeline = _make_pipeline_strings(command, placeholder, star_args=True)
 
     value = next(in_stream)
     for item in in_stream:
         for step in pipeline:
-            value = eval(step, modules, {f'{PYPE_VALUE}': (value, item)})
+            value = eval(step, modules, {f'{_PYPE_VALUE}': (value, item)})
     yield value
 
 
 def main(mapper, reducer, postmap, in_stream, imports, placeholder, total, autoimport):
     if total:
-        yield from apply_total(mapper, in_stream, imports, placeholder)
+        yield from _apply_total(mapper, in_stream, imports, placeholder)
         return
-    mapped = apply_map(mapper, in_stream, imports, placeholder, autoimport)
+    mapped = _apply_map(mapper, in_stream, imports, placeholder, autoimport)
     if reducer is None:
         yield from mapped
         return
-    reduced = apply_reduce(reducer, mapped, imports, placeholder, autoimport)
+    reduced = _apply_reduce(reducer, mapped, imports, placeholder, autoimport)
     if postmap is None:
         yield from reduced
         return
-    yield from apply_map(postmap, reduced, imports, placeholder, autoimport)
+    yield from _apply_map(postmap, reduced, imports, placeholder, autoimport)
     return
 
 
