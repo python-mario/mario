@@ -78,7 +78,7 @@ from pype.app import _PYPE_VALUE
             'a.b.c\nd.e.f\n',
             '{"a": 1, "!": 4, "b": 1, "c": 1, "\\n": 2, "d": 1, "e": 1, "f": 1}\n',
 
-        )
+        ),
     ],
 )
 def test_cli(args, input, expected):
@@ -136,3 +136,16 @@ def test_get_module(name, expected):
 )
 def test_get_identifiers(string, expected):
     assert pype.app._get_identifiers(string) == expected
+
+
+def test_cli_raises_without_autoimport():
+
+    args = [
+        '--no-autoimport',
+        'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
+    ]
+    input = 'a.b.c\n'
+
+    runner = CliRunner()
+    result = runner.invoke(pype.app.cli, args, input=input)
+    assert isinstance(result.exception, NameError)
