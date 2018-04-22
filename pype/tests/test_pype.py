@@ -82,7 +82,22 @@ def _runner():
             ],
             'a.b.c\nd.e.f\n',
             '{"a": 1, "!": 4, "b": 1, "c": 1, "\\n": 2, "d": 1, "e": 1, "f": 1}\n',
-
+        ),
+        (
+            [
+                '--newlines=yes',
+                'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
+            ],
+            'a.b.c\n',
+            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
+        ),
+        (
+            [
+                '--newlines=no',
+                'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
+            ],
+            'a.b.c\n',
+            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}',
         ),
     ],
 )
