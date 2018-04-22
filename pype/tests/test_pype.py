@@ -187,22 +187,22 @@ def test_raises_on_missing_module(runner):
 
 @pytest.mark.parametrize(
     'mapper',
-    [str.capitalize, ],
+    [
+        str.capitalize, str.casefold,
+        str.encode, str.expandtabs, str.isalnum,
+    ],
 )
 @given(in_stream=text())
 def test_main_mappers(mapper, in_stream):
     qualname = mapper.__qualname__
     result = list(pype.app.main(qualname, in_stream=[in_stream]))
-    joined = ''.join(result)
+
     expected = mapper(in_stream)
-    # pprint(locals())
-    assert joined == expected
+    assert result == [expected]
 
 
 # TODO Test find_identifiers result satisfies str.isidentifier
 
-    # str.casefold,
-    # str.encode, str.expandtabs, str.isalnum,
     # str.isalpha, str.isdecimal, str.isdigit, str.isidentifier, str.islower,
     # str.isnumeric, str.isprintable, str.isspace, str.istitle, str.isupper,
     # str.lower, str.lstrip, str.rsplit, str.rstrip, str.split,
