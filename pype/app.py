@@ -109,8 +109,8 @@ def _apply_command_pipeline(value, modules, pipeline):
     return value
 
 
-def _apply_total(command, in_stream, imports, placeholder):
-    modules = _get_named_modules(imports)
+def _apply_total(command, in_stream, imports, placeholder, autoimport):
+    modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder)
     string = in_stream.read()
     result = _apply_command_pipeline(string, modules, pipeline)
@@ -139,7 +139,7 @@ def _apply_reduce(command, in_stream, imports, placeholder, autoimport):
 
 def main(mapper, reducer=None, postmap=None, in_stream=None, imports=(), placeholder='?', total=False, autoimport=True):
     if total:
-        yield from _apply_total(mapper, in_stream, imports, placeholder)
+        yield from _apply_total(mapper, in_stream, imports, placeholder, autoimport)
         return
     mapped = _apply_map(mapper, in_stream, imports, placeholder, autoimport)
     if reducer is None:

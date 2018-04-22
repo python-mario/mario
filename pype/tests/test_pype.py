@@ -88,6 +88,14 @@ def _runner():
         ),
         (
             [
+                '--total',
+                'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
+            ],
+            'a.b.c\nd.e.f\n',
+            '{"a": 1, "!": 4, "b": 1, "c": 1, "\\n": 2, "d": 1, "e": 1, "f": 1}\n',
+        ),
+        (
+            [
                 '--newlines=yes',
                 'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
             ],
@@ -224,4 +232,4 @@ def test_main_mappers_int(mapper, in_stream):
 @given(st.text())
 def test_get_identifiers_matches_str_isidentifier(string):
     identifiers = pype.app._get_identifiers(string)
-    assert all(identifier.isidentifier() for identifier in identifiers)
+    assert all([identifier.isidentifier() for identifier in identifiers])
