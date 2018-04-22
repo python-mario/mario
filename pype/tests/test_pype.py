@@ -8,7 +8,7 @@ import urllib
 import pytest
 from click.testing import CliRunner
 from hypothesis import given
-from hypothesis.strategies import text
+import hypothesis.strategies as st
 import toolz
 
 import pype
@@ -194,9 +194,10 @@ def test_raises_on_missing_module(runner):
         str.isnumeric, str.isprintable, str.isspace, str.istitle, str.isupper,
         str.lower, str.lstrip, str.rsplit, str.rstrip, str.split,
         str.splitlines, str.strip, str.swapcase, str.title, str.upper,
+
     ],
 )
-@given(in_stream=text())
+@given(in_stream=st.text())
 def test_main_mappers(mapper, in_stream):
     qualname = mapper.__qualname__
     result = list(pype.app.main(qualname, in_stream=[in_stream]))
@@ -207,3 +208,16 @@ def test_main_mappers(mapper, in_stream):
 
 
 # TODO Test find_identifiers result satisfies str.isidentifier
+
+@pytest.mark.parametrize(
+    'mapper',
+    [int.bit_length, ],
+)
+@given(in_stream=st.integers())
+def test_main_mappers_int(mapper, in_stream):
+    qualname = mapper.__qualname__
+    result = list(pype.app.main(qualname, in_stream=[in_stream]))
+
+    expected = [mapper(in_stream)]
+
+    assert result == expected
