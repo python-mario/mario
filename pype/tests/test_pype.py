@@ -240,6 +240,7 @@ def test_main_mappers_int(mapper, in_stream):
     assert result == expected
 
 
+@pytest.mark.xfail(strict=True)
 @given(st.text())
 def test_get_identifiers_matches_str_isidentifier(string):
     identifiers = pype.app._get_identifiers(string)
