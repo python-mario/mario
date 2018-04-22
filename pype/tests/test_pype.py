@@ -151,4 +151,17 @@ def test_cli_raises_without_autoimport(runner):
     instream = 'a.b.c\n'
 
     result = runner.invoke(pype.app.cli, args, input=instream)
+
     assert isinstance(result.exception, NameError)
+
+
+def test_raises_on_missing_module(runner):
+
+    args = [
+        '_missing_module.replace(?, ".", "!") || collections.Counter || json.dumps ',
+    ]
+    instream = 'a.b.c\n'
+
+    result = runner.invoke(pype.app.cli, args, input=instream)
+
+    assert isinstance(result.exception, RuntimeError)
