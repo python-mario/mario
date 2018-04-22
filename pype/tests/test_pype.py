@@ -1,3 +1,5 @@
+from __future__ import generator_stop
+
 import collections
 import os
 import urllib
@@ -19,7 +21,7 @@ def _runner():
 
 
 @pytest.mark.parametrize(
-    'args, input, expected',
+    'args, in_stream, expected',
     [
         (['str.replace(?, ".", "!")', '?', '?', ], 'a.b.c\n', 'a!b!c\n'),
         (['-p$', 'str.replace($, ".", "!")', '$', '$', ], 'a.b.c\n', 'a!b!c\n'),
@@ -101,9 +103,9 @@ def _runner():
         ),
     ],
 )
-def test_cli(args, input, expected, runner):
+def test_cli(args, in_stream, expected, runner):
 
-    result = runner.invoke(pype.app.cli, args, input=input)
+    result = runner.invoke(pype.app.cli, args, input=in_stream)
     assert not result.exception
     assert result.output == expected
 
@@ -163,9 +165,9 @@ def test_cli_raises_without_autoimport(runner):
         '--no-autoimport',
         'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
     ]
-    instream = 'a.b.c\n'
+    in_stream = 'a.b.c\n'
 
-    result = runner.invoke(pype.app.cli, args, input=instream)
+    result = runner.invoke(pype.app.cli, args, input=in_stream)
 
     assert isinstance(result.exception, NameError)
 
@@ -175,8 +177,23 @@ def test_raises_on_missing_module(runner):
     args = [
         '_missing_module.replace(?, ".", "!") || collections.Counter || json.dumps ',
     ]
-    instream = 'a.b.c\n'
+    in_stream = 'a.b.c\n'
 
-    result = runner.invoke(pype.app.cli, args, input=instream)
+    result = runner.invoke(pype.app.cli, args, input=in_stream)
 
     assert isinstance(result.exception, RuntimeError)
+
+
+@pytest.mark.parametrize(
+    'mapper',
+    [
+        str.upper
+    ],
+)
+@given(in_stream=text())
+def test_main_mappers(mapper, in_stream):
+
+    args = [mapper.__qualname__]
+
+    result = pype.app.main(*args, in_stream=in_stream)
+    assert ''.join(result) == mapper(in_stream)

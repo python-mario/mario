@@ -137,7 +137,7 @@ def _apply_reduce(command, in_stream, imports, placeholder, autoimport):
     yield value
 
 
-def main(mapper, reducer, postmap, in_stream, imports, placeholder, total, autoimport):
+def main(mapper, reducer=None, postmap=None, in_stream=None, imports=(), placeholder='?', total=False, autoimport=True):
     if total:
         yield from _apply_total(mapper, in_stream, imports, placeholder)
         return
