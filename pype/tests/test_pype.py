@@ -198,7 +198,7 @@ def test_raises_on_missing_module(runner):
     ],
 )
 @given(in_stream=st.text())
-def test_main_mappers(mapper, in_stream):
+def test_str_simple_mappers(mapper, in_stream):
     qualname = mapper.__qualname__
     result = list(pype.app.main(qualname, in_stream=[in_stream]))
 
