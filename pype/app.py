@@ -156,21 +156,45 @@ def main(mapper, reducer, postmap, in_stream, imports, placeholder, total, autoi
 
 
 @click.command()
-@click.argument('command', type=str)
-@click.argument('reducer', type=str, default=None, required=False,)
+@click.argument('command')
+@click.argument('reducer', default=None, required=False)
 @click.argument('postmap', default=None, required=False)
-@click.option('--total', '-t', is_flag=True, help='Apply function to entire input together.')
-@click.option('--newlines', '-n', type=click.Choice(['auto', 'yes', 'no']), default='auto', help='Add newlines.')
-@click.option('--autoimport/--no-autoimport', '-a/-A', is_flag=True, default=True, help='Automatically import modules.')
 @click.option(
-    '--import', '-i', 'imports', type=str, multiple=True,
+    '--total',
+    '-t',
+    is_flag=True,
+    help='Apply function to entire input together.'
+)
+@click.option(
+    '--newlines',
+    '-n',
+    type=click.Choice(['auto', 'yes', 'no']),
+    default='auto', help='Add newlines.'
+)
+@click.option(
+    '--autoimport/--no-autoimport',
+    '-a/-A',
+    is_flag=True,
+    default=True,
+    help='Automatically import modules.'
+)
+@click.option(
+    '--import',
+    '-i',
+    'imports',
+    multiple=True,
     help='Modules to import explicitly.',
 )
 @click.option(
-    '--placeholder', '-p', type=str, default='?',
+    '--placeholder',
+    '-p',
+    default='?',
     help='String to replace with data. Defaults to ?',
 )
-def cli(imports, command, reducer, placeholder, total, postmap, autoimport, newlines):
+def cli(
+        imports, command, reducer, placeholder,
+        total, postmap, autoimport, newlines,
+):
     """
 Pipe data through python functions.
 
