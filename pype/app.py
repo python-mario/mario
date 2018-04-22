@@ -184,7 +184,6 @@ def main(mapper, reducer=None, postmap=None, in_stream=None, imports=(), placeho
 )
 @click.option(
     '--placeholder',
-    '-p',
     default='?',
     help='String to replace with data. Defaults to ?',
 )

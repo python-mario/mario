@@ -36,7 +36,8 @@ def _runner():
     'args, in_stream, expected',
     [
         (['str.replace(?, ".", "!")', '?', '?', ], 'a.b.c\n', 'a!b!c\n'),
-        (['-p$', 'str.replace($, ".", "!")', '$', '$', ], 'a.b.c\n', 'a!b!c\n'),
+        (['--placeholder=$', 'str.replace($, ".", "!")',
+          '$', '$', ], 'a.b.c\n', 'a!b!c\n'),
         (
             [
                 '-icollections',
