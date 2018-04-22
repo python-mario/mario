@@ -10,6 +10,7 @@ url = "https://pypi.python.org/simple"
 click = "*"
 toolz = "*"
 coverage = "*"
+"e1839a8" = {path = ".", editable = true}
 
 
 [requires]
