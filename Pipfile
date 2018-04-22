@@ -8,14 +8,8 @@ url = "https://pypi.python.org/simple"
 [packages]
 
 click = "*"
-pylint = "*"
-pyflakes = "*"
-"flake8" = "*"
-pytest = "*"
-hypothesis = "*"
 toolz = "*"
-pudb = "*"
-"e1839a8" = {path = ".", editable = true}
+
 
 
 [requires]
@@ -30,3 +24,7 @@ rope = "*"
 pylint = "*"
 coverage = "*"
 bumpversion = "*"
+"flake8" = "*"
+pytest = "*"
+hypothesis = "*"
+pylint = "*"
