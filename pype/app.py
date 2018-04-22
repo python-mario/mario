@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-# TODO Consider what happens with quoting when using autoimport.
-
 
 from __future__ import generator_stop
 
