@@ -121,6 +121,7 @@ def _runner():
             'a.b.c\n',
             '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}',
         ),
+
     ],
 )
 def test_cli(args, in_stream, expected, runner):
@@ -238,6 +239,25 @@ def test_main_mappers_int(mapper, in_stream):
     expected = [mapper(in_stream)]
 
     assert result == expected
+
+
+def exception_equal(e1, e2):
+    return type(e1) == type(e2) and e1.args == e2.args
+
+
+@pytest.mark.parametrize(
+    'option',
+    [
+        '--invented-option', '-J',
+    ],
+)
+def test_raises_on_nonexistent_option(option, runner):
+    args = [option, 'print', ]
+    in_stream = 'a.b.c\n'
+
+    result = runner.invoke(pype.app.cli, args, input=in_stream)
+
+    assert exception_equal(result.exception, SystemExit(2,))
 
 
 @pytest.mark.xfail(strict=True)
