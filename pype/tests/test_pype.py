@@ -207,8 +207,6 @@ def test_main_mappers(mapper, in_stream):
     assert result == expected
 
 
-# TODO Test find_identifiers result satisfies str.isidentifier
-
 @pytest.mark.parametrize(
     'mapper',
     [int.bit_length, ],
@@ -221,3 +219,9 @@ def test_main_mappers_int(mapper, in_stream):
     expected = [mapper(in_stream)]
 
     assert result == expected
+
+
+@given(st.text())
+def test_get_identifiers_matches_str_isidentifier(string):
+    identifiers = pype.app._get_identifiers(string)
+    assert all(identifier.isidentifier() for identifier in identifiers)
