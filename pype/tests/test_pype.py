@@ -13,6 +13,11 @@ import pype.app
 from pype.app import _PYPE_VALUE
 
 
+@pytest.fixture(name='runner')
+def _runner():
+    return CliRunner()
+
+
 @pytest.mark.parametrize(
     'args, input, expected',
     [
@@ -81,9 +86,8 @@ from pype.app import _PYPE_VALUE
         ),
     ],
 )
-def test_cli(args, input, expected):
+def test_cli(args, input, expected, runner):
 
-    runner = CliRunner()
     result = runner.invoke(pype.app.cli, args, input=input)
     assert not result.exception
     assert result.output == expected
@@ -138,14 +142,13 @@ def test_get_identifiers(string, expected):
     assert pype.app._get_identifiers(string) == expected
 
 
-def test_cli_raises_without_autoimport():
+def test_cli_raises_without_autoimport(runner):
 
     args = [
         '--no-autoimport',
         'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
     ]
-    input = 'a.b.c\n'
+    instream = 'a.b.c\n'
 
-    runner = CliRunner()
-    result = runner.invoke(pype.app.cli, args, input=input)
+    result = runner.invoke(pype.app.cli, args, input=instream)
     assert isinstance(result.exception, NameError)
