@@ -171,7 +171,6 @@ def main(mapper, reducer=None, postmap=None, in_stream=None, imports=(), placeho
 )
 @click.option(
     '--autoimport/--no-autoimport',
-    '-a/-A',
     is_flag=True,
     default=True,
     help='Automatically import modules.'
