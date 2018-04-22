@@ -19,12 +19,10 @@ python_version = "3.6"
 
 [dev-packages]
 
-rope = "*"
 "flake8" = "*"
-pylint = "*"
-coverage = "*"
 bumpversion = "*"
-"flake8" = "*"
-pytest = "*"
+coverage = "*"
 hypothesis = "*"
 pylint = "*"
+pytest = "*"
+rope = "*"
