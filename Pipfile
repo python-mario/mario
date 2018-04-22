@@ -29,3 +29,4 @@ pytest = "*"
 rope = "*"
 requests = "*"
 "cov2emacs" = {subdirectory = "cov2emacs", editable = true, git = "https://github.com/apnewberry/pycoverage.el/"}
+aiohttp = "*"
