@@ -1,1 +1,5 @@
 * TODO Use =tokenize= instead of =re= for =_get_identifiers=.
+* TODO Consider =concurrent.futures=,
+* TODO Consider async
+* TODO Fix autoimport for =?.method= syntax
+'=printf 'http://example.com' | pype requests.get=

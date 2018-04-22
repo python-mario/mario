@@ -137,8 +137,8 @@ def _apply_reduce(command, in_stream, imports, placeholder, autoimport):
     yield value
 
 
-def main(mapper, reducer=None, postmap=None, in_stream=None, imports=(), placeholder='?', total=False, autoimport=True):
-    if total:
+def main(mapper, reducer=None, postmap=None, in_stream=None, imports=(), placeholder='?', slurp=False, autoimport=True):
+    if slurp:
         yield from _apply_total(mapper, in_stream, imports, placeholder, autoimport)
         return
     mapped = _apply_map(mapper, in_stream, imports, placeholder, autoimport)
@@ -158,10 +158,10 @@ def main(mapper, reducer=None, postmap=None, in_stream=None, imports=(), placeho
 @click.argument('reducer', default=None, required=False)
 @click.argument('postmap', default=None, required=False)
 @click.option(
-    '--total',
-    '-t',
+    '--slurp',
+    '-s',
     is_flag=True,
-    help='Apply function to entire input together.'
+    help='Apply function to entire input together instead of processing one line at a time.'
 )
 @click.option(
     '--newlines',
@@ -189,7 +189,7 @@ def main(mapper, reducer=None, postmap=None, in_stream=None, imports=(), placeho
 )
 def cli(
         imports, command, reducer, placeholder,
-        total, postmap, autoimport, newlines,
+        slurp, postmap, autoimport, newlines,
 ):
     """
 Pipe data through python functions.
@@ -224,7 +224,7 @@ $ printf 'a\\nab\\nabc\\n' | pype -t -i json -i toolz -i collections 'collection
     """
     in_stream = click.get_text_stream('stdin')
     gen = main(command, reducer, postmap, in_stream,
-               imports, placeholder, total, autoimport)
+               imports, placeholder, slurp, autoimport)
 
     if newlines == 'auto':
         first, gen = toolz.peek(gen)

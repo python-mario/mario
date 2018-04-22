@@ -1,7 +1,7 @@
 from __future__ import generator_stop
 
 import collections
-from pprint import pprint
+
 import os
 import urllib
 
@@ -9,11 +9,8 @@ import pytest
 from click.testing import CliRunner
 from hypothesis import given
 import hypothesis.strategies as st
-import os
 from hypothesis import settings, Verbosity
 
-
-import toolz
 
 import pype
 import pype.app
@@ -92,7 +89,7 @@ def _runner():
             [
                 '-icollections',
                 '-ijson',
-                '--total',
+                '--slurp',
                 'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
             ],
             'a.b.c\nd.e.f\n',
@@ -100,7 +97,7 @@ def _runner():
         ),
         (
             [
-                '--total',
+                '--slurp',
                 'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
             ],
             'a.b.c\nd.e.f\n',

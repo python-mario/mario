@@ -9,7 +9,7 @@ url = "https://pypi.python.org/simple"
 
 click = "*"
 toolz = "*"
-
+coverage = "*"
 
 
 [requires]
@@ -26,3 +26,5 @@ hypothesis = "*"
 pylint = "*"
 pytest = "*"
 rope = "*"
+requests = "*"
+"cov2emacs" = {subdirectory = "cov2emacs", editable = true, git = "https://github.com/apnewberry/pycoverage.el/"}
