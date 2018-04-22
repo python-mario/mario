@@ -1,6 +1,7 @@
 from __future__ import generator_stop
 
 import collections
+from pprint import pprint
 import os
 import urllib
 
@@ -186,14 +187,23 @@ def test_raises_on_missing_module(runner):
 
 @pytest.mark.parametrize(
     'mapper',
-    [
-        str.upper
-    ],
+    [str.capitalize, ],
 )
 @given(in_stream=text())
 def test_main_mappers(mapper, in_stream):
+    qualname = mapper.__qualname__
+    result = list(pype.app.main(qualname, in_stream=[in_stream]))
+    joined = ''.join(result)
+    expected = mapper(in_stream)
+    # pprint(locals())
+    assert joined == expected
 
-    args = [mapper.__qualname__]
 
-    result = pype.app.main(*args, in_stream=in_stream)
-    assert ''.join(result) == mapper(in_stream)
+# TODO Test find_identifiers result satisfies str.isidentifier
+
+    # str.casefold,
+    # str.encode, str.expandtabs, str.isalnum,
+    # str.isalpha, str.isdecimal, str.isdigit, str.isidentifier, str.islower,
+    # str.isnumeric, str.isprintable, str.isspace, str.istitle, str.isupper,
+    # str.lower, str.lstrip, str.rsplit, str.rstrip, str.split,
+    # str.splitlines, str.strip, str.swapcase, str.title, str.upper,
