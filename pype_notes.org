@@ -1,3 +1,8 @@
+#+BEGIN_SRC emacs-lisp
+(setq org-confirm-babel-evaluate nil)
+#+END_SRC
+
+
 * TODO Use =tokenize= instead of =re= for =_get_identifiers=.
 * TODO Consider =concurrent.futures=,
 * TODO Consider async, perhaps twisted/trio
@@ -44,9 +49,6 @@ pype --async ' str.split || tmp_client.get_many || list || pprint.pprint  ' < py
 
 * TODO Fix autoimport for =?.method= syntax
 
-** TODO '=printf 'http://example.com' | pype ' requests.get || ?.text ''=
-
-- State "TODO"       from              [2018-04-23 Mon 14:50]
 ** TODO dunders
 
 - State "TODO"       from              [2018-04-23 Mon 14:49]

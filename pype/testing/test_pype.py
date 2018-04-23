@@ -193,6 +193,24 @@ def test_main_example(kwargs, expected):
     assert list(result) == expected
 
 
+@pytest.mark.xfail(strict=True)
+@pytest.mark.parametrize(
+    'kwargs,expected',
+    [
+        (
+            {
+                'mapper': 'str.__add__(?, "bc")',
+                'in_stream': ['a'],
+            },
+            ['abc'],
+        ),
+    ],
+)
+def test_dunder_placeholder(kwargs, expected):
+    result = pype.app.main(**kwargs)
+    assert list(result) == expected
+
+
 @given(string=st.text())
 def test_fn_autoimport_counter_keys(string):
     mapper = 'collections.Counter || ?.keys() '
