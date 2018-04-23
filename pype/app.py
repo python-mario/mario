@@ -19,7 +19,7 @@ _PYPE_VALUE = '__PYPE_VALUE_'
 
 def _get_identifiers(string):
     identifier_pattern = r'[^\d\W]\w*'
-    namespaced_identifier_pattern = r'\b{id}(?:\.{id})*'.format(
+    namespaced_identifier_pattern = r'(?<!\.)\b({id}(?:\.{id})*)'.format(
         id=identifier_pattern
     )
     matches = re.findall(
