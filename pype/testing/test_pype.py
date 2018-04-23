@@ -1,3 +1,5 @@
+# pylint: disable=protected-access
+
 from __future__ import generator_stop
 
 import collections
@@ -267,11 +269,32 @@ def test_get_identifiers_matches_str_isidentifier(string):
     assert all([identifier.isidentifier() for identifier in identifiers])
 
 
+@pytest.mark.parametrize(
+    'in_stream,expected',
+    [
+        (['abbccc'], [{'a': 1, 'b': 2, 'c': 3}.keys()])
+    ],
+)
+def test_fn_autoimport_counter_keys_example(in_stream, expected):
+    mapper = 'collections.Counter || ?.keys() '
+    result = pype.app.main(mapper=mapper, in_stream=in_stream)
+    assert list(result) == expected
+
+
 @given(string=st.text())
-def test_fn_autoimport_placeholder(string):
+def test_fn_autoimport_counter_keys(string):
+    mapper = 'collections.Counter || ?.keys() '
+    in_stream = [string]
+    expected = collections.Counter(string).keys()
+    result = pype.app.main(mapper=mapper, in_stream=in_stream)
+    assert list(result) == [expected]
+
+
+@given(string=st.text())
+def test_main_autoimport_placeholder(string):
     mapper = 'collections.Counter || ?.keys() || "".join '
     expected = ''.join(collections.Counter(string).keys())
-    in_stream = string
+    in_stream = [string]
     result = pype.app.main(mapper=mapper, in_stream=in_stream)
 
     assert ''.join(result) == expected
