@@ -3,3 +3,5 @@
 * TODO Consider async
 * TODO Fix autoimport for =?.method= syntax
 '=printf 'http://example.com' | pype requests.get=
+* TODO Add setup and teardown
+Possibly with =exec=
