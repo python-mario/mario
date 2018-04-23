@@ -99,39 +99,19 @@ def test_raises_on_missing_module(runner):
 @pytest.mark.parametrize(
     'mapper',
     [
-        str.capitalize,
-        str.casefold,
-        str.encode,
-        str.expandtabs,
-        str.isalnum,
-        str.isalpha,
-        str.isdecimal,
-        str.isdigit,
-        str.isidentifier,
-        str.islower,
-        str.isnumeric,
-        str.isprintable,
-        str.isspace,
-        str.istitle,
-        str.isupper,
-        str.lower,
-        str.lstrip,
-        str.rsplit,
-        str.rstrip,
-        str.split,
-        str.splitlines,
-        str.strip,
-        str.swapcase,
-        str.title,
-        str.upper,
+        str.capitalize, str.casefold, str.expandtabs, str.isalnum, str.isalpha, str.isdecimal,
+        str.isdigit, str.isidentifier, str.islower, str.isnumeric, str.isprintable, str.isspace,
+        str.istitle, str.isupper, str.lower, str.lstrip, str.rsplit, str.rstrip, str.split,
+        str.splitlines, str.strip, str.swapcase, str.title, str.upper
     ],
 )
-@given(in_stream=st.text())
-def test_str_simple_mappers(mapper, in_stream):
-    qualname = mapper.__qualname__
-    result = list(pype.app.main(qualname, in_stream=[in_stream]))
+@given(string=st.text())
+def test_str_simple_mappers(mapper, string):
 
-    expected = [mapper(in_stream)]
+    expected = [str(mapper(string)) + '\n']
+
+    qualname = mapper.__qualname__
+    result = list(pype.app.main(qualname, in_stream=[string]))
 
     assert result == expected
 
@@ -147,7 +127,7 @@ def test_main_mappers_int(mapper, in_stream):
     qualname = mapper.__qualname__
     result = list(pype.app.main(qualname, in_stream=[in_stream]))
 
-    expected = [mapper(in_stream)]
+    expected = [str(mapper(in_stream)) + '\n']
 
     assert result == expected
 
