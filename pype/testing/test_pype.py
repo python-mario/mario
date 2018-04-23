@@ -225,7 +225,6 @@ def test_main_autoimport_placeholder_does_not_raise(string):
     pype.app.main(mapper=mapper, in_stream=[string])
 
 
-@reproduce_failure('3.56.5', b'AAA=')
 @given(string=st.text())
 def test_cli_autoimport_placeholder(string, runner):
     args = [
@@ -236,9 +235,11 @@ def test_cli_autoimport_placeholder(string, runner):
     in_stream = string + '\n'
 
     result = runner.invoke(pype.app.cli, args, input=in_stream)
+
+    expected = ''.join(collections.Counter(in_stream).keys()) + '\n'
     assert not result.exception
     assert result.exit_code == 0
-    assert result.output == ''.join(collections.Counter(in_stream).keys())
+    assert result.output == expected
 
 
 @pytest.mark.parametrize(
