@@ -1,7 +1,50 @@
 * TODO Use =tokenize= instead of =re= for =_get_identifiers=.
 * TODO Consider =concurrent.futures=,
-* TODO Consider async
+* TODO Consider async, perhaps twisted/trio
+#+BEGIN_SRC shell
+python -c 'from pprint import pprint; import pype.testing.client; pprint(list(pype.testing.client.get_many([f"http://localhost:8080/{i}" for i in range(5)])))'
+
+#+END_SRC
+
+#+RESULTS:
+: ['Hello, 0. You are client number 1065 for this server.',
+:  'Hello, 1. You are client number 1065 for this server.',
+:  'Hello, 2. You are client number 1065 for this server.',
+:  'Hello, 3. You are client number 1065 for this server.',
+:  'Hello, 4. You are client number 1065 for this server.']
+
+
+#+BEGIN_SRC shell
+pype ' str.split || tmp_client.get_many || list || pprint.pprint  ' < pype/testing/data/inline_urls.txt
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+['Hello, a. You are client number 1088 for this server.',
+ 'Hello, bb. You are client number 1088 for this server.',
+ 'Hello, ccc. You are client number 1088 for this server.']
+
+['Hello, a. You are client number 1091 for this server.',
+ 'Hello, bb. You are client number 1091 for this server.',
+ 'Hello, ccc. You are client number 1091 for this server.']
+
+['Hello, a. You are client number 1094 for this server.',
+ 'Hello, bb. You are client number 1094 for this server.',
+ 'Hello, ccc. You are client number 1094 for this server.']
+
+['Hello, a. You are client number 1097 for this server.',
+ 'Hello, bb. You are client number 1097 for this server.',
+ 'Hello, ccc. You are client number 1097 for this server.']
+#+end_example
+
+
+#+BEGIN_SRC shell
+pype --async ' str.split || tmp_client.get_many || list || pprint.pprint  ' < pype/testing/data/inline_urls.txt
+#+END_SRC
+
+
 * TODO Fix autoimport for =?.method= syntax
 '=printf 'http://example.com' | pype requests.get=
 * TODO Add setup and teardown
 Possibly with =exec=
+* TODO Remove this =f'{_PYPE_VALUE}'=
