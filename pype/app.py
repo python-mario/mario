@@ -75,7 +75,7 @@ def _make_pipeline_strings(command, placeholder, star_args=False):
             string = string + '({star}{placeholder})'.format(
                 star='*' if star_args else '', placeholder=placeholder
             )
-        stage = string.replace(placeholder, f'{_PYPE_VALUE}').strip()
+        stage = string.replace(placeholder, _PYPE_VALUE).strip()
         pipeline.append(stage)
     return pipeline
 

@@ -163,6 +163,8 @@ def test_get_module(name, expected):
 @pytest.mark.parametrize(
     'string, expected',
     [
+        ('a', {'a'}),
+        ('?.upper', set()),
         ('map', {'map'}),
         ('map(json.dumps)', {'map', 'json.dumps'}),
         ('collections.Counter(?)', {'collections.Counter'}),
