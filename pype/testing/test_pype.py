@@ -65,6 +65,7 @@ def test_get_module(name, expected):
         ('urllib.parse.urlparse', {'urllib.parse.urlparse'}),
         ('1 + 2', set()),
         ('json.dumps(collections.Counter)', {'json.dumps', 'collections.Counter'}),
+        ('str.__add__(?, "bc") ', {'str.__add__'}),
     ],
 )
 def test_get_identifiers(string, expected):
