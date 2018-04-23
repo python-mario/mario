@@ -42,7 +42,6 @@ pype ' str.split || tmp_client.get_many || list || pprint.pprint  ' < pype/testi
 pype --async ' str.split || tmp_client.get_many || list || pprint.pprint  ' < pype/testing/data/inline_urls.txt
 #+END_SRC
 
-
 * TODO Fix autoimport for =?.method= syntax
 '=printf 'http://example.com' | pype requests.get=
 * TODO Add setup and teardown

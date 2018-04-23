@@ -263,3 +263,14 @@ def test_raises_on_nonexistent_option(option, runner):
 def test_get_identifiers_matches_str_isidentifier(string):
     identifiers = pype.app._get_identifiers(string)
     assert all([identifier.isidentifier() for identifier in identifiers])
+
+
+@given(string=st.text())
+def test_autoimport_placeholder(string, runner):
+    args = ['collections.Counter || ?.keys() || "".join ', ]
+    in_stream = string
+
+    result = runner.invoke(pype.app.cli, args, input=in_stream)
+
+    assert not result.exception
+    assert result.output == ''.join(collections.Counter(string).keys())
