@@ -17,10 +17,8 @@ _PYPE_VALUE = '__PYPE_VALUE_'
 
 def _get_identifiers(string):
     identifier_pattern = r'[^\d\W]\w*'
-    namespaced_identifier_pattern = r'(?<!\.)\b({id}(?:\.{id})*)'.format(
-        id=identifier_pattern)
-    matches = re.findall(namespaced_identifier_pattern, string.strip(),
-                         re.UNICODE)
+    namespaced_identifier_pattern = r'(?<!\.)\b({id}(?:\.{id})*)'.format(id=identifier_pattern)
+    matches = re.findall(namespaced_identifier_pattern, string.strip(), re.UNICODE)
     return set(matches)
 
 
@@ -90,8 +88,7 @@ def _get_modules(commands, named_imports, autoimport):
     named_modules = _get_named_modules(named_imports)
     if not autoimport:
         return named_modules
-    autoimports = toolz.merge(
-        _get_autoimports(command) for command in commands)
+    autoimports = toolz.merge(_get_autoimports(command) for command in commands)
     # named modules have priority
     modules = {**autoimports, **named_modules}
     return modules
@@ -135,7 +132,7 @@ def _apply_reduce(command, in_stream, imports, placeholder, autoimport):
     yield value
 
 
-def _maybe_add_newlines(gen, newlines_setting):
+def _maybe_add_newlines(gen, newlines_setting='auto'):
     if newlines_setting == 'auto':
         first, gen = toolz.peek(gen)
         add_newlines = not str(first).endswith('\n')
@@ -161,15 +158,12 @@ def main(  # pylint: disable=too-many-arguments
         newlines='auto',
 ):
     if slurp:
-        result = _apply_total(mapper, in_stream, imports, placeholder,
-                              autoimport)
+        result = _apply_total(mapper, in_stream, imports, placeholder, autoimport)
     else:
-        result = _apply_map(mapper, in_stream, imports, placeholder,
-                            autoimport)
+        result = _apply_map(mapper, in_stream, imports, placeholder, autoimport)
 
     if reducer is not None:
-        result = _apply_reduce(reducer, result, imports, placeholder,
-                               autoimport)
+        result = _apply_reduce(reducer, result, imports, placeholder, autoimport)
     if postmap is not None:
         result = _apply_map(postmap, result, imports, placeholder, autoimport)
 
@@ -186,9 +180,7 @@ def main(  # pylint: disable=too-many-arguments
     '--slurp',
     '-s',
     is_flag=True,
-    help=
-    'Apply function to entire input together instead of processing one line at a time.'
-)
+    help='Apply function to entire input together instead of processing one line at a time.')
 @click.option(
     '--newlines',
     '-n',
@@ -254,8 +246,8 @@ $ printf 'a\\nab\\nabc\\n' | pype -t -i json -i toolz -i collections 'collection
 
     """
     in_stream = click.get_text_stream('stdin')
-    gen = main(command, reducer, postmap, in_stream, imports, placeholder,
-               slurp, autoimport, newlines)
+    gen = main(command, reducer, postmap, in_stream, imports, placeholder, slurp, autoimport,
+               newlines)
 
     for line in gen:
         click.echo(line, nl=False)

@@ -29,114 +29,6 @@ def _runner():
 
 
 @pytest.mark.parametrize(
-    'args, in_stream, expected',
-    [
-        ([
-            'str.replace(?, ".", "!")',
-            '?',
-            '?',
-        ], 'a.b.c\n', 'a!b!c\n'),
-        ([
-            '--placeholder=$',
-            'str.replace($, ".", "!")',
-            '$',
-            '$',
-        ], 'a.b.c\n', 'a!b!c\n'),
-        (
-            [
-                '-icollections',
-                '-ijson',
-                'json.dumps(dict(collections.Counter(str.replace(?, ".", "!"))))',
-            ],
-            'a.b.c\n',
-            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
-        ),
-        (
-            [
-                '-icollections',
-                '-ijson',
-                'str.replace(?, ".", "!") || collections.Counter(?) || dict(?) || json.dumps(?) ',
-            ],
-            'a.b.c\n',
-            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
-        ),
-        (
-            [
-                '-icollections',
-                '-ijson',
-                'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
-            ],
-            'a.b.c\n',
-            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
-        ),
-        (
-            [
-                '-icollections',
-                '-ijson',
-                'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
-            ],
-            'a.b.c\nd.e.f\n',
-            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n{"d": 1, "!": 2, "e": 1, "f": 1, "\\n": 1}\n',
-        ),
-        (
-            [
-                ' str.replace(?, ".", "!") || collections.Counter',
-                'toolz.merge_with(sum, ?)',
-            ],
-            "a.b.c\nd.e.f\n",
-            "{'a': 1, '!': 4, 'b': 1, 'c': 1, '\\n': 2, 'd': 1, 'e': 1, 'f': 1}\n",
-        ),
-        (
-            [
-                'str.replace(?, ".", "!") || collections.Counter(?) || json.dumps(?) ',
-            ],
-            'a.b.c\n',
-            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
-        ),
-        (
-            [
-                '-icollections',
-                '-ijson',
-                '--slurp',
-                'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
-            ],
-            'a.b.c\nd.e.f\n',
-            '{"a": 1, "!": 4, "b": 1, "c": 1, "\\n": 2, "d": 1, "e": 1, "f": 1}\n',
-        ),
-        (
-            [
-                '--slurp',
-                'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
-            ],
-            'a.b.c\nd.e.f\n',
-            '{"a": 1, "!": 4, "b": 1, "c": 1, "\\n": 2, "d": 1, "e": 1, "f": 1}\n',
-        ),
-        (
-            [
-                '--newlines=yes',
-                'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
-            ],
-            'a.b.c\n',
-            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
-        ),
-        (
-            [
-                '--newlines=no',
-                'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
-            ],
-            'a.b.c\n',
-            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}',
-        ),
-    ],
-)
-def test_cli(args, in_stream, expected, runner):
-
-    result = runner.invoke(pype.app.cli, args, input=in_stream)
-    assert not result.exception
-    assert result.output == expected
-
-
-@pytest.mark.parametrize(
     'command, expected',
     [
         ('str.upper(?)', [f'str.upper({_PYPE_VALUE})']),
@@ -331,6 +223,17 @@ def test_fn_autoimport_counter_keys(string):
     assert list(result) == [expected]
 
 
+@pytest.mark.parametrize(
+    'args,expected',
+    [
+        ((['a', 'b'], ), ['a\n', 'b\n']),
+        ((['ab', 'cd'], ), ['ab\n', 'cd\n']),
+    ],
+)
+def test__maybe_add_newlines(args, expected):
+    assert list(pype.app._maybe_add_newlines(*args)) == expected
+
+
 @given(string=st.one_of(st.just(''), st.text()))
 def test_main_autoimport_placeholder(string):
     mapper = 'collections.Counter || ?.keys() || "".join '
@@ -351,3 +254,111 @@ def test_cli_autoimport_placeholder(string, runner):
     assert not result.exception
     assert result.exit_code == 0
     assert result.output == ''.join(collections.Counter(string).keys())
+
+
+@pytest.mark.parametrize(
+    'args, in_stream, expected',
+    [
+        ([
+            'str.replace(?, ".", "!")',
+            '?',
+            '?',
+        ], 'a.b.c\n', 'a!b!c\n'),
+        ([
+            '--placeholder=$',
+            'str.replace($, ".", "!")',
+            '$',
+            '$',
+        ], 'a.b.c\n', 'a!b!c\n'),
+        (
+            [
+                '-icollections',
+                '-ijson',
+                'json.dumps(dict(collections.Counter(str.replace(?, ".", "!"))))',
+            ],
+            'a.b.c\n',
+            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
+        ),
+        (
+            [
+                '-icollections',
+                '-ijson',
+                'str.replace(?, ".", "!") || collections.Counter(?) || dict(?) || json.dumps(?) ',
+            ],
+            'a.b.c\n',
+            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
+        ),
+        (
+            [
+                '-icollections',
+                '-ijson',
+                'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
+            ],
+            'a.b.c\n',
+            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
+        ),
+        (
+            [
+                '-icollections',
+                '-ijson',
+                'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
+            ],
+            'a.b.c\nd.e.f\n',
+            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n{"d": 1, "!": 2, "e": 1, "f": 1, "\\n": 1}\n',
+        ),
+        (
+            [
+                ' str.replace(?, ".", "!") || collections.Counter',
+                'toolz.merge_with(sum, ?)',
+            ],
+            "a.b.c\nd.e.f\n",
+            "{'a': 1, '!': 4, 'b': 1, 'c': 1, '\\n': 2, 'd': 1, 'e': 1, 'f': 1}\n",
+        ),
+        (
+            [
+                'str.replace(?, ".", "!") || collections.Counter(?) || json.dumps(?) ',
+            ],
+            'a.b.c\n',
+            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
+        ),
+        (
+            [
+                '-icollections',
+                '-ijson',
+                '--slurp',
+                'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
+            ],
+            'a.b.c\nd.e.f\n',
+            '{"a": 1, "!": 4, "b": 1, "c": 1, "\\n": 2, "d": 1, "e": 1, "f": 1}\n',
+        ),
+        (
+            [
+                '--slurp',
+                'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
+            ],
+            'a.b.c\nd.e.f\n',
+            '{"a": 1, "!": 4, "b": 1, "c": 1, "\\n": 2, "d": 1, "e": 1, "f": 1}\n',
+        ),
+        (
+            [
+                '--newlines=yes',
+                'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
+            ],
+            'a.b.c\n',
+            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
+        ),
+        (
+            [
+                '--newlines=no',
+                'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
+            ],
+            'a.b.c\n',
+            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}',
+        ),
+    ],
+)
+def test_cli(args, in_stream, expected, runner):
+
+    result = runner.invoke(pype.app.cli, args, input=in_stream)
+    assert not result.exception
+    assert result.output == expected
