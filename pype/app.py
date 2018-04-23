@@ -4,8 +4,9 @@ from __future__ import generator_stop
 
 from pdb import set_trace as st
 
-import os
 import importlib
+import itertools
+import os
 import re
 import sys
 
@@ -130,13 +131,20 @@ def _apply_reduce(command, in_stream, imports, placeholder, autoimport):
     yield value
 
 
-def _maybe_add_newlines(gen, newlines_setting='auto'):
+def _maybe_add_newlines(iterator, newlines_setting='auto'):
+
     if newlines_setting == 'auto':
-        first, gen = toolz.peek(gen)
-        add_newlines = not str(first).endswith('\n')
+        try:
+            first, iterator = toolz.peek(iterator)
+        except StopIteration:
+            add_newlines = False
+        else:
+            add_newlines = not str(first).endswith('\n')
+
     else:
         add_newlines = {'yes': True, 'no': False}[newlines_setting]
-    for item in gen:
+
+    for item in iterator:
         string = str(item)
         if add_newlines:
             yield string + os.linesep
@@ -155,6 +163,7 @@ def main(  # pylint: disable=too-many-arguments
         autoimport=True,
         newlines='auto',
 ):
+
     if slurp:
         result = _apply_total(mapper, in_stream, imports, placeholder, autoimport)
     else:

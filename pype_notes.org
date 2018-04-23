@@ -43,7 +43,53 @@ pype --async ' str.split || tmp_client.get_many || list || pprint.pprint  ' < py
 #+END_SRC
 
 * TODO Fix autoimport for =?.method= syntax
-'=printf 'http://example.com' | pype requests.get=
+
+** TODO '=printf 'http://example.com' | pype ' requests.get || ?.text ''=
+
+- State "TODO"       from              [2018-04-23 Mon 14:50]
+** TODO dunders
+
+- State "TODO"       from              [2018-04-23 Mon 14:49]
+#+BEGIN_SRC shell
+printf 'a' | pype 'str.__add__(?, "bc") '
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+Traceback (most recent call last):
+load_entry_point('pype', 'console_scripts', 'pype')()
+  File "/home/adam/.envs/pype-Klgf3iES/lib/python3.6/site-packages/click/core.py", line 722, in __call__
+    return self.main(*args, **kwargs)
+  File "/home/adam/.envs/pype-Klgf3iES/lib/python3.6/site-packages/click/core.py", line 697, in main
+    rv = self.invoke(ctx)
+  File "/home/adam/.envs/pype-Klgf3iES/lib/python3.6/site-packages/click/core.py", line 895, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/adam/.envs/pype-Klgf3iES/lib/python3.6/site-packages/click/core.py", line 535, in invoke
+    return callback(*args, **kwargs)
+  File "/home/adam/Documents/pype/pype/app.py", line 255, in cli
+    for line in gen:
+  File "/home/adam/Documents/pype/pype/app.py", line 175, in main
+    yield from result
+  File "/home/adam/Documents/pype/pype/app.py", line 135, in _maybe_add_newlines
+    iterable = list(iterable)
+  File "/home/adam/Documents/pype/pype/app.py", line 115, in _apply_map
+    modules = _get_modules([command], imports, autoimport)
+  File "/home/adam/Documents/pype/pype/app.py", line 92, in _get_modules
+    autoimports = toolz.merge(_get_autoimports(command) for command in commands)
+  File "/home/adam/.envs/pype-Klgf3iES/lib/python3.6/site-packages/toolz/dicttoolz.py", line 38, in merge
+    for d in dicts:
+autoimports = toolz.merge(_get_autoimports(command) for command in commands)
+  File "/home/adam/Documents/pype/pype/app.py", line 83, in _get_autoimports
+    name_module = _get_autoimport_modules(identifier)
+  File "/home/adam/Documents/pype/pype/app.py", line 52, in _get_autoimport_modules
+    raise RuntimeError(f'Could not find {fullname}')
+RuntimeError: Could not find bc
+#+end_example
+
+
+
 * TODO Add setup and teardown
 Possibly with =exec=
 * TODO Remove this =f'{_PYPE_VALUE}'=
+* Maybe single-line inputs shouldn't get a newline

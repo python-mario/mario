@@ -229,14 +229,16 @@ def test_main_autoimport_placeholder_does_not_raise(string):
 @given(string=st.text())
 def test_cli_autoimport_placeholder(string, runner):
     args = [
-        'collections.Counter || ?.keys() || "".join ',
+        '--newlines=yes',
+        'str || collections.Counter || ?.keys() || "".join ',
     ]
-    in_stream = string
+
+    in_stream = string + '\n'
 
     result = runner.invoke(pype.app.cli, args, input=in_stream)
     assert not result.exception
     assert result.exit_code == 0
-    assert result.output == ''.join(collections.Counter(string).keys())
+    assert result.output == ''.join(collections.Counter(in_stream).keys())
 
 
 @pytest.mark.parametrize(
