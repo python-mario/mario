@@ -12,6 +12,7 @@ toolz = "*"
 coverage = "*"
 "e1839a8" = {path = ".", editable = true}
 attrs = "*"
+rope = "*"
 
 
 [requires]
@@ -31,3 +32,6 @@ rope = "*"
 requests = "*"
 "cov2emacs" = {subdirectory = "cov2emacs", editable = true, git = "https://github.com/apnewberry/pycoverage.el/"}
 aiohttp = "*"
+jedi = "*"
+"autopep8" = "*"
+yapf = "*"

@@ -1,18 +1,16 @@
 #!/usr/bin/env python
 
-
 from __future__ import generator_stop
 
 from pdb import set_trace as st
 
+import os
 import importlib
 import re
 import sys
 
-
 import click
 import toolz
-
 
 _PYPE_VALUE = '__PYPE_VALUE_'
 
@@ -20,11 +18,9 @@ _PYPE_VALUE = '__PYPE_VALUE_'
 def _get_identifiers(string):
     identifier_pattern = r'[^\d\W]\w*'
     namespaced_identifier_pattern = r'(?<!\.)\b({id}(?:\.{id})*)'.format(
-        id=identifier_pattern
-    )
-    matches = re.findall(
-        namespaced_identifier_pattern, string.strip(), re.UNICODE
-    )
+        id=identifier_pattern)
+    matches = re.findall(namespaced_identifier_pattern, string.strip(),
+                         re.UNICODE)
     return set(matches)
 
 
@@ -73,8 +69,7 @@ def _make_pipeline_strings(command, placeholder, star_args=False):
         string = string.strip()
         if placeholder not in string:
             string = string + '({star}{placeholder})'.format(
-                star='*' if star_args else '', placeholder=placeholder
-            )
+                star='*' if star_args else '', placeholder=placeholder)
         stage = string.replace(placeholder, _PYPE_VALUE).strip()
         pipeline.append(stage)
     return pipeline
@@ -95,8 +90,8 @@ def _get_modules(commands, named_imports, autoimport):
     named_modules = _get_named_modules(named_imports)
     if not autoimport:
         return named_modules
-    autoimports = toolz.merge(_get_autoimports(command)
-                              for command in commands)
+    autoimports = toolz.merge(
+        _get_autoimports(command) for command in commands)
     # named modules have priority
     modules = {**autoimports, **named_modules}
     return modules
@@ -118,6 +113,9 @@ def _apply_total(command, in_stream, imports, placeholder, autoimport):
 
 
 def _apply_map(command, in_stream, imports, placeholder, autoimport):
+    import itertools
+    in_stream, b = itertools.tee(in_stream)
+    print(list(b))
     modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder)
     for line in in_stream:
@@ -137,20 +135,47 @@ def _apply_reduce(command, in_stream, imports, placeholder, autoimport):
     yield value
 
 
-def main(mapper, reducer=None, postmap=None, in_stream=None, imports=(), placeholder='?', slurp=False, autoimport=True):
+def _maybe_add_newlines(gen, newlines_setting):
+    if newlines_setting == 'auto':
+        first, gen = toolz.peek(gen)
+        add_newlines = not str(first).endswith('\n')
+    else:
+        add_newlines = {'yes': True, 'no': False}[newlines_setting]
+    for item in gen:
+        string = str(item)
+        if add_newlines:
+            yield string + os.linesep
+        else:
+            yield string
+
+
+def main(  # pylint: disable=too-many-arguments
+        mapper,
+        reducer=None,
+        postmap=None,
+        in_stream=None,
+        imports=(),
+        placeholder='?',
+        slurp=False,
+        autoimport=True,
+        newlines='auto',
+):
     if slurp:
-        yield from _apply_total(mapper, in_stream, imports, placeholder, autoimport)
-        return
-    mapped = _apply_map(mapper, in_stream, imports, placeholder, autoimport)
-    if reducer is None:
-        yield from mapped
-        return
-    reduced = _apply_reduce(reducer, mapped, imports, placeholder, autoimport)
-    if postmap is None:
-        yield from reduced
-        return
-    yield from _apply_map(postmap, reduced, imports, placeholder, autoimport)
-    return
+        result = _apply_total(mapper, in_stream, imports, placeholder,
+                              autoimport)
+    else:
+        result = _apply_map(mapper, in_stream, imports, placeholder,
+                            autoimport)
+
+    if reducer is not None:
+        result = _apply_reduce(reducer, result, imports, placeholder,
+                               autoimport)
+    if postmap is not None:
+        result = _apply_map(postmap, result, imports, placeholder, autoimport)
+
+    result = _maybe_add_newlines(result, newlines)
+
+    yield from result
 
 
 @click.command()
@@ -161,20 +186,20 @@ def main(mapper, reducer=None, postmap=None, in_stream=None, imports=(), placeho
     '--slurp',
     '-s',
     is_flag=True,
-    help='Apply function to entire input together instead of processing one line at a time.'
+    help=
+    'Apply function to entire input together instead of processing one line at a time.'
 )
 @click.option(
     '--newlines',
     '-n',
     type=click.Choice(['auto', 'yes', 'no']),
-    default='auto', help='Add newlines.'
-)
+    default='auto',
+    help='Add newlines.')
 @click.option(
     '--autoimport/--no-autoimport',
     is_flag=True,
     default=True,
-    help='Automatically import modules.'
-)
+    help='Automatically import modules.')
 @click.option(
     '--import',
     '-i',
@@ -188,8 +213,14 @@ def main(mapper, reducer=None, postmap=None, in_stream=None, imports=(), placeho
     help='String to replace with data. Defaults to ?',
 )
 def cli(
-        imports, command, reducer, placeholder,
-        slurp, postmap, autoimport, newlines,
+        imports,
+        command,
+        reducer,
+        placeholder,
+        slurp,
+        postmap,
+        autoimport,
+        newlines,
 ):
     """
 Pipe data through python functions.
@@ -223,14 +254,8 @@ $ printf 'a\\nab\\nabc\\n' | pype -t -i json -i toolz -i collections 'collection
 
     """
     in_stream = click.get_text_stream('stdin')
-    gen = main(command, reducer, postmap, in_stream,
-               imports, placeholder, slurp, autoimport)
-
-    if newlines == 'auto':
-        first, gen = toolz.peek(gen)
-        add_newlines = not str(first).endswith('\n')
-    else:
-        add_newlines = {'yes': True, 'no': False}[newlines]
+    gen = main(command, reducer, postmap, in_stream, imports, placeholder,
+               slurp, autoimport, newlines)
 
     for line in gen:
-        click.echo(line, nl=add_newlines)
+        click.echo(line, nl=False)

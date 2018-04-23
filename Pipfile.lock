@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c15bade5e6a3ca5b4e3ab2c2088ef2ad9bcd022f465ad90b380aeb8ebaf915d2"
+            "sha256": "072f75937ad605b680df5c2f4b96ff2857eb0abb839c5a4167f80aed7e218270"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -88,6 +88,12 @@
             "editable": true,
             "path": "."
         },
+        "rope": {
+            "hashes": [
+                "sha256:a09edfd2034fd50099a67822f9bd851fbd0f4e98d3b87519f6267b60e50d80d1"
+            ],
+            "version": "==0.10.7"
+        },
         "toolz": {
             "hashes": [
                 "sha256:929f0a7ea7f61c178bd951bdae93920515d3fbdbafc8e6caf82d752b9b3b31c9"
@@ -136,6 +142,12 @@
                 "sha256:1c7960ccfd6a005cd9f7ba884e6316b5e430a3f1a6c37c5f87d8b43f83b54ec9"
             ],
             "version": "==17.4.0"
+        },
+        "autopep8": {
+            "hashes": [
+                "sha256:2284d4ae2052fedb9f466c09728e30d2e231cfded5ffd7b1a20c34123fdc4ba4"
+            ],
+            "version": "==1.3.5"
         },
         "bumpversion": {
             "hashes": [
@@ -238,6 +250,13 @@
             ],
             "version": "==4.3.4"
         },
+        "jedi": {
+            "hashes": [
+                "sha256:5861f6dc0c16e024cbb0044999f9cf8013b292c05f287df06d3d991a87a4eb89",
+                "sha256:1972f694c6bc66a2fac8718299e2ab73011d653a6d8059790c3476d2353b99ad"
+            ],
+            "version": "==0.12.0"
+        },
         "lazy-object-proxy": {
             "hashes": [
                 "sha256:209615b0fe4624d79e50220ce3310ca1a9445fd8e6d3572a896e7f9146bbf019",
@@ -313,6 +332,13 @@
                 "sha256:24052724195e46872739faa10c611957bbaceae28eec92e1ce49150b115ec5ed"
             ],
             "version": "==4.2.0"
+        },
+        "parso": {
+            "hashes": [
+                "sha256:a75a304d7090d2c67bd298091c14ef9d3d560e3c53de1c239617889f61d1d307",
+                "sha256:62bd6bf7f04ab5c817704ff513ef175328676471bdef3629d4bdd46626f75551"
+            ],
+            "version": "==0.2.0"
         },
         "pluggy": {
             "hashes": [
@@ -391,6 +417,13 @@
                 "sha256:d4d560d479f2c21e1b5443bbd15fe7ec4b37fe7e53d335d3b9b0a7b1226fe3c6"
             ],
             "version": "==1.10.11"
+        },
+        "yapf": {
+            "hashes": [
+                "sha256:dd23b52edbb4c0461d0383050f7886175b0df9ab8fd0b67edd41f94e25770993",
+                "sha256:7d8ae3567f3fb2d288f127d35e4decb3348c96cd091001e02e818465da618f90"
+            ],
+            "version": "==0.21.0"
         },
         "yarl": {
             "hashes": [
