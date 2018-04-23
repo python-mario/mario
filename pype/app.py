@@ -105,7 +105,7 @@ def _get_modules(commands, named_imports, autoimport):
 def _apply_command_pipeline(value, modules, pipeline):
     assert modules is not None
     for step in pipeline:
-        value = eval(step, modules, {f'{_PYPE_VALUE}': value})
+        value = eval(step, modules, {_PYPE_VALUE: value})
     return value
 
 
@@ -133,7 +133,7 @@ def _apply_reduce(command, in_stream, imports, placeholder, autoimport):
     value = next(in_stream)
     for item in in_stream:
         for step in pipeline:
-            value = eval(step, modules, {f'{_PYPE_VALUE}': (value, item)})
+            value = eval(step, modules, {_PYPE_VALUE: (value, item)})
     yield value
 
 
