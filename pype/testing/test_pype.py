@@ -268,11 +268,21 @@ def test_get_identifiers_matches_str_isidentifier(string):
 
 
 @given(string=st.text())
-def test_autoimport_placeholder(string, runner):
+def test_fn_autoimport_placeholder(string):
+    mapper = 'collections.Counter || ?.keys() || "".join '
+    expected = ''.join(collections.Counter(string).keys())
+    in_stream = string
+    result = pype.app.main(mapper=mapper, in_stream=in_stream)
+
+    assert ''.join(result) == expected
+
+
+@given(string=st.text())
+def test_cli_autoimport_placeholder(string, runner):
     args = ['collections.Counter || ?.keys() || "".join ', ]
     in_stream = string
 
     result = runner.invoke(pype.app.cli, args, input=in_stream)
-
     assert not result.exception
+    assert result.exit_code == 0
     assert result.output == ''.join(collections.Counter(string).keys())
