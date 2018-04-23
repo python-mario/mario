@@ -226,8 +226,11 @@ def test_fn_autoimport_counter_keys(string):
 @pytest.mark.parametrize(
     'args,expected',
     [
-        ((['a', 'b'], ), ['a\n', 'b\n']),
         ((['ab', 'cd'], ), ['ab\n', 'cd\n']),
+        ((['ab', 'cd'], 'auto'), ['ab\n', 'cd\n']),
+        ((['ab', 'cd'], 'yes'), ['ab\n', 'cd\n']),
+        ((['ab', 'cd'], 'no'), ['ab', 'cd']),
+        ((['ab'], ), ['ab\n']),
     ],
 )
 def test__maybe_add_newlines(args, expected):

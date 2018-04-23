@@ -112,7 +112,6 @@ def _apply_total(command, in_stream, imports, placeholder, autoimport):
 def _apply_map(command, in_stream, imports, placeholder, autoimport):
     import itertools
     in_stream, b = itertools.tee(in_stream)
-    print(list(b))
     modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder)
     for line in in_stream:
