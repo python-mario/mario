@@ -193,7 +193,6 @@ def test_main_example(kwargs, expected):
     assert list(result) == expected
 
 
-@pytest.mark.xfail(strict=True)
 @pytest.mark.parametrize(
     'kwargs,expected',
     [
@@ -206,7 +205,7 @@ def test_main_example(kwargs, expected):
         ),
     ],
 )
-def test_dunder_placeholder(kwargs, expected):
+def test_quoting(kwargs, expected):
     result = pype.app.main(**kwargs)
     assert list(result) == expected
 
