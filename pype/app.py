@@ -9,6 +9,9 @@ import itertools
 import os
 import re
 import sys
+import token
+import io
+from tokenize import tokenize, untokenize
 
 import click
 import toolz
@@ -21,6 +24,54 @@ def _get_identifiers(string):
     namespaced_identifier_pattern = r'(?<!\.)\b({id}(?:\.{id})*)'.format(id=identifier_pattern)
     matches = re.findall(namespaced_identifier_pattern, string.strip(), re.UNICODE)
     return set(matches)
+
+
+def _is_name_token(token_object):
+    return token.tok_name[token_object.type] == 'NAME'
+
+
+def _is_reference_part(token_object):
+    if _is_name_token(token_object):
+        return True
+    if token_object.string == '.':
+        return True
+    return False
+
+
+def _string_to_tokens(string):
+    bytestring = string.encode('utf-8')
+    bytesio = io.BytesIO(bytestring)
+    tokens = tokenize(bytesio.readline)
+    return tokens
+
+
+def _tokens_to_string(token_objects):
+    """Untokenize, ignoring whitespace."""
+    return ''.join(t.string for t in token_objects)
+
+
+def _get_identifiers(string):
+    tokens = _string_to_tokens(string)
+    identifier_strings = {}
+
+    current_tokens = []
+    for token_object in tokens:
+        print(current_tokens)
+        if _is_reference_part(token_object):
+            current_tokens.append(token_object)
+            continue
+
+        # May have finished an identifier
+        if current_tokens and _is_name_token(current_tokens[-1]):
+            identifier_string = _tokens_to_string(current_tokens)
+            current_tokens = []
+
+    if current_tokens and _is_name_token(current_tokens[-1]):
+        identifier_string = _tokens_to_string(current_tokens)
+        identifier_strings.add(identifier_string)
+        current_tokens = []
+
+    return identifier_strings
 
 
 def _get_named_module(name):
