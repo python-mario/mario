@@ -28,7 +28,6 @@ def _runner():
     return CliRunner()
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize(
     'command, expected',
     [
@@ -196,14 +195,6 @@ def test_get_identifiers_matches_str_isidentifier(string):
             },
             ['abc\n'],
         ),
-        (
-            {
-                'mapper': '"?"',
-                'newlines': 'no',
-                'in_stream': ['abc'],
-            },
-            ['"abc"'],
-        ),
     ],
 )
 def test_main_example(kwargs, expected):
@@ -211,9 +202,36 @@ def test_main_example(kwargs, expected):
     assert list(result) == expected
 
 
+@pytest.mark.xfail(strict=True)
+@pytest.mark.parametrize('kwargs, expected', [
+    (
+        {
+            'mapper': '"?"',
+            'newlines': 'no',
+            'in_stream': ['abc'],
+        },
+        ['"abc"'],
+    ),
+])
+def test_quoting_warning(kwargs, expected):
+    result = pype.app.main(**kwargs)
+    assert list(result) == expected
+
+
+def test_main_raises_parse_warning():
+    with pytest.raises(PypeParseWarning):
+        list(pype.app.main('"?"', in_stream=['abc\n']))
+
+
+def test_main_f_string():
+
+    result = list(pype.app.main("""f'"{?}"'""", in_stream=['abc'], newlines='no'))
+    assert result == ['"abc"']
+
+
 def test_parse_warning():
     with pytest.raises(PypeParseWarning):
-        pype.app.main('"?"', in_stream=['abc'])
+        pype.app._check_parsing('"?"', '?')
 
 
 @given(string=st.text())

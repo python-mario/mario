@@ -3,6 +3,7 @@
 from __future__ import generator_stop
 
 from pdb import set_trace as st
+from pprint import pprint
 
 import importlib
 import itertools
@@ -18,6 +19,14 @@ import click
 import toolz
 
 _PYPE_VALUE = '__PYPE_VALUE_'
+
+
+class PypeWarning(Warning):
+    pass
+
+
+class PypeParseWarning(PypeWarning):
+    pass
 
 
 def _is_name_token(token_object):
@@ -164,12 +173,10 @@ def _apply_total(command, in_stream, imports, placeholder, autoimport):
 
 
 def _apply_map(command, in_stream, imports, placeholder, autoimport):
-    import itertools
     modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder)
     for line in in_stream:
         result = _apply_command_pipeline(line, modules, pipeline)
-        _check_parsing(result, _apply_command_pipeline(_PYPE_VALUE, modules, pipeline))
         yield result
 
 
@@ -206,14 +213,24 @@ def _maybe_add_newlines(iterator, newlines_setting='auto'):
             yield string
 
 
-class PypeParseWarning(Warning):
-    pass
+def _check_parsing(command, placeholder):
+    # TODO Fix this...
+    tokens = _string_to_tokens(command)
+    for tok in tokens:
 
+        if tok.type != token.STRING:
+            continue
+        if placeholder not in tok.string:
+            continue
+        if tok.string[0] == 'f':
+            continue
+        if '{' in tok.string and '}' in tok.string:
+            continue
 
-def _check_parsing(string, checker):
-    if str(checker) in str(string):
-        raise PypeParseWarning(
-            '''Use f-string format when quoting placeholder:  'f"Eggs and {?} and spam.'"''', )
+        raise PypeParseWarning(r'''Use f-string format when quoting placeholder:
+
+           printf 'abc\n' | pype 'f"Eggs and {?} and spam."'
+            ''', )
 
 
 def main(  # pylint: disable=too-many-arguments
@@ -227,6 +244,8 @@ def main(  # pylint: disable=too-many-arguments
         autoimport=True,
         newlines='auto',
 ):
+
+    _check_parsing(mapper, placeholder)
 
     if slurp:
         result = _apply_total(mapper, in_stream, imports, placeholder, autoimport)
