@@ -90,10 +90,60 @@ RuntimeError: Could not find bc
 #+end_example
 
 
+** Quoting approaches
+
+#+BEGIN_SRC ipython
+"""
+
+$ echo 'a.b.c' | pype 'str.replace(?, ".", "!")'
+a!b!c
+
+"""
+
+import sys
+
+import click
+
+
+def parse_command(command):
+    fnstr = 'lambda placeholder: ' + command.replace('?', 'placeholder')
+    return eval(fnstr)
+
+
+def main(in_stream, command):
+    process = parse_command(command)
+    for line in in_stream:
+        yield process(line)
+
+
+@click.command()
+@click.option('--import', '-i', 'import_')
+@click.argument('command')
+@click.argument('in_stream', default=click.get_text_stream('stdin'))
+def cli(import_, command, in_stream):
+
+    gen = main(in_stream, command)
+    for line in gen:
+        print(line)
+
+
+cli()
+#+END_SRC
+
+** Two =eval()= calls
+#+BEGIN_SRC ipython
+
+def do(command, data):
+    a = 'lambda PLACEHOLDER: command.replace("?", PLACEHOLDER)'
+    b = eval(a, {'command': command})
+    c = b(data)
+    d = eval(c)
+    return d
+do('str.upper("?")', 'xyz') == 'XYZ'
+#+END_SRC
+
 
 * TODO Add setup and teardown
 Possibly with =exec=
 * TODO Remove this =f'{_PYPE_VALUE}'=
 * Maybe single-line inputs shouldn't get a newline
-* TODO Late str.replace('?') wont work'
-- State "TODO"       from              [2018-04-23 Mon 19:35]
