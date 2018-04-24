@@ -237,9 +237,9 @@ def request(agent, i, modules, pipeline):
     import treq
     d = Deferred()
     for pipeline_segment in pipeline:
-        # d.addCallback(run_segment, pipeline_segment, modules)
         d.addCallback(treq.get)
         d.addCallback(treq.text_content)
+        d.addCallback(run_segment, pipeline_segment, modules)
         d.addCallback(pprint)
     d.callback(i)
 
