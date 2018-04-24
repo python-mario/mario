@@ -238,8 +238,9 @@ def request(agent, i, modules, pipeline):
     d = Deferred()
     for pipeline_segment in pipeline:
         d.addCallbacks(
-            lambda x: run_segment(x, pipeline_segment, modules),
-            lambda x: pprint('Error', x),
+            run_segment,
+            None,
+            [pipeline_segment, modules],
         )
 
         d.addCallback(pprint)
