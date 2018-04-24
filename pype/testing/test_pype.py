@@ -198,9 +198,10 @@ def test_get_identifiers_matches_str_isidentifier(string):
         (
             {
                 'mapper': '"?"',
-                'in_stream': ['"abc"\n'],
+                'newlines': 'no',
+                'in_stream': ['abc'],
             },
-            ['abc\n'],
+            ['"abc"'],
         ),
     ],
 )
