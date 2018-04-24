@@ -3,24 +3,86 @@
 from __future__ import generator_stop
 
 from pdb import set_trace as st
+from pprint import pprint
 
 import importlib
 import itertools
 import os
 import re
 import sys
+import token
+import io
+from tokenize import tokenize, untokenize
 
+import attr
 import click
 import toolz
 
 _PYPE_VALUE = '__PYPE_VALUE_'
 
 
-def _get_identifiers(string):
-    identifier_pattern = r'[^\d\W]\w*'
-    namespaced_identifier_pattern = r'(?<!\.)\b({id}(?:\.{id})*)'.format(id=identifier_pattern)
-    matches = re.findall(namespaced_identifier_pattern, string.strip(), re.UNICODE)
-    return set(matches)
+class PypeWarning(Warning):
+    pass
+
+
+class PypeParseWarning(PypeWarning):
+    pass
+
+
+def _is_name_token(token_object):
+    return token.tok_name[token_object.type] == 'NAME'
+
+
+def _is_reference_part(token_object):
+    if _is_name_token(token_object):
+        return True
+    if token_object.string == '.':
+        return True
+    return False
+
+
+def _string_to_tokens(string):
+    bytestring = string.encode('utf-8')
+    bytesio = io.BytesIO(bytestring)
+    tokens = tokenize(bytesio.readline)
+    return tokens
+
+
+def _tokens_to_string(token_objects):
+    """Untokenize, ignoring whitespace."""
+    return ''.join(t.string for t in token_objects)
+
+
+def _get_maybe_namespaced_identifiers(string):
+    scanner = _StringScanner(string)
+    return scanner.scan()
+
+
+@attr.s
+class _StringScanner:
+
+    _string = attr.ib()
+    _current_tokens = attr.ib(default=attr.Factory(list))
+    _identifier_strings = attr.ib(default=attr.Factory(set))
+
+    def _maybe_update(self):
+        if self._current_tokens and _is_name_token(self._current_tokens[-1]):
+            if _is_name_token(self._current_tokens[0]):
+                self._identifier_strings.add(_tokens_to_string(self._current_tokens))
+            self._current_tokens = []
+
+    def scan(self):
+        tokens = _string_to_tokens(self._string)
+
+        for token_object in tokens:
+            if _is_reference_part(token_object):
+                self._current_tokens.append(token_object)
+                continue
+            self._maybe_update()
+
+        self._maybe_update()
+
+        return self._identifier_strings
 
 
 def _get_named_module(name):
@@ -78,7 +140,7 @@ def _get_autoimports(string):
     components = [comp.strip() for comp in string.split('||')]
     name_to_module = {}
     for component in components:
-        identifiers = _get_identifiers(component)
+        identifiers = _get_maybe_namespaced_identifiers(component)
         for identifier in identifiers:
             name_module = _get_autoimport_modules(identifier)
             name_to_module.update(name_module)
@@ -111,7 +173,6 @@ def _apply_total(command, in_stream, imports, placeholder, autoimport):
 
 
 def _apply_map(command, in_stream, imports, placeholder, autoimport):
-    import itertools
     modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder)
     for line in in_stream:
@@ -152,6 +213,33 @@ def _maybe_add_newlines(iterator, newlines_setting='auto'):
             yield string
 
 
+def _check_parsing(command, placeholder):
+    # TODO Fix this...
+    tokens = _string_to_tokens(command)
+    for tok in tokens:
+
+        if tok.type != token.STRING:
+            continue
+        if placeholder not in tok.string:
+            continue
+        if re.fullmatch(r'f.*\{.*%s.*\}.*' % placeholder, tok.string):
+            continue
+
+        raise PypeParseWarning(r'''Use f-string format when quoting placeholder:
+
+           printf 'eggs' | pype 'f"Ham and {?} and spam!".upper()'
+
+           # HAM AND EGGS AND SPAM!
+
+
+           printf 'World' | pype $'f\'I say, "Hello, {?}!"\''
+
+           # I say, "Hello, World!"
+
+
+            ''')
+
+
 def main(  # pylint: disable=too-many-arguments
         mapper,
         reducer=None,
@@ -163,6 +251,8 @@ def main(  # pylint: disable=too-many-arguments
         autoimport=True,
         newlines='auto',
 ):
+
+    _check_parsing(mapper, placeholder)
 
     if slurp:
         result = _apply_total(mapper, in_stream, imports, placeholder, autoimport)
@@ -176,7 +266,8 @@ def main(  # pylint: disable=too-many-arguments
 
     result = _maybe_add_newlines(result, newlines)
 
-    yield from result
+    for item in result:
+        yield item
 
 
 @click.command()

@@ -15,7 +15,7 @@ from hypothesis import settings, Verbosity, reproduce_failure
 
 import pype
 import pype.app
-from pype.app import _PYPE_VALUE
+from pype.app import _PYPE_VALUE, PypeParseWarning
 
 settings.register_profile("ci", max_examples=1000)
 settings.register_profile("dev", max_examples=10)
@@ -65,10 +65,11 @@ def test_get_module(name, expected):
         ('urllib.parse.urlparse', {'urllib.parse.urlparse'}),
         ('1 + 2', set()),
         ('json.dumps(collections.Counter)', {'json.dumps', 'collections.Counter'}),
+        ('str.__add__(?, "bc") ', {'str.__add__'}),
     ],
 )
 def test_get_identifiers(string, expected):
-    assert pype.app._get_identifiers(string) == expected
+    assert pype.app._get_maybe_namespaced_identifiers(string) == expected
 
 
 def test_cli_raises_without_autoimport(runner):
@@ -158,7 +159,7 @@ def test_raises_on_nonexistent_option(option, runner):
 @pytest.mark.xfail(strict=True)
 @given(st.text())
 def test_get_identifiers_matches_str_isidentifier(string):
-    identifiers = pype.app._get_identifiers(string)
+    identifiers = pype.app._get_maybe_namespaced_identifiers(string)
     assert all([identifier.isidentifier() for identifier in identifiers])
 
 
@@ -186,6 +187,14 @@ def test_get_identifiers_matches_str_isidentifier(string):
             },
             ['\n'],
         ),
+        (
+            {
+                'mapper': 'str.__add__(?, "bc")',
+                'newlines': 'yes',
+                'in_stream': ['a'],
+            },
+            ['abc\n'],
+        ),
     ],
 )
 def test_main_example(kwargs, expected):
@@ -195,20 +204,58 @@ def test_main_example(kwargs, expected):
 
 @pytest.mark.xfail(strict=True)
 @pytest.mark.parametrize(
-    'kwargs,expected',
+    'kwargs, expected',
     [
         (
             {
-                'mapper': 'str.__add__(?, "bc")',
-                'in_stream': ['a'],
+                'mapper': '"?"',
+                'newlines': 'no',
+                'in_stream': ['abc'],
             },
-            ['abc'],
+            ['"abc"'],
         ),
     ],
 )
-def test_dunder_placeholder(kwargs, expected):
+def test_quoting_warning(kwargs, expected):
     result = pype.app.main(**kwargs)
     assert list(result) == expected
+
+
+@pytest.mark.parametrize(
+    'kwargs, expected',
+    [
+        (
+            {
+                'mapper': '"?"',
+                'newlines': 'no',
+                'in_stream': 'abc',
+            },
+            ['abc'],
+        ),
+        (
+            {
+                'mapper': """'I say, "Hello, {?}!"'""",
+                'newlines': 'no',
+                'in_stream': ['World'],
+            },
+            ['I say, "Hello, World!"'],
+        ),
+    ],
+)
+def test_main_raises_parse_warning(kwargs, expected):
+    with pytest.raises(PypeParseWarning):
+        list(pype.app.main(**kwargs))
+
+
+def test_main_f_string():
+
+    result = list(pype.app.main("""f'"{?}"'""", in_stream=['abc'], newlines='no'))
+    assert result == ['"abc"']
+
+
+def test_parse_warning():
+    with pytest.raises(PypeParseWarning):
+        pype.app._check_parsing('"?"', '?')
 
 
 @given(string=st.text())
