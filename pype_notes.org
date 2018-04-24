@@ -3,7 +3,7 @@
 #+END_SRC
 
 
-* TODO Use =tokenize= instead of =re= for =_get_identifiers=.
+* TODO Use =parso= instead of =tokenize=
 * TODO Consider =concurrent.futures=,
 * TODO Consider async, perhaps twisted/trio
 #+BEGIN_SRC shell
@@ -47,47 +47,149 @@ pype ' str.split || tmp_client.get_many || list || pprint.pprint  ' < pype/testi
 pype --async ' str.split || tmp_client.get_many || list || pprint.pprint  ' < pype/testing/data/inline_urls.txt
 #+END_SRC
 
-* TODO Fix autoimport for =?.method= syntax
+* TODO Fix quote syntax
 
-** TODO dunders
+** TODO Use =parso=.
 
-- State "TODO"       from              [2018-04-23 Mon 14:49]
-#+BEGIN_SRC shell
-printf 'a' | pype 'str.__add__(?, "bc") '
+
+** Quoting approaches
+
+#+BEGIN_SRC ipython
+"""
+
+$ echo 'a.b.c' | pype 'str.replace(?, ".", "!")'
+a!b!c
+
+"""
+
+import sys
+
+import click
+
+
+def parse_command(command):
+    fnstr = 'lambda placeholder: ' + command.replace('?', 'placeholder')
+    return eval(fnstr)
+
+
+def main(in_stream, command):
+    process = parse_command(command)
+    for line in in_stream:
+        yield process(line)
+
+
+@click.command()
+@click.option('--import', '-i', 'import_')
+@click.argument('command')
+@click.argument('in_stream', default=click.get_text_stream('stdin'))
+def cli(import_, command, in_stream):
+
+    gen = main(in_stream, command)
+    for line in gen:
+        print(line)
+
+
+cli()
+#+END_SRC
+
+** Two =eval()= calls
+#+BEGIN_SRC python
+
+def do(command, data):
+    a = 'lambda PLACEHOLDER: command.replace("?", PLACEHOLDER)'
+    b = eval(a, {'command': command})
+    c = b(data)
+    d = eval(c)
+    return d
+print(do('str.upper("?")', 'xyz') == 'XYZ')
+print(do('str.upper(?)', 'xyz') == 'XYZ')
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
+: True
+: Traceback (most recent call last):
+:   File "<stdin>", line 1, in <module>
+:   File "/tmp/babel-31866NJj/python-31866KrV", line 9, in <module>
+:     print(do('str.upper(?)', 'xyz') == 'XYZ')
+:   File "/tmp/babel-31866NJj/python-31866KrV", line 6, in do
+:     d = eval(c)
+:   File "<string>", line 1, in <module>
+: NameError: name 'xyz' is not defined
 
-Traceback (most recent call last):
-load_entry_point('pype', 'console_scripts', 'pype')()
-  File "/home/adam/.envs/pype-Klgf3iES/lib/python3.6/site-packages/click/core.py", line 722, in __call__
-    return self.main(*args, **kwargs)
-  File "/home/adam/.envs/pype-Klgf3iES/lib/python3.6/site-packages/click/core.py", line 697, in main
-    rv = self.invoke(ctx)
-  File "/home/adam/.envs/pype-Klgf3iES/lib/python3.6/site-packages/click/core.py", line 895, in invoke
-    return ctx.invoke(self.callback, **ctx.params)
-  File "/home/adam/.envs/pype-Klgf3iES/lib/python3.6/site-packages/click/core.py", line 535, in invoke
-    return callback(*args, **kwargs)
-  File "/home/adam/Documents/pype/pype/app.py", line 255, in cli
-    for line in gen:
-  File "/home/adam/Documents/pype/pype/app.py", line 175, in main
-    yield from result
-  File "/home/adam/Documents/pype/pype/app.py", line 135, in _maybe_add_newlines
-    iterable = list(iterable)
-  File "/home/adam/Documents/pype/pype/app.py", line 115, in _apply_map
-    modules = _get_modules([command], imports, autoimport)
-  File "/home/adam/Documents/pype/pype/app.py", line 92, in _get_modules
-    autoimports = toolz.merge(_get_autoimports(command) for command in commands)
-  File "/home/adam/.envs/pype-Klgf3iES/lib/python3.6/site-packages/toolz/dicttoolz.py", line 38, in merge
-    for d in dicts:
-autoimports = toolz.merge(_get_autoimports(command) for command in commands)
-  File "/home/adam/Documents/pype/pype/app.py", line 83, in _get_autoimports
-    name_module = _get_autoimport_modules(identifier)
-  File "/home/adam/Documents/pype/pype/app.py", line 52, in _get_autoimport_modules
-    raise RuntimeError(f'Could not find {fullname}')
-RuntimeError: Could not find bc
-#+end_example
+** Two =eval()= calls with local data
+#+BEGIN_SRC python
+def do(command, data):
+    a = 'lambda PLACEHOLDER: command.replace("?", PLACEHOLDER)'
+    b = eval(a, {'command': command})
+    c = b(data)
+    d = eval(c, {data:data})
+    return d
+print(do('str.upper("?")', 'xyz'))
+print(do('str.upper(?)', 'xyz'))
+
+#+END_SRC
+
+#+RESULTS:
+: XYZ
+: XYZ
+
+** Two =eval= calls other way around
+
+#+BEGIN_SRC python
+from pprint import pprint as pp
+def do(command, data):
+    a = """lambda PLACEHOLDER: 'command.replace("?", PLACEHOLDER)'"""
+    b = eval(a, {'command': command})
+    c = b(data)
+    d = eval(c, {'PLACEHOLDER': data, 'command': command})
+    e = eval(d)
+    pp(locals())
+    return e
+print(do('str.upper("?")', 'xyz'))
+
+
+#+END_SRC
+
+#+RESULTS:
+: {'a': 'lambda PLACEHOLDER: \'command.replace("?", PLACEHOLDER)\'',
+:  'b': <function <lambda> at 0x7f3ed6a92ea0>,
+:  'c': 'command.replace("?", PLACEHOLDER)',
+:  'command': 'str.upper("?")',
+:  'd': 'str.upper("xyz")',
+:  'data': 'xyz',
+:  'e': 'XYZ'}
+: XYZ
+
+** One call
+
+
+#+BEGIN_SRC python
+from pprint import pprint as pp
+def do(command, data):
+    a = command.replace('?', data)
+    b = eval(a, {})
+    pp(locals())
+    return b
+print(do("""str.upper('?')""", 'xyz'))
+
+
+#+END_SRC
+
+#+RESULTS:
+: {'a': "str.upper('xyz')",
+:  'b': 'XYZ',
+:  'command': "str.upper('?')",
+:  'data': 'xyz'}
+: XYZ
+
+** fstrings
+
+#+BEGIN_SRC shell
+printf Bob | pype $'f"I said, \'hello, {?}\'".lower()'
+#+END_SRC
+
+#+RESULTS:
+: i said, 'hello, bob'
 
 
 
@@ -95,3 +197,4 @@ RuntimeError: Could not find bc
 Possibly with =exec=
 * TODO Remove this =f'{_PYPE_VALUE}'=
 * Maybe single-line inputs shouldn't get a newline
+* TODO Use True/False instead of yes/no in main()
