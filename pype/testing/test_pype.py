@@ -15,7 +15,7 @@ from hypothesis import settings, Verbosity, reproduce_failure
 
 import pype
 import pype.app
-from pype.app import _PYPE_VALUE
+from pype.app import _PYPE_VALUE, PypeParseWarning
 
 settings.register_profile("ci", max_examples=1000)
 settings.register_profile("dev", max_examples=10)
@@ -28,6 +28,7 @@ def _runner():
     return CliRunner()
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize(
     'command, expected',
     [
@@ -208,6 +209,11 @@ def test_get_identifiers_matches_str_isidentifier(string):
 def test_main_example(kwargs, expected):
     result = pype.app.main(**kwargs)
     assert list(result) == expected
+
+
+def test_parse_warning():
+    with pytest.raises(PypeParseWarning):
+        pype.app.main('"?"', in_stream=['abc'])
 
 
 @given(string=st.text())

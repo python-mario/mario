@@ -169,6 +169,7 @@ def _apply_map(command, in_stream, imports, placeholder, autoimport):
     pipeline = _make_pipeline_strings(command, placeholder)
     for line in in_stream:
         result = _apply_command_pipeline(line, modules, pipeline)
+        _check_parsing(result, _apply_command_pipeline(_PYPE_VALUE, modules, pipeline))
         yield result
 
 
@@ -205,6 +206,16 @@ def _maybe_add_newlines(iterator, newlines_setting='auto'):
             yield string
 
 
+class PypeParseWarning(Warning):
+    pass
+
+
+def _check_parsing(string, checker):
+    if str(checker) in str(string):
+        raise PypeParseWarning(
+            '''Use f-string format when quoting placeholder:  'f"Eggs and {?} and spam.'"''', )
+
+
 def main(  # pylint: disable=too-many-arguments
         mapper,
         reducer=None,
@@ -229,7 +240,8 @@ def main(  # pylint: disable=too-many-arguments
 
     result = _maybe_add_newlines(result, newlines)
 
-    yield from result
+    for item in result:
+        yield item
 
 
 @click.command()
