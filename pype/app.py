@@ -66,11 +66,9 @@ class _StringScanner:
         tokens = _string_to_tokens(self._string)
 
         for token_object in tokens:
-
             if _is_reference_part(token_object):
                 self._current_tokens.append(token_object)
                 continue
-
             self._maybe_update()
 
         self._maybe_update()
