@@ -67,7 +67,8 @@ class _StringScanner:
     def _maybe_update(self):
         if self._current_tokens and _is_name_token(self._current_tokens[-1]):
             if _is_name_token(self._current_tokens[0]):
-                self._identifier_strings.add(_tokens_to_string(self._current_tokens))
+                self._identifier_strings.add(
+                    _tokens_to_string(self._current_tokens))
             self._current_tokens = []
 
     def scan(self):
@@ -150,7 +151,8 @@ def _get_modules(commands, named_imports, autoimport):
     named_modules = _get_named_modules(named_imports)
     if not autoimport:
         return named_modules
-    autoimports = toolz.merge(_get_autoimports(command) for command in commands)
+    autoimports = toolz.merge(_get_autoimports(command)
+                              for command in commands)
     # named modules have priority
     modules = {**autoimports, **named_modules}
     return modules
@@ -221,23 +223,23 @@ def _check_parsing(command, placeholder):
             continue
         if placeholder not in tok.string:
             continue
-        if re.fullmatch(r'f.*\{.*%s.*\}.*' % placeholder, tok.string):
-            continue
+        # if re.fullmatch(r'f.*\{.*%s.*\}.*' % placeholder, tok.string):
+        #     continue
 
         other = {'$': '?', '?': '$'}[placeholder]
         raise PypeParseError(r'''
 
-        If data should appear in quotation marks, use f-string format :
+        If data should appear in quotation marks, use 'Hello, {{}}.format(?)':
 
 
-           printf 'eggs' | pype 'f"Ham and {{?}} and spam!".upper()'
+            printf 'World' | pype '"Hello, {{}}!".format(?)'
 
-           # HAM AND EGGS AND SPAM!
+            # Hello, World!
 
 
-           printf 'World' | pype $'f\'I say, "Hello, {{?}}!"\''
+            printf 'World' | pype $'"I say, \'Hello, {{}}!\'".format(?)'
 
-           # I say, "Hello, World!"
+            # I say, 'Hello, World!'
 
 
         If {placeholder} should appear in quotation marks, use another placeholder:
@@ -266,12 +268,15 @@ def main(  # pylint: disable=too-many-arguments
     _check_parsing(mapper, placeholder)
 
     if slurp:
-        result = _apply_total(mapper, in_stream, imports, placeholder, autoimport)
+        result = _apply_total(mapper, in_stream, imports,
+                              placeholder, autoimport)
     else:
-        result = _apply_map(mapper, in_stream, imports, placeholder, autoimport)
+        result = _apply_map(mapper, in_stream, imports,
+                            placeholder, autoimport)
 
     if reducer is not None:
-        result = _apply_reduce(reducer, result, imports, placeholder, autoimport)
+        result = _apply_reduce(reducer, result, imports,
+                               placeholder, autoimport)
     if postmap is not None:
         result = _apply_map(postmap, result, imports, placeholder, autoimport)
 

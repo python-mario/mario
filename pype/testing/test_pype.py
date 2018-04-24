@@ -247,6 +247,7 @@ def test_main_raises_parse_error(kwargs, expected):
         list(pype.app.main(**kwargs))
 
 
+@pytest.mark.xfail(strict=True)
 def test_main_f_string():
 
     result = list(pype.app.main("""f'"{?}"'""", in_stream=['abc'], newlines='no'))
