@@ -244,7 +244,10 @@ def _check_parsing(command, placeholder):
         If {placeholder} should appear in quotation marks, use another placeholder:
 
 
-        printf 'Is this a question' | pype --placeholder=$ '$ + "?"'
+            printf 'Is this a question' | pype --placeholder=$ '$ + "?"'
+
+            # Is this a question?
+
 
             '''.format(placeholder=placeholder, other=other))
 
