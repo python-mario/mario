@@ -228,7 +228,7 @@ def _check_parsing(command, placeholder):
         other = {'$': '?', '?': '$'}[placeholder]
         raise PypeParseWarning(rf'''
 
-        Use another placeholder value when quoting the placeholder:
+        Use another placeholder value when quoting literal {placeholder}:
 
         pype --placeholder={other} {command} ...
             ''')
