@@ -200,9 +200,10 @@ def test_main_example(kwargs, expected):
         (
             {
                 'mapper': 'str.__add__(?, "bc")',
+                'newlines': 'yes',
                 'in_stream': ['a'],
             },
-            ['abc'],
+            ['abc\n'],
         ),
     ],
 )
