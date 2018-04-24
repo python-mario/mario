@@ -227,6 +227,7 @@ def _check_parsing(command, placeholder):
 
         raise PypeParseWarning(r'''Use f-string format when quoting placeholder:
 
+
            printf 'eggs' | pype 'f"Ham and {?} and spam!".upper()'
 
            # HAM AND EGGS AND SPAM!
@@ -235,7 +236,6 @@ def _check_parsing(command, placeholder):
            printf 'World' | pype $'f\'I say, "Hello, {?}!"\''
 
            # I say, "Hello, World!"
-
 
             ''')
 
