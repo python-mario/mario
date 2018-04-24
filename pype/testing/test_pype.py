@@ -195,6 +195,13 @@ def test_get_identifiers_matches_str_isidentifier(string):
             },
             ['abc\n'],
         ),
+        (
+            {
+                'mapper': '"?"',
+                'in_stream': ['"abc"\n'],
+            },
+            ['abc\n'],
+        ),
     ],
 )
 def test_main_example(kwargs, expected):
