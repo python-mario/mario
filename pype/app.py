@@ -16,6 +16,7 @@ from tokenize import tokenize, untokenize
 import attr
 import click
 import toolz
+from twisted.internet.defer import Deferred
 
 _PYPE_VALUE = '__PYPE_VALUE_'
 
@@ -228,21 +229,21 @@ def cbShutdown(ignored):
     reactor.stop()
 
 
-def request(agent, i, body, modules, pipeline):
-    url = str(i).encode('utf-8')
-    d = agent.request(
-        b'GET',
-        url,
-        Headers({
-            b'User-Agent': [b'Twisted Web Client Example'],
-            b'Content-Type': [b'text/x-greeting'],
-        }, ),
-        body,
-    )
-    d.addCallbacks(cbResponse, lambda x: print('Error', x))
-    d.addCallbacks(lambda x: _apply_command_pipeline(x, modules, pipeline),
-                   lambda x: print('Error', x))
-    d.addCallbacks(pprint, lambda x: print('Error', x))
+def run_segment(value, segment, modules):
+    return eval(segment, modules, {_PYPE_VALUE: value})
+
+
+def request(agent, i, modules, pipeline):
+
+    d = Deferred()
+    for pipeline_segment in pipeline:
+        d.addCallbacks(
+            lambda x: run_segment(x, pipeline_segment, modules),
+            lambda x: pprint('Error', x),
+        )
+
+        d.addCallback(pprint)
+    d.callback(i)
 
 
 def _async_apply_map(command, in_stream, imports, placeholder, autoimport):
@@ -252,15 +253,9 @@ def _async_apply_map(command, in_stream, imports, placeholder, autoimport):
     agent = Agent(reactor)
 
     for item in in_stream:
-        body = FileBodyProducer(BytesIO(b"hello, world"))
-        request(agent, item, body, modules, pipeline)
-
+        request(agent, item, modules, pipeline)
     print('about to run reactor')
     reactor.run()
-
-    for line in in_stream:
-        result = _apply_command_pipeline(line, modules, pipeline)
-        yield result
 
 
 def _apply_reduce(command, in_stream, imports, placeholder, autoimport):

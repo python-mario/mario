@@ -13,6 +13,7 @@ coverage = "*"
 "e1839a8" = {path = ".", editable = true}
 attrs = "*"
 rope = "*"
+treq = "*"
 
 
 [requires]
