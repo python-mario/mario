@@ -220,7 +220,6 @@ from twisted.web.client import FileBodyProducer
 def cbResponse(response):
     d = readBody(response)
     d.addCallbacks(bytes.decode, lambda x: print('Error', x))
-    d.addCallbacks(pprint, lambda x: print('Error', x))
 
     return d
 
@@ -229,8 +228,8 @@ def cbShutdown(ignored):
     reactor.stop()
 
 
-def request(agent, i, body):
-    url = b'http://localhost:8080/' + str(i).encode('utf-8')
+def request(agent, i, body, modules, pipeline):
+    url = str(i).encode('utf-8')
     d = agent.request(
         b'GET',
         url,
@@ -241,6 +240,9 @@ def request(agent, i, body):
         body,
     )
     d.addCallbacks(cbResponse, lambda x: print('Error', x))
+    d.addCallbacks(lambda x: _apply_command_pipeline(x, modules, pipeline),
+                   lambda x: print('Error', x))
+    d.addCallbacks(pprint, lambda x: print('Error', x))
 
 
 def _async_apply_map(command, in_stream, imports, placeholder, autoimport):
@@ -251,7 +253,7 @@ def _async_apply_map(command, in_stream, imports, placeholder, autoimport):
 
     for item in in_stream:
         body = FileBodyProducer(BytesIO(b"hello, world"))
-        request(agent, item, body)
+        request(agent, item, body, modules, pipeline)
 
     print('about to run reactor')
     reactor.run()
@@ -447,6 +449,6 @@ $ printf 'a\\nab\\nabc\\n' | pype -t -i json -i toolz -i collections 'collection
     in_stream = click.get_text_stream('stdin')
     gen = main(command, reducer, postmap, in_stream, imports, placeholder, slurp, autoimport,
                newlines, do_async)
-    list(gen)
+
     for line in gen:
         click.echo(line, nl=False)
