@@ -181,6 +181,42 @@ def _apply_map(command, in_stream, imports, placeholder, autoimport):
         yield result
 
 
+def _do_async(command, in_stream, imports, placeholder, autoimport):
+    from twisted.internet import reactor
+    from twisted.web.client import Agent
+    from twisted.web.http_headers import Headers
+
+    from stringprod import StringProducer
+
+    agent = Agent(reactor)
+    body = StringProducer("hello, world")
+    d = agent.request(
+        'GET',
+        'http://example.com/',
+        Headers({'User-Agent': ['Twisted Web Client Example'],
+                 'Content-Type': ['text/x-greeting']}),
+        body)
+
+    def cbResponse(ignored):
+        print('Response received')
+    d.addCallback(cbResponse)
+
+    def cbShutdown(ignored):
+        reactor.stop()
+    d.addBoth(cbShutdown)
+
+    reactor.run()
+
+
+def _async_apply_map(command, in_stream, imports, placeholder, autoimport):
+    modules = _get_modules([command], imports, autoimport)
+    pipeline = _make_pipeline_strings(command, placeholder)
+
+    for line in in_stream:
+        result = _apply_command_pipeline(line, modules, pipeline)
+        yield result
+
+
 def _apply_reduce(command, in_stream, imports, placeholder, autoimport):
 
     modules = _get_modules([command], imports, autoimport)
@@ -263,6 +299,7 @@ def main(  # pylint: disable=too-many-arguments
         slurp=False,
         autoimport=True,
         newlines='auto',
+        do_async=False,
 ):
 
     _check_parsing(mapper, placeholder)
@@ -271,8 +308,14 @@ def main(  # pylint: disable=too-many-arguments
         result = _apply_total(mapper, in_stream, imports,
                               placeholder, autoimport)
     else:
-        result = _apply_map(mapper, in_stream, imports,
-                            placeholder, autoimport)
+
+        if do_async:
+
+        result = _async_apply_map(mapper, in_stream, imports,
+                                  placeholder, autoimport)
+        else:
+            result = _apply_map(mapper, in_stream, imports,
+                                placeholder, autoimport)
 
     if reducer is not None:
         result = _apply_reduce(reducer, result, imports,
@@ -318,6 +361,7 @@ def main(  # pylint: disable=too-many-arguments
     default='?',
     help='String to replace with data. Defaults to ?',
 )
+@click.option('--async', 'do_async', is_flag=True, default=False)
 def cli(
         imports,
         command,
@@ -327,6 +371,7 @@ def cli(
         postmap,
         autoimport,
         newlines,
+        do_async,
 ):
     """
 Pipe data through python functions.
@@ -361,7 +406,7 @@ $ printf 'a\\nab\\nabc\\n' | pype -t -i json -i toolz -i collections 'collection
     """
     in_stream = click.get_text_stream('stdin')
     gen = main(command, reducer, postmap, in_stream, imports, placeholder, slurp, autoimport,
-               newlines)
+               newlines, do_async)
 
     for line in gen:
         click.echo(line, nl=False)

@@ -47,6 +47,73 @@ pype ' str.split || tmp_client.get_many || list || pprint.pprint  ' < pype/testi
 pype --async ' str.split || tmp_client.get_many || list || pprint.pprint  ' < pype/testing/data/inline_urls.txt
 #+END_SRC
 
+** Async notes
+
+#+BEGIN_SRC python
+from pprint import pprint
+import inspect
+from io import BytesIO
+
+from twisted.internet import reactor
+from twisted.web.client import Agent, readBody
+from twisted.web.http_headers import Headers
+
+from twisted.web.client import FileBodyProducer
+
+
+def cbResponse(response):
+    d = readBody(response)
+    d.addCallbacks(bytes.decode, lambda x: print('Error', x))
+    d.addCallbacks(pprint, lambda x: print('Error', x))
+
+    return d
+
+
+def cbShutdown(ignored):
+    reactor.stop()
+
+
+def request(agent, i, body):
+    url = b'http://localhost:8080/' + str(i).encode('utf-8')
+    d = agent.request(
+        b'GET',
+        url,
+        Headers({
+            b'User-Agent': [b'Twisted Web Client Example'],
+            b'Content-Type': [b'text/x-greeting'],
+        }, ),
+        body,
+    )
+    d.addCallbacks(cbResponse, lambda x: print('Error', x))
+
+
+def main():
+    agent = Agent(reactor)
+
+    for i in range(10):
+        body = FileBodyProducer(BytesIO(b"hello, world"))
+        request(agent, i, body)
+
+    reactor.run()
+
+
+main()
+
+#+END_SRC
+
+#+BEGIN_SRC ipython
+'Hello, 0. You are client number 141 for this server.'
+'Hello, 1. You are client number 141 for this server.'
+'Hello, 4. You are client number 141 for this server.'
+'Hello, 2. You are client number 141 for this server.'
+'Hello, 5. You are client number 141 for this server.'
+'Hello, 6. You are client number 141 for this server.'
+'Hello, 3. You are client number 141 for this server.'
+'Hello, 7. You are client number 141 for this server.'
+'Hello, 8. You are client number 141 for this server.'
+'Hello, 9. You are client number 141 for this server.'
+
+#+END_SRC
 * TODO Fix quote syntax
 
 ** TODO Use =parso=.
