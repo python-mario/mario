@@ -20,11 +20,11 @@ import toolz
 _PYPE_VALUE = '__PYPE_VALUE_'
 
 
-class PypeWarning(Warning):
+class PypeException(Exception):
     pass
 
 
-class PypeParseWarning(PypeWarning):
+class PypeParseError(PypeException):
     pass
 
 
@@ -225,7 +225,7 @@ def _check_parsing(command, placeholder):
             continue
 
         other = {'$': '?', '?': '$'}[placeholder]
-        raise PypeParseWarning(r'''
+        raise PypeParseError(r'''
 
         If data should appear in quotation marks, use f-string format :
 

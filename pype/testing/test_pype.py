@@ -15,7 +15,7 @@ from hypothesis import settings, Verbosity, reproduce_failure
 
 import pype
 import pype.app
-from pype.app import _PYPE_VALUE, PypeParseWarning
+from pype.app import _PYPE_VALUE, PypeParseError
 
 settings.register_profile("ci", max_examples=1000)
 settings.register_profile("dev", max_examples=10)
@@ -216,7 +216,7 @@ def test_main_example(kwargs, expected):
         ),
     ],
 )
-def test_quoting_warning(kwargs, expected):
+def test_quoting_error(kwargs, expected):
     result = pype.app.main(**kwargs)
     assert list(result) == expected
 
@@ -242,8 +242,8 @@ def test_quoting_warning(kwargs, expected):
         ),
     ],
 )
-def test_main_raises_parse_warning(kwargs, expected):
-    with pytest.raises(PypeParseWarning):
+def test_main_raises_parse_error(kwargs, expected):
+    with pytest.raises(PypeParseError):
         list(pype.app.main(**kwargs))
 
 
@@ -254,8 +254,8 @@ def test_main_f_string():
     assert result == ['"abc"']
 
 
-def test_parse_warning():
-    with pytest.raises(PypeParseWarning):
+def test_parse_error():
+    with pytest.raises(PypeParseError):
         pype.app._check_parsing('"?"', '?')
 
 
