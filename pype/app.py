@@ -67,8 +67,7 @@ class _StringScanner:
     def _maybe_update(self):
         if self._current_tokens and _is_name_token(self._current_tokens[-1]):
             if _is_name_token(self._current_tokens[0]):
-                self._identifier_strings.add(
-                    _tokens_to_string(self._current_tokens))
+                self._identifier_strings.add(_tokens_to_string(self._current_tokens))
             self._current_tokens = []
 
     def scan(self):
@@ -151,8 +150,7 @@ def _get_modules(commands, named_imports, autoimport):
     named_modules = _get_named_modules(named_imports)
     if not autoimport:
         return named_modules
-    autoimports = toolz.merge(_get_autoimports(command)
-                              for command in commands)
+    autoimports = toolz.merge(_get_autoimports(command) for command in commands)
     # named modules have priority
     modules = {**autoimports, **named_modules}
     return modules
@@ -191,26 +189,72 @@ def _do_async(command, in_stream, imports, placeholder, autoimport):
     agent = Agent(reactor)
     body = StringProducer("hello, world")
     d = agent.request(
-        'GET',
-        'http://example.com/',
-        Headers({'User-Agent': ['Twisted Web Client Example'],
-                 'Content-Type': ['text/x-greeting']}),
-        body)
+        'GET', 'http://example.com/',
+        Headers({'User-Agent': ['Twisted Web Client Example'], 'Content-Type':
+                 ['text/x-greeting']}), body)
 
     def cbResponse(ignored):
         print('Response received')
+
     d.addCallback(cbResponse)
 
     def cbShutdown(ignored):
         reactor.stop()
+
     d.addBoth(cbShutdown)
 
     reactor.run()
 
 
+from pprint import pprint
+import inspect
+from io import BytesIO
+
+from twisted.internet import reactor
+from twisted.web.client import Agent, readBody
+from twisted.web.http_headers import Headers
+
+from twisted.web.client import FileBodyProducer
+
+
+def cbResponse(response):
+    d = readBody(response)
+    d.addCallbacks(bytes.decode, lambda x: print('Error', x))
+    d.addCallbacks(pprint, lambda x: print('Error', x))
+
+    return d
+
+
+def cbShutdown(ignored):
+    reactor.stop()
+
+
+def request(agent, i, body):
+    url = b'http://localhost:8080/' + str(i).encode('utf-8')
+    d = agent.request(
+        b'GET',
+        url,
+        Headers({
+            b'User-Agent': [b'Twisted Web Client Example'],
+            b'Content-Type': [b'text/x-greeting'],
+        }, ),
+        body,
+    )
+    d.addCallbacks(cbResponse, lambda x: print('Error', x))
+
+
 def _async_apply_map(command, in_stream, imports, placeholder, autoimport):
     modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder)
+
+    agent = Agent(reactor)
+
+    for item in in_stream:
+        body = FileBodyProducer(BytesIO(b"hello, world"))
+        request(agent, item, body)
+
+    print('about to run reactor')
+    reactor.run()
 
     for line in in_stream:
         result = _apply_command_pipeline(line, modules, pipeline)
@@ -305,21 +349,17 @@ def main(  # pylint: disable=too-many-arguments
     _check_parsing(mapper, placeholder)
 
     if slurp:
-        result = _apply_total(mapper, in_stream, imports,
-                              placeholder, autoimport)
+        result = _apply_total(mapper, in_stream, imports, placeholder, autoimport)
     else:
 
         if do_async:
 
-        result = _async_apply_map(mapper, in_stream, imports,
-                                  placeholder, autoimport)
+            result = _async_apply_map(mapper, in_stream, imports, placeholder, autoimport)
         else:
-            result = _apply_map(mapper, in_stream, imports,
-                                placeholder, autoimport)
+            result = _apply_map(mapper, in_stream, imports, placeholder, autoimport)
 
     if reducer is not None:
-        result = _apply_reduce(reducer, result, imports,
-                               placeholder, autoimport)
+        result = _apply_reduce(reducer, result, imports, placeholder, autoimport)
     if postmap is not None:
         result = _apply_map(postmap, result, imports, placeholder, autoimport)
 
@@ -407,6 +447,6 @@ $ printf 'a\\nab\\nabc\\n' | pype -t -i json -i toolz -i collections 'collection
     in_stream = click.get_text_stream('stdin')
     gen = main(command, reducer, postmap, in_stream, imports, placeholder, slurp, autoimport,
                newlines, do_async)
-
+    list(gen)
     for line in gen:
         click.echo(line, nl=False)
