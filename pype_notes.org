@@ -198,3 +198,86 @@ Possibly with =exec=
 * TODO Remove this =f'{_PYPE_VALUE}'=
 * Maybe single-line inputs shouldn't get a newline
 * TODO Use True/False instead of yes/no in main()
+* Quoting notes
+
+# import ast
+# from inspect import getmembers
+
+# import parso
+# from astpp import parseprint
+
+# class RewriteName(ast.NodeTransformer):
+#     def visit_Name(self, node):
+#         return ast.copy_location(ast.Name(id='data', ctx=ast.Load()), node)
+
+# s = 'print(1 + a)'
+# tree = ast.parse(s)
+# parseprint(tree)
+
+# out = RewriteName().visit(tree)
+
+# # parseprint(out)
+
+# def show(x):
+#     return dict(getmembers(x))
+
+# ptree = parso.parse('100 + 5000 + ? + 8 + 9')
+# show(ptree)
+
+command = 'str.upper(?)'
+ls = ('lambda _PYPE_PLACEHOLDER_: ' + command.replace('?', '_PYPE_PLACEHOLDER'))
+ls2 = 'lambda _PYPE_PLACEHOLDER_: str.upper(_PYPE_PLACEHOLDER)'
+
+ls
+eval(ls, {'_PYPE_PLACEHOLDER': 'a'})("b")
+
+# import ast
+# from inspect import getmembers
+
+# import parso
+# from astpp import parseprint
+
+# class RewriteName(ast.NodeTransformer):
+#     def visit_Name(self, node):
+#         return ast.copy_location(ast.Name(id='data', ctx=ast.Load()), node)
+
+# s = 'print(1 + a)'
+# tree = ast.parse(s)
+# parseprint(tree)
+
+# out = RewriteName().visit(tree)
+
+# # parseprint(out)
+
+# def show(x):
+#     return dict(getmembers(x))
+
+# ptree = parso.parse('100 + 5000 + ? + 8 + 9')
+# show(ptree)
+# 111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+command = 'str.upper("?")'
+ls = ('lambda _PYPE_PLACEHOLDER: ' + command.replace('?', '_PYPE_PLACEHOLDER'))
+ls
+eval(ls, {'_PYPE_PLACEHOLDER': 'a'})("b")
+
+command = 'str.upper("?")'
+ls2 = 'lambda _PYPE_PLACEHOLDER: command.replace("?", _PYPE_PLACEHOLDER)'
+ls2_result = eval(ls2, {'command': command})('b')
+eval(ls2_result)
+
+
+def do(command, data):
+    a = 'lambda PLACEHOLDER: command.replace("?", PLACEHOLDER)'
+    b = eval(a, {'command': command})
+    c = b(data)
+    d = eval(c)
+    return d
+
+
+do('str.upper("?")', 'xyz') == 'XYZ'
+
+from pype.app import _string_to_tokens
+
+s = """f'abc{?}'"""
+t = _string_to_tokens(s)
+list(t)
