@@ -203,24 +203,48 @@ def test_main_example(kwargs, expected):
 
 
 @pytest.mark.xfail(strict=True)
-@pytest.mark.parametrize('kwargs, expected', [
-    (
-        {
-            'mapper': '"?"',
-            'newlines': 'no',
-            'in_stream': ['abc'],
-        },
-        ['"abc"'],
-    ),
-])
+@pytest.mark.parametrize(
+    'kwargs, expected',
+    [
+        (
+            {
+                'mapper': '"?"',
+                'newlines': 'no',
+                'in_stream': ['abc'],
+            },
+            ['"abc"'],
+        ),
+    ],
+)
 def test_quoting_warning(kwargs, expected):
     result = pype.app.main(**kwargs)
     assert list(result) == expected
 
 
-def test_main_raises_parse_warning():
+@pytest.mark.parametrize(
+    'kwargs, expected',
+    [
+        (
+            {
+                'mapper': '"?"',
+                'newlines': 'no',
+                'in_stream': 'abc',
+            },
+            ['abc'],
+        ),
+        (
+            {
+                'mapper': """'I say, "Hello, {?}!"'""",
+                'newlines': 'no',
+                'in_stream': ['World'],
+            },
+            ['I say, "Hello, World!"'],
+        ),
+    ],
+)
+def test_main_raises_parse_warning(kwargs, expected):
     with pytest.raises(PypeParseWarning):
-        list(pype.app.main('"?"', in_stream=['abc\n']))
+        list(pype.app.main(**kwargs))
 
 
 def test_main_f_string():

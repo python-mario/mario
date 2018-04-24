@@ -222,15 +222,22 @@ def _check_parsing(command, placeholder):
             continue
         if placeholder not in tok.string:
             continue
-        if tok.string[0] == 'f':
-            continue
-        if '{' in tok.string and '}' in tok.string:
+        if re.fullmatch(r'f.*\{.*%s.*\}.*' % placeholder, tok.string):
             continue
 
         raise PypeParseWarning(r'''Use f-string format when quoting placeholder:
 
-           printf 'abc\n' | pype 'f"Eggs and {?} and spam."'
-            ''', )
+           printf 'eggs' | pype 'f"Ham and {?} and spam!".upper()'
+
+           # HAM AND EGGS AND SPAM!
+
+
+           printf 'World' | pype $'f\'I say, "Hello, {?}!"\''
+
+           # I say, "Hello, World!"
+
+
+            ''')
 
 
 def main(  # pylint: disable=too-many-arguments
