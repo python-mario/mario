@@ -95,3 +95,5 @@ RuntimeError: Could not find bc
 Possibly with =exec=
 * TODO Remove this =f'{_PYPE_VALUE}'=
 * Maybe single-line inputs shouldn't get a newline
+* TODO Late str.replace('?') wont work'
+- State "TODO"       from              [2018-04-23 Mon 19:35]

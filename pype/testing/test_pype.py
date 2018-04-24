@@ -69,7 +69,7 @@ def test_get_module(name, expected):
     ],
 )
 def test_get_identifiers(string, expected):
-    assert pype.app._get_identifiers(string) == expected
+    assert pype.app._get_maybe_namespaced_identifiers(string) == expected
 
 
 def test_cli_raises_without_autoimport(runner):
@@ -159,7 +159,7 @@ def test_raises_on_nonexistent_option(option, runner):
 @pytest.mark.xfail(strict=True)
 @given(st.text())
 def test_get_identifiers_matches_str_isidentifier(string):
-    identifiers = pype.app._get_identifiers(string)
+    identifiers = pype.app._get_maybe_namespaced_identifiers(string)
     assert all([identifier.isidentifier() for identifier in identifiers])
 
 
@@ -187,16 +187,6 @@ def test_get_identifiers_matches_str_isidentifier(string):
             },
             ['\n'],
         ),
-    ],
-)
-def test_main_example(kwargs, expected):
-    result = pype.app.main(**kwargs)
-    assert list(result) == expected
-
-
-@pytest.mark.parametrize(
-    'kwargs,expected',
-    [
         (
             {
                 'mapper': 'str.__add__(?, "bc")',
@@ -207,7 +197,7 @@ def test_main_example(kwargs, expected):
         ),
     ],
 )
-def test_quoting(kwargs, expected):
+def test_main_example(kwargs, expected):
     result = pype.app.main(**kwargs)
     assert list(result) == expected
 

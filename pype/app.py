@@ -44,7 +44,7 @@ def _tokens_to_string(token_objects):
     return ''.join(t.string for t in token_objects)
 
 
-def _get_identifiers(string):
+def _get_maybe_namespaced_identifiers(string):
     scanner = _StringScanner(string)
     return scanner.scan()
 
@@ -131,7 +131,7 @@ def _get_autoimports(string):
     components = [comp.strip() for comp in string.split('||')]
     name_to_module = {}
     for component in components:
-        identifiers = _get_identifiers(component)
+        identifiers = _get_maybe_namespaced_identifiers(component)
         for identifier in identifiers:
             name_module = _get_autoimport_modules(identifier)
             name_to_module.update(name_module)
