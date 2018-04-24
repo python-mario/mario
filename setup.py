@@ -22,7 +22,7 @@ VERSION = '0.0.3'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    'attr',
+    'attrs',
     'click',
     'toolz',
 ]
