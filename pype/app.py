@@ -228,7 +228,7 @@ def _check_parsing(command, placeholder):
         other = {'$': '?', '?': '$'}[placeholder]
         raise PypeParseWarning(r'''
 
-        If data should appear in quotes, use f-string format :
+        If data should appear in quotation marks, use f-string format :
 
 
            printf 'eggs' | pype 'f"Ham and {{?}} and spam!".upper()'
