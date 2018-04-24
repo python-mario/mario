@@ -131,7 +131,7 @@ cli()
 #+END_SRC
 
 ** Two =eval()= calls
-#+BEGIN_SRC ipython
+#+BEGIN_SRC python
 
 def do(command, data):
     a = 'lambda PLACEHOLDER: command.replace("?", PLACEHOLDER)'
@@ -139,8 +139,96 @@ def do(command, data):
     c = b(data)
     d = eval(c)
     return d
-do('str.upper("?")', 'xyz') == 'XYZ'
+print(do('str.upper("?")', 'xyz') == 'XYZ')
+print(do('str.upper(?)', 'xyz') == 'XYZ')
 #+END_SRC
+
+#+RESULTS:
+: True
+: Traceback (most recent call last):
+:   File "<stdin>", line 1, in <module>
+:   File "/tmp/babel-31866NJj/python-31866KrV", line 9, in <module>
+:     print(do('str.upper(?)', 'xyz') == 'XYZ')
+:   File "/tmp/babel-31866NJj/python-31866KrV", line 6, in do
+:     d = eval(c)
+:   File "<string>", line 1, in <module>
+: NameError: name 'xyz' is not defined
+
+** Two =eval()= calls with local data
+#+BEGIN_SRC python
+def do(command, data):
+    a = 'lambda PLACEHOLDER: command.replace("?", PLACEHOLDER)'
+    b = eval(a, {'command': command})
+    c = b(data)
+    d = eval(c, {data:data})
+    return d
+print(do('str.upper("?")', 'xyz'))
+print(do('str.upper(?)', 'xyz'))
+
+#+END_SRC
+
+#+RESULTS:
+: XYZ
+: XYZ
+
+** Two =eval= calls other way around
+
+#+BEGIN_SRC python
+from pprint import pprint as pp
+def do(command, data):
+    a = """lambda PLACEHOLDER: 'command.replace("?", PLACEHOLDER)'"""
+    b = eval(a, {'command': command})
+    c = b(data)
+    d = eval(c, {'PLACEHOLDER': data, 'command': command})
+    e = eval(d)
+    pp(locals())
+    return e
+print(do('str.upper("?")', 'xyz'))
+
+
+#+END_SRC
+
+#+RESULTS:
+: {'a': 'lambda PLACEHOLDER: \'command.replace("?", PLACEHOLDER)\'',
+:  'b': <function <lambda> at 0x7f3ed6a92ea0>,
+:  'c': 'command.replace("?", PLACEHOLDER)',
+:  'command': 'str.upper("?")',
+:  'd': 'str.upper("xyz")',
+:  'data': 'xyz',
+:  'e': 'XYZ'}
+: XYZ
+
+** One call
+
+
+#+BEGIN_SRC python
+from pprint import pprint as pp
+def do(command, data):
+    a = command.replace('?', data)
+    b = eval(a, {})
+    pp(locals())
+    return b
+print(do("""str.upper('?')""", 'xyz'))
+
+
+#+END_SRC
+
+#+RESULTS:
+: {'a': "str.upper('xyz')",
+:  'b': 'XYZ',
+:  'command': "str.upper('?')",
+:  'data': 'xyz'}
+: XYZ
+
+** fstrings
+
+#+BEGIN_SRC shell
+printf Bob | pype $'f"I said, \'hello, {?}\'".lower()'
+#+END_SRC
+
+#+RESULTS:
+: i said, 'hello, bob'
+
 
 
 * TODO Add setup and teardown
