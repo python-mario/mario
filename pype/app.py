@@ -312,7 +312,7 @@ def _async_apply_map2(command, in_stream, imports, placeholder, autoimport):
     pipeline = _make_pipeline_strings(command, placeholder)
 
     for item in in_stream:
-        request(item, modules, pipeline)
+        yield request(item, modules, pipeline)
 
 
 def _async_main(
@@ -327,8 +327,10 @@ def _async_main(
         newlines='auto',
 ):
 
-    _async_apply_map2(mapper, in_stream, imports, placeholder, autoimport)
-
+    d = Deferred()
+    d.addCallback(lambda x: _async_apply_map2(mapper, x, imports, placeholder, autoimport))
+    d.addCallback(list)
+    d.callback(in_stream)
     print('about to run reactor')
     reactor.run()
 
