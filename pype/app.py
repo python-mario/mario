@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 
 from __future__ import generator_stop
 
@@ -17,7 +17,7 @@ import attr
 import click
 import toolz
 import treq
-from twisted.internet.defer import Deferred
+from twisted.internet.defer import Deferred, inlineCallbacks
 
 _PYPE_VALUE = '__PYPE_VALUE_'
 
@@ -71,7 +71,8 @@ class _StringScanner:
     def _maybe_update(self):
         if self._current_tokens and _is_name_token(self._current_tokens[-1]):
             if _is_name_token(self._current_tokens[0]):
-                self._identifier_strings.add(_tokens_to_string(self._current_tokens))
+                self._identifier_strings.add(
+                    _tokens_to_string(self._current_tokens))
             self._current_tokens = []
 
     def scan(self):
@@ -154,7 +155,8 @@ def _get_modules(commands, named_imports, autoimport):
     named_modules = _get_named_modules(named_imports)
     if not autoimport:
         return named_modules
-    autoimports = toolz.merge(_get_autoimports(command) for command in commands)
+    autoimports = toolz.merge(_get_autoimports(command)
+                              for command in commands)
     # named modules have priority
     modules = {**autoimports, **named_modules}
     return modules
@@ -227,8 +229,6 @@ def request(value, modules, pipeline):
 def _async_apply_map(command, in_stream, imports, placeholder, autoimport):
     modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder)
-
-    agent = Agent(reactor)
 
     for item in in_stream:
         request(item, modules, pipeline)
@@ -308,6 +308,32 @@ def _check_parsing(command, placeholder):
             '''.format(placeholder=placeholder, other=other))
 
 
+def _async_apply_map2(command, in_stream, imports, placeholder, autoimport):
+    modules = _get_modules([command], imports, autoimport)
+    pipeline = _make_pipeline_strings(command, placeholder)
+
+    for item in in_stream:
+        request(item, modules, pipeline)
+
+
+def _async_main(
+        mapper,
+        reducer=None,
+        postmap=None,
+        in_stream=None,
+        imports=(),
+        placeholder='?',
+        slurp=False,
+        autoimport=True,
+        newlines='auto',
+):
+
+    _async_apply_map2(mapper, in_stream, imports, placeholder, autoimport)
+
+    print('about to run reactor')
+    reactor.run()
+
+
 def main(  # pylint: disable=too-many-arguments
         mapper,
         reducer=None,
@@ -323,18 +349,35 @@ def main(  # pylint: disable=too-many-arguments
 
     _check_parsing(mapper, placeholder)
 
+    if do_async:
+        _async_main(
+            mapper=mapper,
+            reducer=reducer,
+            postmap=postmap,
+            in_stream=in_stream,
+            imports=imports,
+            placeholder=placeholder,
+            slurp=slurp,
+            autoimport=autoimport,
+            newlines=newlines,
+        )
+
     if slurp:
-        result = _apply_total(mapper, in_stream, imports, placeholder, autoimport)
+        result = _apply_total(mapper, in_stream, imports,
+                              placeholder, autoimport)
     else:
 
         if do_async:
 
-            result = _async_apply_map(mapper, in_stream, imports, placeholder, autoimport)
+            result = _async_apply_map(
+                mapper, in_stream, imports, placeholder, autoimport)
         else:
-            result = _apply_map(mapper, in_stream, imports, placeholder, autoimport)
+            result = _apply_map(mapper, in_stream, imports,
+                                placeholder, autoimport)
 
     if reducer is not None:
-        result = _apply_reduce(reducer, result, imports, placeholder, autoimport)
+        result = _apply_reduce(reducer, result, imports,
+                               placeholder, autoimport)
     if postmap is not None:
         result = _apply_map(postmap, result, imports, placeholder, autoimport)
 
