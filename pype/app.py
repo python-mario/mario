@@ -261,7 +261,7 @@ def run_segment(value, segment, modules):
     return eval(segment, modules, {_PYPE_VALUE: value})
 
 
-def request(value, modules, pipeline):
+def _async_apply_segment(value, modules, pipeline):
     d = Deferred()
     for pipeline_segment in pipeline:
         d.addCallback(run_segment, pipeline_segment, modules)
@@ -273,7 +273,7 @@ def _async_apply_map(command, in_stream, imports, placeholder, autoimport):
     modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder)
 
-    yield from (request(item, modules, pipeline) for item in in_stream)
+    yield from (_async_apply_segment(item, modules, pipeline) for item in in_stream)
 
 
 # TODO async reduce should fire on two callbacks rather than using a DeferredList
