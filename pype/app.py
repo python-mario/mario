@@ -299,8 +299,9 @@ def request(value, modules, pipeline):
     d = Deferred()
     for i, pipeline_segment in enumerate(pipeline):
         d.addCallback(run_segment, pipeline_segment, modules)
-        d.addCallback(lambda x, i=i: pprint(f'{i},{counter}: x is {x}') or x)
-    d.addErrback(err)
+        d.addCallbacks(
+            lambda x, i=i, counter=counter: print(f'pipeline_segment {i}; data item {counter};  x is {x}') or x,
+            err)
 
     d.callback(value)
     counter += 1
