@@ -17,11 +17,12 @@ import attr
 import click
 import toolz
 import treq
+from twisted.internet import reactor
 from twisted.internet.defer import Deferred, inlineCallbacks, DeferredList
+from twisted.python.log import err
+
 
 _PYPE_VALUE = '__PYPE_VALUE_'
-
-from twisted.python.log import err
 
 
 class PypeException(Exception):
@@ -183,28 +184,6 @@ def _apply_map(command, in_stream, imports, placeholder, autoimport):
     for line in in_stream:
         result = _apply_command_pipeline(line, modules, pipeline)
         yield result
-
-
-from pprint import pprint
-import inspect
-from io import BytesIO
-
-from twisted.internet import reactor
-from twisted.web.client import Agent, readBody
-from twisted.web.http_headers import Headers
-
-from twisted.web.client import FileBodyProducer
-
-
-def cbResponse(response):
-    d = readBody(response)
-    d.addCallback(bytes.decode)
-
-    return d
-
-
-def cbShutdown(ignored):
-    reactor.stop()
 
 
 def _apply_reduce(command, in_stream, imports, placeholder, autoimport):
