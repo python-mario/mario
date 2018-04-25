@@ -299,11 +299,12 @@ def _async_main(
         value for success, value in deferred_list))
     d.addCallback(lambda x: _apply_reduce(
         reducer, x, imports, placeholder, autoimport))
+    d.addCallbacks(lambda x: _async_apply_map(
+        postmap, x, imports, placeholder, autoimport), err)
     d.addCallback(list)
-    d.addCallback(print)
     d.addErrback(err)
+    # begin
     d.callback(in_stream)
-
     print('about to run reactor')
     reactor.run()
 
