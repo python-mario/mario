@@ -207,16 +207,6 @@ def cbShutdown(ignored):
     reactor.stop()
 
 
-def _async_apply_map(command, in_stream, imports, placeholder, autoimport):
-    modules = _get_modules([command], imports, autoimport)
-    pipeline = _make_pipeline_strings(command, placeholder)
-
-    for item in in_stream:
-        request(item, modules, pipeline)
-    print('about to run reactor')
-    reactor.run()
-
-
 def _apply_reduce(command, in_stream, imports, placeholder, autoimport):
 
     modules = _get_modules([command], imports, autoimport)
