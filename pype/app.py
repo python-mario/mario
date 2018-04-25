@@ -315,6 +315,9 @@ def _async_apply_map2(command, in_stream, imports, placeholder, autoimport):
     yield from (request(item, modules, pipeline) for item in in_stream)
 
 
+# TODO async reduce should fire on two callbacks
+
+
 def _async_main(
         mapper,
         reducer=None,
