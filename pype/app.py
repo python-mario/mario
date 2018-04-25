@@ -71,8 +71,7 @@ class _StringScanner:
     def _maybe_update(self):
         if self._current_tokens and _is_name_token(self._current_tokens[-1]):
             if _is_name_token(self._current_tokens[0]):
-                self._identifier_strings.add(
-                    _tokens_to_string(self._current_tokens))
+                self._identifier_strings.add(_tokens_to_string(self._current_tokens))
             self._current_tokens = []
 
     def scan(self):
@@ -155,8 +154,7 @@ def _get_modules(commands, named_imports, autoimport):
     named_modules = _get_named_modules(named_imports)
     if not autoimport:
         return named_modules
-    autoimports = toolz.merge(_get_autoimports(command)
-                              for command in commands)
+    autoimports = toolz.merge(_get_autoimports(command) for command in commands)
     # named modules have priority
     modules = {**autoimports, **named_modules}
     return modules
@@ -205,25 +203,6 @@ def cbResponse(response):
 
 def cbShutdown(ignored):
     reactor.stop()
-
-
-def run_segment(value, segment, modules):
-    return eval(segment, modules, {_PYPE_VALUE: value})
-
-
-counter = 0
-
-
-def request(value, modules, pipeline):
-    global counter
-    d = Deferred()
-    for i, pipeline_segment in enumerate(pipeline):
-        d.addCallback(run_segment, pipeline_segment, modules)
-        d.addCallback(lambda x, i=i: pprint(f'{i},{counter}: x is {x}') or x)
-    d.addErrback(err)
-
-    d.callback(value)
-    counter += 1
 
 
 def _async_apply_map(command, in_stream, imports, placeholder, autoimport):
@@ -308,6 +287,25 @@ def _check_parsing(command, placeholder):
             '''.format(placeholder=placeholder, other=other))
 
 
+def run_segment(value, segment, modules):
+    return eval(segment, modules, {_PYPE_VALUE: value})
+
+
+counter = 0
+
+
+def request(value, modules, pipeline):
+    global counter
+    d = Deferred()
+    for i, pipeline_segment in enumerate(pipeline):
+        d.addCallback(run_segment, pipeline_segment, modules)
+        d.addCallback(lambda x, i=i: pprint(f'{i},{counter}: x is {x}') or x)
+    d.addErrback(err)
+
+    d.callback(value)
+    counter += 1
+
+
 def _async_apply_map2(command, in_stream, imports, placeholder, autoimport):
     modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder)
@@ -363,21 +361,13 @@ def main(  # pylint: disable=too-many-arguments
         )
 
     if slurp:
-        result = _apply_total(mapper, in_stream, imports,
-                              placeholder, autoimport)
+        result = _apply_total(mapper, in_stream, imports, placeholder, autoimport)
     else:
 
-        if do_async:
-
-            result = _async_apply_map(
-                mapper, in_stream, imports, placeholder, autoimport)
-        else:
-            result = _apply_map(mapper, in_stream, imports,
-                                placeholder, autoimport)
+        result = _apply_map(mapper, in_stream, imports, placeholder, autoimport)
 
     if reducer is not None:
-        result = _apply_reduce(reducer, result, imports,
-                               placeholder, autoimport)
+        result = _apply_reduce(reducer, result, imports, placeholder, autoimport)
     if postmap is not None:
         result = _apply_map(postmap, result, imports, placeholder, autoimport)
 
