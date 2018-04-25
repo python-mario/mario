@@ -326,8 +326,6 @@ def _async_main(
         autoimport=True,
         newlines='auto',
 ):
-    from functools import reduce
-    import operator
     d = Deferred()
     d.addCallback(lambda x: _async_apply_map2(
         mapper, x, imports, placeholder, autoimport))
@@ -337,8 +335,6 @@ def _async_main(
         value for success, value in deferred_list))
     d.addCallback(lambda x: _apply_reduce(
         reducer, x, imports, placeholder, autoimport))
-    d.addCallback(list)
-    # d.addCallback(lambda x: reduce(operator.add, x))
     d.addCallback(list)
     d.addCallback(print)
     d.addErrback(err)
