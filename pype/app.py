@@ -16,9 +16,12 @@ from tokenize import tokenize, untokenize
 import attr
 import click
 import toolz
+import treq
 from twisted.internet.defer import Deferred
 
 _PYPE_VALUE = '__PYPE_VALUE_'
+
+from twisted.python.log import err
 
 
 class PypeException(Exception):
@@ -180,33 +183,6 @@ def _apply_map(command, in_stream, imports, placeholder, autoimport):
         yield result
 
 
-def _do_async(command, in_stream, imports, placeholder, autoimport):
-    from twisted.internet import reactor
-    from twisted.web.client import Agent
-    from twisted.web.http_headers import Headers
-
-    from stringprod import StringProducer
-
-    agent = Agent(reactor)
-    body = StringProducer("hello, world")
-    d = agent.request(
-        'GET', 'http://example.com/',
-        Headers({'User-Agent': ['Twisted Web Client Example'], 'Content-Type':
-                 ['text/x-greeting']}), body)
-
-    def cbResponse(ignored):
-        print('Response received')
-
-    d.addCallback(cbResponse)
-
-    def cbShutdown(ignored):
-        reactor.stop()
-
-    d.addBoth(cbShutdown)
-
-    reactor.run()
-
-
 from pprint import pprint
 import inspect
 from io import BytesIO
@@ -220,7 +196,7 @@ from twisted.web.client import FileBodyProducer
 
 def cbResponse(response):
     d = readBody(response)
-    d.addCallbacks(bytes.decode, lambda x: print('Error', x))
+    d.addCallback(bytes.decode)
 
     return d
 
@@ -233,15 +209,19 @@ def run_segment(value, segment, modules):
     return eval(segment, modules, {_PYPE_VALUE: value})
 
 
-def request(agent, i, modules, pipeline):
-    import treq
+counter = 0
+
+
+def request(value, modules, pipeline):
+    global counter
     d = Deferred()
-    for pipeline_segment in pipeline:
-        d.addCallback(treq.get)
-        d.addCallback(treq.text_content)
+    for i, pipeline_segment in enumerate(pipeline):
         d.addCallback(run_segment, pipeline_segment, modules)
-        d.addCallback(pprint)
-    d.callback(i)
+        d.addCallback(lambda x, i=i: pprint(f'{i},{counter}: x is {x}') or x)
+    d.addErrback(err)
+
+    d.callback(value)
+    counter += 1
 
 
 def _async_apply_map(command, in_stream, imports, placeholder, autoimport):
@@ -251,7 +231,7 @@ def _async_apply_map(command, in_stream, imports, placeholder, autoimport):
     agent = Agent(reactor)
 
     for item in in_stream:
-        request(agent, item, modules, pipeline)
+        request(item, modules, pipeline)
     print('about to run reactor')
     reactor.run()
 
