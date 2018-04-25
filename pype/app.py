@@ -308,9 +308,11 @@ def _async_main(
             value for success, value in deferred_list))
         d.addCallback(lambda x: _apply_reduce(
             reducer, x, imports, placeholder, autoimport))
+
     if postmap:
         d.addCallbacks(lambda x: _async_apply_map(
             postmap, x, imports, placeholder, autoimport), err)
+
     d.addCallback(list, err)
     d.addBoth(lambda _: reactor.stop())
     # begin
