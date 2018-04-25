@@ -290,6 +290,7 @@ def _async_main(
         slurp=False,
         autoimport=True,
         newlines='auto',
+        reactor=reactor,
 ):
     d = Deferred()
     d.addCallback(lambda x: _async_apply_map(
@@ -321,6 +322,7 @@ def main(  # pylint: disable=too-many-arguments
         autoimport=True,
         newlines='auto',
         do_async=False,
+        reactor=reactor,
 ):
 
     _check_parsing(mapper, placeholder)
@@ -336,6 +338,7 @@ def main(  # pylint: disable=too-many-arguments
             slurp=slurp,
             autoimport=autoimport,
             newlines=newlines,
+            reactor=reactor,
         )
 
     if slurp:
