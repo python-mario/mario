@@ -276,6 +276,11 @@ def _async_apply_map(command, in_stream, imports, placeholder, autoimport):
     yield from (_async_apply_segment(item, modules, pipeline) for item in in_stream)
 
 
+def _async_apply_reduce(command, in_stream, imports, placeholder, autoimport):
+    modules = _get_modules([command], imports, autoimport)
+    pipeline = _make_pipeline_strings(command, placeholder, star_args=True)
+
+
 # TODO make reduce async, using a function _async_apply_reduce
 # TODO async reduce should fire on two callbacks rather than using a DeferredList
 
@@ -295,14 +300,16 @@ def _async_main(
     d = Deferred()
     d.addCallback(lambda x: _async_apply_map(
         mapper, x, imports, placeholder, autoimport))
-    d.addCallback(DeferredList)
-    d.addCallback(iter)
-    d.addCallback(lambda deferred_list: (
-        value for success, value in deferred_list))
-    d.addCallback(lambda x: _apply_reduce(
-        reducer, x, imports, placeholder, autoimport))
-    d.addCallbacks(lambda x: _async_apply_map(
-        postmap, x, imports, placeholder, autoimport), err)
+    if reducer:
+        d.addCallback(DeferredList)
+        d.addCallback(iter)
+        d.addCallback(lambda deferred_list: (
+            value for success, value in deferred_list))
+        d.addCallback(lambda x: _apply_reduce(
+            reducer, x, imports, placeholder, autoimport))
+    if postmap:
+        d.addCallbacks(lambda x: _async_apply_map(
+            postmap, x, imports, placeholder, autoimport), err)
     d.addCallback(list)
     d.addErrback(err)
     d.addBoth(lambda _: reactor.stop())
