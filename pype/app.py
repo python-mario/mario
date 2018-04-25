@@ -283,7 +283,7 @@ def _async_apply_reduce(command, in_stream, imports, placeholder, autoimport):
 
 # TODO make reduce async, using a function _async_apply_reduce
 # TODO async reduce should fire on two callbacks rather than using a DeferredList
-
+# TODO add --nonstop option like tail -F
 
 def _async_main(
         mapper,
