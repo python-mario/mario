@@ -305,6 +305,7 @@ def _async_main(
         postmap, x, imports, placeholder, autoimport), err)
     d.addCallback(list)
     d.addErrback(err)
+    d.addBoth(lambda _: reactor.stop())
     # begin
     d.callback(in_stream)
     print('about to run reactor')
@@ -340,6 +341,7 @@ def main(  # pylint: disable=too-many-arguments
             newlines=newlines,
             reactor=reactor,
         )
+        sys.exit()
 
     if slurp:
         result = _apply_total(mapper, in_stream, imports,
