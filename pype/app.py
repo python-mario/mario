@@ -276,6 +276,7 @@ def _async_apply_map(command, in_stream, imports, placeholder, autoimport):
     yield from (_async_apply_segment(item, modules, pipeline) for item in in_stream)
 
 
+# TODO make reduce async, using a function _async_apply_reduce
 # TODO async reduce should fire on two callbacks rather than using a DeferredList
 
 
