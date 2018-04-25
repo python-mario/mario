@@ -274,7 +274,7 @@ def request(value, modules, pipeline):
     return d
 
 
-def _async_apply_map2(command, in_stream, imports, placeholder, autoimport):
+def _async_apply_map(command, in_stream, imports, placeholder, autoimport):
     modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder)
 
@@ -296,7 +296,7 @@ def _async_main(
         newlines='auto',
 ):
     d = Deferred()
-    d.addCallback(lambda x: _async_apply_map2(
+    d.addCallback(lambda x: _async_apply_map(
         mapper, x, imports, placeholder, autoimport))
     d.addCallback(DeferredList)
     d.addCallback(iter)
