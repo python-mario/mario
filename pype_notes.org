@@ -47,7 +47,7 @@ pype ' str.split || tmp_client.get_many || list || pprint.pprint  ' < pype/testi
 pype --async ' str.split || tmp_client.get_many || list || pprint.pprint  ' < pype/testing/data/inline_urls.txt
 #+END_SRC
 
-** Async notes
+** async pype notes
 
 #+BEGIN_SRC python
 from pprint import pprint
@@ -118,10 +118,10 @@ main()
 ** Async-main
 
 #+BEGIN_SRC shell
-pype --async ' str.upper || ?.rstrip()  || treq.get || treq.text_content ' max 're.search(r"(\d+)", ?) || ?.group(1) || int || pprint.pprint' <<<'
+pype --async ' str.upper || ?.rstrip()  || treq.get || treq.text_content ' max 're.search(r"(\d+)", ?) || ?.group(1) || int || pprint.pprint' <<EOF
 http://localhost:8080/a1
 http://localhost:8080/a2
-'
+EOF
 about to run reactor
 2
 [<Deferred at 0x7fa9b26f9358 current result: None>]
@@ -381,3 +381,9 @@ from pype.app import _string_to_tokens
 s = """f'abc{?}'"""
 t = _string_to_tokens(s)
 list(t)
+* Async notes :notes:
+
+#+BEGIN_SRC python
+print(1)
+5
+#+END_SRC
