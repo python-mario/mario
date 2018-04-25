@@ -261,16 +261,11 @@ def run_segment(value, segment, modules):
     return eval(segment, modules, {_PYPE_VALUE: value})
 
 
-counter = 0
-
-
 def request(value, modules, pipeline):
-    global counter
     d = Deferred()
-    for i, pipeline_segment in enumerate(pipeline):
+    for pipeline_segment in pipeline:
         d.addCallback(run_segment, pipeline_segment, modules)
     d.callback(value)
-    counter += 1
     return d
 
 
