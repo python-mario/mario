@@ -221,11 +221,8 @@ def _apply_reduce(command, in_stream, imports, placeholder, autoimport):
 
     modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder, star_args=True)
-    lstream, in_stream = itertools.tee(in_stream)
-    lstream = list(lstream)
     value = next(in_stream)
     for item in in_stream:
-        pprint(lstream)
         for step in pipeline:
             value = eval(step, modules, {_PYPE_VALUE: (value, item)})
     yield value
@@ -303,11 +300,6 @@ def request(value, modules, pipeline):
     d = Deferred()
     for i, pipeline_segment in enumerate(pipeline):
         d.addCallback(run_segment, pipeline_segment, modules)
-        d.addCallbacks(
-            lambda x, i=i, counter=counter: print(
-                f'pipeline_segment {i}; data item {counter};  x is {x}') or x,
-            err)
-
     d.callback(value)
     counter += 1
     return d
@@ -341,10 +333,14 @@ def _async_main(
         mapper, x, imports, placeholder, autoimport))
     d.addCallback(DeferredList)
     d.addCallback(iter)
+    d.addCallback(lambda deferred_list: (
+        value for success, value in deferred_list))
     d.addCallback(lambda x: _apply_reduce(
         reducer, x, imports, placeholder, autoimport))
+    d.addCallback(list)
     # d.addCallback(lambda x: reduce(operator.add, x))
-    d.addCallback(lambda x: print('AAAAAAAAAAAAAAAAAAAAAAAA', list(x)))
+    d.addCallback(list)
+    d.addCallback(print)
     d.addErrback(err)
     d.callback(in_stream)
 
