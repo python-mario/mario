@@ -114,6 +114,39 @@ main()
 'Hello, 9. You are client number 141 for this server.'
 
 #+END_SRC
+
+** Async-main
+
+#+BEGIN_SRC shell
+pype --async ' str.upper || ?.rstrip()  || treq.get || treq.text_content ' max 're.search(r"(\d+)", ?) || ?.group(1) || int || pprint.pprint' <<<'
+http://localhost:8080/a1
+http://localhost:8080/a2
+'
+about to run reactor
+2
+[<Deferred at 0x7fa9b26f9358 current result: None>]
+
+#+END_SRC
+
+
+#+BEGIN_SRC shell
+pype --async ' str.upper || ?.rstrip()  || treq.get || treq.text_content  '  max < urls.txt
+about to run reactor
+['Hello, REQUESTER_300. You are client number 33797 for this server.']
+
+#+END_SRC
+
+#+BEGIN_SRC shell
+ pype --async ' str.upper || ?.rstrip()  || treq.get || treq.text_content ' <<EOFhttp://localhost:8080/a1
+http://localhost:8080/a2
+EOF
+
+about to run reactor
+[(True, 'Hello, A1. You are client number 34399 for this server.'), (True, 'Hello, A2. You are client number 34399 for this server.')]
+
+#+END_SRC
+
+
 * TODO Fix quote syntax
 
 ** TODO Use =parso=.
