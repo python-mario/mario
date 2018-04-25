@@ -71,7 +71,8 @@ class _StringScanner:
     def _maybe_update(self):
         if self._current_tokens and _is_name_token(self._current_tokens[-1]):
             if _is_name_token(self._current_tokens[0]):
-                self._identifier_strings.add(_tokens_to_string(self._current_tokens))
+                self._identifier_strings.add(
+                    _tokens_to_string(self._current_tokens))
             self._current_tokens = []
 
     def scan(self):
@@ -154,7 +155,8 @@ def _get_modules(commands, named_imports, autoimport):
     named_modules = _get_named_modules(named_imports)
     if not autoimport:
         return named_modules
-    autoimports = toolz.merge(_get_autoimports(command) for command in commands)
+    autoimports = toolz.merge(_get_autoimports(command)
+                              for command in commands)
     # named modules have priority
     modules = {**autoimports, **named_modules}
     return modules
@@ -219,9 +221,11 @@ def _apply_reduce(command, in_stream, imports, placeholder, autoimport):
 
     modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder, star_args=True)
-
+    lstream, in_stream = itertools.tee(in_stream)
+    lstream = list(lstream)
     value = next(in_stream)
     for item in in_stream:
+        pprint(lstream)
         for step in pipeline:
             value = eval(step, modules, {_PYPE_VALUE: (value, item)})
     yield value
@@ -300,7 +304,8 @@ def request(value, modules, pipeline):
     for i, pipeline_segment in enumerate(pipeline):
         d.addCallback(run_segment, pipeline_segment, modules)
         d.addCallbacks(
-            lambda x, i=i, counter=counter: print(f'pipeline_segment {i}; data item {counter};  x is {x}') or x,
+            lambda x, i=i, counter=counter: print(
+                f'pipeline_segment {i}; data item {counter};  x is {x}') or x,
             err)
 
     d.callback(value)
@@ -332,9 +337,13 @@ def _async_main(
     from functools import reduce
     import operator
     d = Deferred()
-    d.addCallback(lambda x: _async_apply_map2(mapper, x, imports, placeholder, autoimport))
+    d.addCallback(lambda x: _async_apply_map2(
+        mapper, x, imports, placeholder, autoimport))
     d.addCallback(DeferredList)
-    d.addCallback(lambda x: reduce(operator.add, x))
+    d.addCallback(iter)
+    d.addCallback(lambda x: _apply_reduce(
+        reducer, x, imports, placeholder, autoimport))
+    # d.addCallback(lambda x: reduce(operator.add, x))
     d.addCallback(lambda x: print('AAAAAAAAAAAAAAAAAAAAAAAA', list(x)))
     d.addErrback(err)
     d.callback(in_stream)
@@ -372,13 +381,16 @@ def main(  # pylint: disable=too-many-arguments
         )
 
     if slurp:
-        result = _apply_total(mapper, in_stream, imports, placeholder, autoimport)
+        result = _apply_total(mapper, in_stream, imports,
+                              placeholder, autoimport)
     else:
 
-        result = _apply_map(mapper, in_stream, imports, placeholder, autoimport)
+        result = _apply_map(mapper, in_stream, imports,
+                            placeholder, autoimport)
 
     if reducer is not None:
-        result = _apply_reduce(reducer, result, imports, placeholder, autoimport)
+        result = _apply_reduce(reducer, result, imports,
+                               placeholder, autoimport)
     if postmap is not None:
         result = _apply_map(postmap, result, imports, placeholder, autoimport)
 
