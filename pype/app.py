@@ -313,7 +313,8 @@ def _async_main(
         d.addCallbacks(lambda x: _async_apply_map(
             postmap, x, imports, placeholder, autoimport), err)
 
-    d.addCallback(list, err)
+    d.addCallbacks(list, err)
+    d.addCallbacks(print, err)
     d.addBoth(lambda _: reactor.stop())
     # begin
     d.callback(in_stream)
