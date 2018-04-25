@@ -17,7 +17,7 @@ import attr
 import click
 import toolz
 import treq
-from twisted.internet.defer import Deferred, inlineCallbacks
+from twisted.internet.defer import Deferred, inlineCallbacks, DeferredList
 
 _PYPE_VALUE = '__PYPE_VALUE_'
 
@@ -305,14 +305,14 @@ def request(value, modules, pipeline):
 
     d.callback(value)
     counter += 1
+    return d
 
 
 def _async_apply_map2(command, in_stream, imports, placeholder, autoimport):
     modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder)
 
-    for item in in_stream:
-        yield request(item, modules, pipeline)
+    yield from (request(item, modules, pipeline) for item in in_stream)
 
 
 def _async_main(
@@ -326,11 +326,16 @@ def _async_main(
         autoimport=True,
         newlines='auto',
 ):
-
+    from functools import reduce
+    import operator
     d = Deferred()
     d.addCallback(lambda x: _async_apply_map2(mapper, x, imports, placeholder, autoimport))
-    d.addCallback(list)
+    d.addCallback(DeferredList)
+    d.addCallback(lambda x: reduce(operator.add, x))
+    d.addCallback(lambda x: print('AAAAAAAAAAAAAAAAAAAAAAAA', list(x)))
+    d.addErrback(err)
     d.callback(in_stream)
+
     print('about to run reactor')
     reactor.run()
 
