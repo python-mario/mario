@@ -41,6 +41,43 @@ def test_make_pipeline(command, expected):
 
 
 @pytest.mark.parametrize(
+    'command_string,symbol,expected',
+    [
+        ('int', '?', 'int(?)'),
+        ('int(?)', '?', 'int(?)'),
+        ('str.upper', '?', 'str.upper(?)'),
+        ('str.upper(?)', '?', 'str.upper(?)'),
+        ('int', '$', 'int($)'),
+    ],
+)
+def test_add_short_placeholder(command_string, symbol, expected):
+    assert pype.app._add_short_placeholder(command_string, symbol) == expected
+
+
+def test_command_string_to_function():
+    assert pype.app._command_string_to_function('int')('4') == 4
+    assert pype.app._command_string_to_function('str.upper')('abc') == 'ABC'
+
+
+@pytest.mark.parametrize(
+    'pipestring, modules, value, expected',
+    [
+        ('str.upper', None, 'abc', 'ABC'),
+        ('str.upper || ? + "z" ', None, 'abc', 'ABCz'),
+        ('str.upper || ? + "z" || set', None, 'abc', set('ABCz')),
+        (
+            'str.upper || collections.Counter || dict',
+            {'collections': collections},
+            'abbccc',
+            {'A': 1, 'B': 2, 'C': 3},
+        ),
+    ],
+)
+def test_pipestring_to_function(pipestring, modules, value, expected):
+    assert pype.app._pipestring_to_function(pipestring, modules)(value) == expected
+
+
+@pytest.mark.parametrize(
     'name, expected',
     [
         ('str.upper', {}),
@@ -311,17 +348,25 @@ def test_cli_autoimport_placeholder(string, runner):
 @pytest.mark.parametrize(
     'args, in_stream, expected',
     [
-        ([
-            'str.replace(?, ".", "!")',
-            '?',
-            '?',
-        ], 'a.b.c\n', 'a!b!c\n'),
-        ([
-            '--placeholder=$',
-            'str.replace($, ".", "!")',
-            '$',
-            '$',
-        ], 'a.b.c\n', 'a!b!c\n'),
+        (
+            [
+                'str.replace(?, ".", "!")',
+                '?',
+                '?',
+            ],
+            'a.b.c\n',
+            'a!b!c\n',
+        ),
+        (
+            [
+                '--placeholder=$',
+                'str.replace($, ".", "!")',
+                '$',
+                '$',
+            ],
+            'a.b.c\n',
+            'a!b!c\n',
+        ),
         (
             [
                 '-icollections',
