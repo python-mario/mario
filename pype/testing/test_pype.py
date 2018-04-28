@@ -360,8 +360,6 @@ def test_cli_autoimport_placeholder(string, runner):
         (
             [
                 'str.replace(?, ".", "!")',
-                '?',
-                '?',
             ],
             'a.b.c\n',
             'a!b!c\n',
@@ -370,8 +368,6 @@ def test_cli_autoimport_placeholder(string, runner):
             [
                 '--placeholder=$',
                 'str.replace($, ".", "!")',
-                '$',
-                '$',
             ],
             'a.b.c\n',
             'a!b!c\n',

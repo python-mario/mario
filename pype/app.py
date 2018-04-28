@@ -331,18 +331,15 @@ def _do_apply(command, in_stream, imports, placeholder, autoimport):
 
 def _async_main(
         mapper,
-        reducer=None,
-        postmap=None,
         in_stream=None,
         imports=(),
         placeholder='?',
-        slurp=False,
         autoimport=True,
         newlines='auto',
         reactor=reactor,
 ):
 
-    commands = (x for x in [mapper, reducer, postmap] if x)
+    commands = (x for x in [mapper] if x)
     modules = _get_modules(commands, imports, autoimport)
     mapper_functions = _pipestring_to_functions(mapper, modules, placeholder)
 
@@ -361,12 +358,9 @@ def _async_main(
 
 def main(  # pylint: disable=too-many-arguments
         mapper=None,
-        reducer=None,
-        postmap=None,
         in_stream=None,
         imports=(),
         placeholder='?',
-        slurp=False,
         autoimport=True,
         newlines='auto',
         do_async=False,
@@ -379,19 +373,16 @@ def main(  # pylint: disable=too-many-arguments
     if do_async:
         _async_main(
             mapper=mapper,
-            reducer=reducer,
-            postmap=postmap,
             in_stream=in_stream,
             imports=imports,
             placeholder=placeholder,
-            slurp=slurp,
             autoimport=autoimport,
             newlines=newlines,
             reactor=reactor,
         )
         sys.exit()
 
-    commands = (x for x in [mapper, reducer, postmap, apply] if x)
+    commands = (x for x in [mapper, apply] if x)
     modules = _get_modules(commands, imports, autoimport)
 
     if apply:
@@ -410,13 +401,8 @@ def main(  # pylint: disable=too-many-arguments
 
 @click.command()
 @click.argument('command', default=None, required=False)
-@click.argument('reducer', default=None, required=False)
-@click.argument('postmap', default=None, required=False)
-@click.option('--apply', default=None)
 @click.option(
-    '--slurp',
-    '-s',
-    is_flag=True,
+    '--apply',
     help='Apply function to entire input together instead of processing one line at a time.')
 @click.option(
     '--newlines',
@@ -445,10 +431,7 @@ def main(  # pylint: disable=too-many-arguments
 def cli(
         imports,
         command,
-        reducer,
         placeholder,
-        slurp,
-        postmap,
         autoimport,
         newlines,
         do_async,
@@ -487,17 +470,7 @@ $ printf 'a\\nab\\nabc\\n' | pype -t -i json -i toolz -i collections 'collection
     """
     in_stream = click.get_text_stream('stdin')
     gen = main(
-        command,
-        reducer,
-        postmap,
-        in_stream,
-        imports,
-        placeholder,
-        slurp,
-        autoimport,
-        newlines,
-        do_async,
-        apply=apply)
+        command, in_stream, imports, placeholder, autoimport, newlines, do_async, apply=apply)
 
     for line in gen:
         click.echo(line, nl=False)
