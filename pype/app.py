@@ -391,7 +391,7 @@ def main(  # pylint: disable=too-many-arguments
         )
         sys.exit()
 
-    commands = (x for x in [mapper, reducer, postmap] if x)
+    commands = (x for x in [mapper, reducer, postmap, apply] if x)
     modules = _get_modules(commands, imports, autoimport)
 
     if slurp:

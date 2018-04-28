@@ -464,10 +464,19 @@ def test_cli_autoimport_placeholder(string, runner):
 (2, (0, 'a\\n'))
 """),
         ),
+        (
+            [
+                '--newlines=no',
+                "--apply",
+                'functools.partial(map, str.upper)',
+            ],
+            'a\nbb\nccc\n',
+            'A\nBB\nCCC\n',
+        ),
     ],
 )
 def test_cli(args, in_stream, expected, runner):
 
     result = runner.invoke(pype.app.cli, args, input=in_stream)
-    assert result.output == expected
     assert not result.exception
+    assert result.output == expected
