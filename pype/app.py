@@ -166,13 +166,6 @@ def _get_modules(commands, named_imports, autoimport):
     return modules
 
 
-def _do_command_pipeline(value, modules, pipeline):
-    assert modules is not None
-    for step in pipeline:
-        value = eval(step, modules, {_PYPE_VALUE: value})
-    return value
-
-
 def _maybe_add_newlines(iterator, newlines_setting='auto'):
 
     if newlines_setting == 'auto':
@@ -274,13 +267,6 @@ def _pipestring_to_functions(multicommand_string, modules=None, symbol='?', sepa
 def _pipestring_to_function(multicommand_string, modules=None, symbol='?', separator='||'):
     functions = _pipestring_to_functions(multicommand_string, modules, symbol, separator)
     return toolz.compose(*reversed(functions))
-
-
-def _do_apply(command, in_stream, imports, placeholder, autoimport):
-    modules = _get_modules([command], imports, autoimport)
-    pipeline = _make_pipeline_strings(command, placeholder)
-    result = _do_command_pipeline(in_stream, modules, pipeline)
-    return result
 
 
 def _async_main(
