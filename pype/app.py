@@ -360,7 +360,7 @@ def _async_main(
 
 
 def main(  # pylint: disable=too-many-arguments
-        mapper,
+        mapper=None,
         reducer=None,
         postmap=None,
         in_stream=None,

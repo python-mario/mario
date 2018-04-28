@@ -233,6 +233,14 @@ def test_get_identifiers_matches_str_isidentifier(string):
             },
             ['abc\n'],
         ),
+        (
+            {
+                'newlines': 'no',
+                'apply': 'functools.partial(map, str.upper)',
+                'in_stream': ['a\nbb\nccc\n'],
+            },
+            ['A\nBB\nCCC\n'],
+        ),
     ],
 )
 def test_main_example(kwargs, expected):
@@ -406,14 +414,6 @@ def test_cli_autoimport_placeholder(string, runner):
         ),
         (
             [
-                ' str.replace(?, ".", "!") || collections.Counter',
-                'toolz.merge_with(sum, ?)',
-            ],
-            "a.b.c\nd.e.f\n",
-            "{'a': 1, '!': 4, 'b': 1, 'c': 1, '\\n': 2, 'd': 1, 'e': 1, 'f': 1}\n",
-        ),
-        (
-            [
                 'str.replace(?, ".", "!") || collections.Counter(?) || json.dumps(?) ',
             ],
             'a.b.c\n',
@@ -479,4 +479,5 @@ def test_cli(args, in_stream, expected, runner):
 
     result = runner.invoke(pype.app.cli, args, input=in_stream)
     assert not result.exception
+    assert result.exit_code == 0
     assert result.output == expected
