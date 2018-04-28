@@ -302,12 +302,24 @@ def _command_string_to_function(command, modules=None, symbol='?'):
     return function
 
 
-def _pipestring_to_function(multicommand_string, modules=None, symbol='?', separator='||'):
+def _pipestring_to_functions(multicommand_string, modules=None, symbol='?', separator='||'):
     command_strings = multicommand_string.split(separator)
     functions = []
     for command_string in command_strings:
         functions.append(_command_string_to_function(command_string, modules, symbol))
+    return functions
+
+
+def _pipestring_to_function(multicommand_string, modules=None, symbol='?', separator='||'):
+    functions = _pipestring_to_functions(multicommand_string, modules, symbol, separator)
     return toolz.compose(*reversed(functions))
+
+
+# def _async_do_item(item, function):
+#     d = Deferred()
+#     d.addCallback(function)
+#     d.addCallbacks(print, err)
+#     d.callback(item)
 
 
 def _async_main(
@@ -322,24 +334,27 @@ def _async_main(
         newlines='auto',
         reactor=reactor,
 ):
-    d = Deferred()
-    d.addCallback(lambda x: _async_apply_map(mapper, x, imports, placeholder, autoimport))
-    d.addCallback(DeferredList)
-    d.addCallback(iter)
 
-    if reducer:
-        d.addCallback(lambda deferred_list: (value for success, value in deferred_list))
-        d.addCallback(lambda x: _apply_reduce(reducer, x, imports, placeholder, autoimport))
+    commands = (x for x in [mapper, reducer, postmap] if x)
+    modules = _get_modules(commands, imports, autoimport)
+    mapper_functions = _pipestring_to_functions(mapper, modules, placeholder)
 
-    if postmap:
-        d.addCallbacks(lambda x: _async_apply_map(postmap, x, imports, placeholder, autoimport),
-                       err)
+    data = []
 
-    d.addCallbacks(list, err)
-    d.addCallbacks(print, err)
-    d.addBoth(lambda _: reactor.stop())
-    # begin
-    d.callback(in_stream)
+    def debug(x, function):
+        data.append(x)
+        return function(x)
+
+    for item in in_stream:
+        print(item)
+        d = Deferred()
+        for function in mapper_functions:
+            print(function)
+            d.addCallback(debug, function)
+        d.addCallbacks(print, err)
+
+        d.callback(item)
+
     print('about to run reactor')
     reactor.run()
 
