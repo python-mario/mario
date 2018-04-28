@@ -394,16 +394,12 @@ def main(  # pylint: disable=too-many-arguments
     commands = (x for x in [mapper, reducer, postmap, apply] if x)
     modules = _get_modules(commands, imports, autoimport)
 
-    if slurp:
-        result = _do_total(mapper, in_stream, imports, placeholder, autoimport)
-    elif apply:
+    if apply:
         apply_function = _pipestring_to_function(apply, modules, placeholder)
         result = apply_function(in_stream)
 
     else:
-
         mapper_function = _pipestring_to_function(mapper, modules, placeholder)
-
         result = map(mapper_function, in_stream)
 
     result = _maybe_add_newlines(result, newlines)
