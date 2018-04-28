@@ -279,11 +279,6 @@ def _async_do_map(command, in_stream, imports, placeholder, autoimport):
     yield from (_async_do_segment(item, modules, pipeline) for item in in_stream)
 
 
-def _async_do_reduce(command, in_stream, imports, placeholder, autoimport):
-    modules = _get_modules([command], imports, autoimport)
-    pipeline = _make_pipeline_strings(command, placeholder, star_args=True)
-
-
 # TODO make reduce async, using a function _async_do_reduce
 # TODO async reduce should fire on two callbacks rather than using a DeferredList
 # TODO add --nonstop option like tail -F
@@ -313,13 +308,6 @@ def _pipestring_to_functions(multicommand_string, modules=None, symbol='?', sepa
 def _pipestring_to_function(multicommand_string, modules=None, symbol='?', separator='||'):
     functions = _pipestring_to_functions(multicommand_string, modules, symbol, separator)
     return toolz.compose(*reversed(functions))
-
-
-# def _async_do_item(item, function):
-#     d = Deferred()
-#     d.addCallback(function)
-#     d.addCallbacks(print, err)
-#     d.callback(item)
 
 
 def _do_apply(command, in_stream, imports, placeholder, autoimport):
