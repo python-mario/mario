@@ -406,11 +406,6 @@ def main(  # pylint: disable=too-many-arguments
 
         result = map(mapper_function, in_stream)
 
-    if reducer is not None:
-        result = _do_reduce(reducer, result, imports, placeholder, autoimport)
-    if postmap is not None:
-        result = _do_map(postmap, result, imports, placeholder, autoimport)
-
     result = _maybe_add_newlines(result, newlines)
 
     for item in result:
