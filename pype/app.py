@@ -302,8 +302,8 @@ def _command_string_to_function(command, modules=None, symbol='?'):
     return function
 
 
-def _pipestring_to_function(multicommand_string, modules=None, symbol='?'):
-    command_strings = multicommand_string.split('||')
+def _pipestring_to_function(multicommand_string, modules=None, symbol='?', separator='||'):
+    command_strings = multicommand_string.split(separator)
     functions = []
     for command_string in command_strings:
         functions.append(_command_string_to_function(command_string, modules, symbol))
