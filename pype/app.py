@@ -173,33 +173,6 @@ def _do_command_pipeline(value, modules, pipeline):
     return value
 
 
-def _do_total(command, in_stream, imports, placeholder, autoimport):
-    modules = _get_modules([command], imports, autoimport)
-    pipeline = _make_pipeline_strings(command, placeholder)
-    string = in_stream.read()
-    result = _do_command_pipeline(string, modules, pipeline)
-    yield result
-
-
-def _do_map(command, in_stream, imports, placeholder, autoimport):
-    modules = _get_modules([command], imports, autoimport)
-    pipeline = _make_pipeline_strings(command, placeholder)
-    for line in in_stream:
-        result = _do_command_pipeline(line, modules, pipeline)
-        yield result
-
-
-def _do_reduce(command, in_stream, imports, placeholder, autoimport):
-
-    modules = _get_modules([command], imports, autoimport)
-    pipeline = _make_pipeline_strings(command, placeholder, star_args=True)
-    value = next(in_stream)
-    for item in in_stream:
-        for step in pipeline:
-            value = eval(step, modules, {_PYPE_VALUE: (value, item)})
-    yield value
-
-
 def _maybe_add_newlines(iterator, newlines_setting='auto'):
 
     if newlines_setting == 'auto':
