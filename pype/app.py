@@ -339,18 +339,11 @@ def _async_main(
     modules = _get_modules(commands, imports, autoimport)
     mapper_functions = _pipestring_to_functions(mapper, modules, placeholder)
 
-    data = []
-
-    def debug(x, function):
-        data.append(x)
-        return function(x)
-
     for item in in_stream:
         print(item)
         d = Deferred()
         for function in mapper_functions:
-            print(function)
-            d.addCallback(debug, function)
+            d.addCallback(function)
         d.addCallbacks(print, err)
 
         d.callback(item)
