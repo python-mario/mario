@@ -272,13 +272,6 @@ def _async_do_segment(value, modules, pipeline):
     return d
 
 
-def _async_do_map(command, in_stream, imports, placeholder, autoimport):
-    modules = _get_modules([command], imports, autoimport)
-    pipeline = _make_pipeline_strings(command, placeholder)
-
-    yield from (_async_do_segment(item, modules, pipeline) for item in in_stream)
-
-
 # TODO make reduce async, using a function _async_do_reduce
 # TODO async reduce should fire on two callbacks rather than using a DeferredList
 # TODO add --nonstop option like tail -F
