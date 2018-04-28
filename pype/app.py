@@ -166,30 +166,30 @@ def _get_modules(commands, named_imports, autoimport):
     return modules
 
 
-def _apply_command_pipeline(value, modules, pipeline):
+def _do_command_pipeline(value, modules, pipeline):
     assert modules is not None
     for step in pipeline:
         value = eval(step, modules, {_PYPE_VALUE: value})
     return value
 
 
-def _apply_total(command, in_stream, imports, placeholder, autoimport):
+def _do_total(command, in_stream, imports, placeholder, autoimport):
     modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder)
     string = in_stream.read()
-    result = _apply_command_pipeline(string, modules, pipeline)
+    result = _do_command_pipeline(string, modules, pipeline)
     yield result
 
 
-def _apply_map(command, in_stream, imports, placeholder, autoimport):
+def _do_map(command, in_stream, imports, placeholder, autoimport):
     modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder)
     for line in in_stream:
-        result = _apply_command_pipeline(line, modules, pipeline)
+        result = _do_command_pipeline(line, modules, pipeline)
         yield result
 
 
-def _apply_reduce(command, in_stream, imports, placeholder, autoimport):
+def _do_reduce(command, in_stream, imports, placeholder, autoimport):
 
     modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder, star_args=True)
@@ -264,7 +264,7 @@ def run_segment(value, segment, modules):
     return eval(segment, modules, {_PYPE_VALUE: value})
 
 
-def _async_apply_segment(value, modules, pipeline):
+def _async_do_segment(value, modules, pipeline):
     d = Deferred()
     for pipeline_segment in pipeline:
         d.addCallback(run_segment, pipeline_segment, modules)
@@ -272,19 +272,19 @@ def _async_apply_segment(value, modules, pipeline):
     return d
 
 
-def _async_apply_map(command, in_stream, imports, placeholder, autoimport):
+def _async_do_map(command, in_stream, imports, placeholder, autoimport):
     modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder)
 
-    yield from (_async_apply_segment(item, modules, pipeline) for item in in_stream)
+    yield from (_async_do_segment(item, modules, pipeline) for item in in_stream)
 
 
-def _async_apply_reduce(command, in_stream, imports, placeholder, autoimport):
+def _async_do_reduce(command, in_stream, imports, placeholder, autoimport):
     modules = _get_modules([command], imports, autoimport)
     pipeline = _make_pipeline_strings(command, placeholder, star_args=True)
 
 
-# TODO make reduce async, using a function _async_apply_reduce
+# TODO make reduce async, using a function _async_do_reduce
 # TODO async reduce should fire on two callbacks rather than using a DeferredList
 # TODO add --nonstop option like tail -F
 
@@ -320,6 +320,13 @@ def _pipestring_to_function(multicommand_string, modules=None, symbol='?', separ
 #     d.addCallback(function)
 #     d.addCallbacks(print, err)
 #     d.callback(item)
+
+
+def _do_apply(command, in_stream, imports, placeholder, autoimport):
+    modules = _get_modules([command], imports, autoimport)
+    pipeline = _make_pipeline_strings(command, placeholder)
+    result = _do_command_pipeline(in_stream, modules, pipeline)
+    return result
 
 
 def _async_main(
@@ -364,9 +371,10 @@ def main(  # pylint: disable=too-many-arguments
         newlines='auto',
         do_async=False,
         reactor=reactor,
+        apply=None,
 ):
-
-    _check_parsing(mapper, placeholder)
+    if mapper:
+        _check_parsing(mapper, placeholder)
 
     if do_async:
         _async_main(
@@ -383,20 +391,25 @@ def main(  # pylint: disable=too-many-arguments
         )
         sys.exit()
 
+    commands = (x for x in [mapper, reducer, postmap] if x)
+    modules = _get_modules(commands, imports, autoimport)
+
     if slurp:
-        result = _apply_total(mapper, in_stream, imports, placeholder, autoimport)
+        result = _do_total(mapper, in_stream, imports, placeholder, autoimport)
+    elif apply:
+        apply_function = _pipestring_to_function(apply, modules, placeholder)
+        result = apply_function(in_stream)
+
     else:
 
-        commands = (x for x in [mapper, reducer, postmap] if x)
-        modules = _get_modules(commands, imports, autoimport)
         mapper_function = _pipestring_to_function(mapper, modules, placeholder)
 
         result = map(mapper_function, in_stream)
 
     if reducer is not None:
-        result = _apply_reduce(reducer, result, imports, placeholder, autoimport)
+        result = _do_reduce(reducer, result, imports, placeholder, autoimport)
     if postmap is not None:
-        result = _apply_map(postmap, result, imports, placeholder, autoimport)
+        result = _do_map(postmap, result, imports, placeholder, autoimport)
 
     result = _maybe_add_newlines(result, newlines)
 
@@ -405,9 +418,10 @@ def main(  # pylint: disable=too-many-arguments
 
 
 @click.command()
-@click.argument('command')
+@click.argument('command', default=None, required=False)
 @click.argument('reducer', default=None, required=False)
 @click.argument('postmap', default=None, required=False)
+@click.option('--apply', default=None)
 @click.option(
     '--slurp',
     '-s',
@@ -447,6 +461,7 @@ def cli(
         autoimport,
         newlines,
         do_async,
+        apply,
 ):
     """
 Pipe data through python functions.
@@ -480,8 +495,18 @@ $ printf 'a\\nab\\nabc\\n' | pype -t -i json -i toolz -i collections 'collection
 
     """
     in_stream = click.get_text_stream('stdin')
-    gen = main(command, reducer, postmap, in_stream, imports, placeholder, slurp, autoimport,
-               newlines, do_async)
+    gen = main(
+        command,
+        reducer,
+        postmap,
+        in_stream,
+        imports,
+        placeholder,
+        slurp,
+        autoimport,
+        newlines,
+        do_async,
+        apply=apply)
 
     for line in gen:
         click.echo(line, nl=False)

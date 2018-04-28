@@ -6,6 +6,7 @@ import collections
 
 import os
 import urllib
+import textwrap
 
 import pytest
 from click.testing import CliRunner
@@ -452,10 +453,21 @@ def test_cli_autoimport_placeholder(string, runner):
             'a.b.c\n',
             '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}',
         ),
+        (
+            [
+                "--apply",
+                'enumerate || list || reversed || enumerate || list',
+            ],
+            'a\nbb\nccc\n',
+            ("""(0, (2, 'ccc\\n'))
+(1, (1, 'bb\\n'))
+(2, (0, 'a\\n'))
+"""),
+        ),
     ],
 )
 def test_cli(args, in_stream, expected, runner):
 
     result = runner.invoke(pype.app.cli, args, input=in_stream)
-    assert not result.exception
     assert result.output == expected
+    assert not result.exception
