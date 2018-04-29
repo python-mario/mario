@@ -287,17 +287,16 @@ def _async_react_map(reactor, mapper_functions, items):
         for d in it:
             running[0] += 1
             d.addBoth(check)
-            yield
 
     deferreds = (_async_do_item(mapper_functions, item) for item in items)
-    for _ in wrap(deferreds):
-        pass
+    wrap(deferreds)
 
     return finished
 
 
 def _async_run(
         mapper,
+        applier=None,
         in_stream=None,
         imports=(),
         placeholder='?',
