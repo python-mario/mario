@@ -177,7 +177,7 @@ def _maybe_add_newlines(iterator, newlines_setting='auto'):
             add_newlines = not str(first).endswith('\n')
 
     else:
-        add_newlines = {'yes': True, 'no': False}[newlines_setting]
+        add_newlines = newlines_setting
 
     for item in iterator:
         string = str(item)
@@ -431,8 +431,24 @@ $ printf 'a\\nab\\nabc\\n' | pype -t -i json -i toolz -i collections 'collection
 
     """
     in_stream = click.get_text_stream('stdin')
+
+    true_strings = {s: True for s in ['true', 'yes', 't', 'y']}
+    false_strings = {s: False for s in ['false', 'no', 'f', 'n']}
+    str_to_bool = {
+        **true_strings,
+        **false_strings,
+    }
+
     gen = main(
-        command, in_stream, imports, placeholder, autoimport, newlines, do_async, apply=apply)
+        command,
+        in_stream,
+        imports,
+        placeholder,
+        autoimport,
+        str_to_bool.get(newlines, newlines),
+        do_async,
+        apply=apply,
+    )
 
     for line in gen:
         click.echo(line, nl=False)

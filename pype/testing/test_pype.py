@@ -228,14 +228,14 @@ def test_get_identifiers_matches_str_isidentifier(string):
         (
             {
                 'mapper': 'str.__add__(?, "bc")',
-                'newlines': 'yes',
+                'newlines': True,
                 'in_stream': ['a'],
             },
             ['abc\n'],
         ),
         (
             {
-                'newlines': 'no',
+                'newlines': False,
                 'apply': 'functools.partial(map, str.upper)',
                 'in_stream': ['a\nbb\nccc\n'],
             },
@@ -320,11 +320,11 @@ def test_fn_autoimport_counter_keys(string):
     [
         ((['ab'], ), ['ab\n']),
         ((['ab'], 'auto'), ['ab\n']),
-        ((['ab'], 'yes'), ['ab\n']),
-        ((['ab'], 'no'), ['ab']),
+        ((['ab'], True), ['ab\n']),
+        ((['ab'], False), ['ab']),
         ((['ab', 'cd'], 'auto'), ['ab\n', 'cd\n']),
-        ((['ab', 'cd'], 'yes'), ['ab\n', 'cd\n']),
-        ((['ab', 'cd'], 'no'), ['ab', 'cd']),
+        ((['ab', 'cd'], True), ['ab\n', 'cd\n']),
+        ((['ab', 'cd'], False), ['ab', 'cd']),
     ],
 )
 def test__maybe_add_newlines(args, expected):
