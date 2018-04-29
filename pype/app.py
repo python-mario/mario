@@ -386,7 +386,7 @@ def main(  # pylint: disable=too-many-arguments
     return gen
 
 
-@click.group(chain=True, invoke_without_command=True)
+@click.group(chain=True)
 @click.option(
     '--newlines',
     '-n',
@@ -422,7 +422,6 @@ def cli(
     Pipe data through Python functions.
 
     """
-    print('cli:', locals())
 
 
 def str_to_bool(string, strict=False):
@@ -445,11 +444,8 @@ def process_pipeline(processors, **kwargs):
 
     in_stream = click.get_text_stream('stdin')
 
-    print('process_pipeline: ', locals())
-
     options = dict(kwargs)
     options['newlines'] = str_to_bool(kwargs['newlines'])
-    print(options)
 
     for processor in processors:
         in_stream = processor(in_stream=in_stream, **options)
@@ -462,8 +458,6 @@ def process_pipeline(processors, **kwargs):
 @cli.command('apply')
 @click.argument('applier')
 def cli_apply(applier):
-    print('cli_apply:', locals())
-
     def wrapped(**kwargs):
         return main(applier=applier, **kwargs)
 
@@ -473,8 +467,6 @@ def cli_apply(applier):
 @cli.command('map')
 @click.argument('mapper')
 def cli_map(mapper):
-    print('cli_map:', locals())
-
     def wrapped(**kwargs):
         return main(mapper=mapper, **kwargs)
 
