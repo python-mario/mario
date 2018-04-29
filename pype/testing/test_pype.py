@@ -31,6 +31,10 @@ settings.load_profile(os.getenv('HYPOTHESIS_PROFILE', 'default'))
 def _runner():
     return CliRunner()
 
+@pytest.fixture(name='reactor')
+def _reactor():
+    from twisted.internet import reactor
+    return reactor
 
 @pytest.mark.parametrize(
     'command_string,symbol,expected',
@@ -492,8 +496,8 @@ class Timer:
         self.end = arrow.now()
         self.elapsed = self.end - self.start
 
-
-def test_cli_async(runner):
+@pytest.mark.skip
+def test_cli_async(runner, reactor):
     base_url = 'http://localhost:8080/{}'
     letters = string.ascii_lowercase
     in_stream = '\n'.join(base_url.format(c) for c in letters)
@@ -511,4 +515,26 @@ def test_cli_async(runner):
     assert not result.exception
     assert result.exit_code == 0
     assert sorted_starts == expected
+    assert t.elapsed < timedelta(seconds=4)
+
+
+def test_cli_async_chain_map_apply(runner, reactor):
+    base_url = 'http://localhost:8080/{}'
+    letters = string.ascii_lowercase
+    in_stream = '\n'.join(base_url.format(c) for c in letters)
+    mapper = 'str.upper || ?.rstrip() || treq.get || treq.text_content '
+    applier = 'max'
+    args = ['--async', 'map', mapper, 'apply', applier]
+    expected = ['Hello, Z']
+
+    with Timer() as t:
+        result = runner.invoke(pype.app.cli, args, input=in_stream)
+
+    lines = result.output.splitlines()
+    starts = [line[:8] for line in lines]
+
+    assert not result.exception
+    assert result.exit_code == 0
+    assert len(lines) == 1
+    assert starts == expected
     assert t.elapsed < timedelta(seconds=4)
