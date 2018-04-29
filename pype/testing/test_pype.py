@@ -5,6 +5,7 @@ from __future__ import generator_stop
 import collections
 
 import os
+import string
 import urllib
 import textwrap
 
@@ -459,3 +460,20 @@ def test_cli(args, in_stream, expected, runner):
     assert not result.exception
     assert result.exit_code == 0
     assert result.output == expected
+
+
+def test_cli_async(runner):
+    base_url = 'http://localhost:8080/{}'
+    in_stream = '\n'.join(base_url.format(c) for c in string.ascii_lowercase)
+    command = 'str.upper || ?.rstrip() || treq.get || treq.text_content '
+    args = ['--async', command]
+    expected = [f'Hello, {letter.upper()}' for letter in string.ascii_lowercase]
+
+    result = runner.invoke(pype.app.cli, args, input=in_stream)
+    lines = result.output.splitlines()
+    starts = [line[:8] for line in lines]
+    sorted_starts = sorted(starts)
+
+    assert not result.exception
+    assert result.exit_code == 0
+    assert sorted_starts == expected
