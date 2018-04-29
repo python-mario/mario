@@ -315,14 +315,14 @@ def _async_run(
 
 def run(  # pylint: disable=too-many-arguments
         mapper=None,
-        apply=None,
+        applier=None,
         in_stream=None,
         imports=(),
         placeholder='?',
         autoimport=True,
         newlines='auto',
 ):
-    pipestrings = (x for x in [mapper, apply] if x)
+    pipestrings = (x for x in [mapper, applier] if x)
     modules = _get_modules(pipestrings, imports, autoimport)
 
     items = in_stream
@@ -331,8 +331,8 @@ def run(  # pylint: disable=too-many-arguments
         mapper_function = _pipestring_to_function(mapper, modules, placeholder)
         items = map(mapper_function, items)
 
-    if apply:
-        apply_function = _pipestring_to_function(apply, modules, placeholder)
+    if applier:
+        apply_function = _pipestring_to_function(applier, modules, placeholder)
         items = apply_function(items)
 
     items = _maybe_add_newlines(items, newlines)
@@ -343,7 +343,7 @@ def run(  # pylint: disable=too-many-arguments
 
 def main(  # pylint: disable=too-many-arguments
         mapper=None,
-        apply=None,
+        applier=None,
         in_stream=None,
         imports=(),
         placeholder='?',
@@ -352,6 +352,8 @@ def main(  # pylint: disable=too-many-arguments
         do_async=False,
         reactor=reactor,
 ):
+
+    print('main: ', locals())
     if mapper:
         _check_parsing(mapper, placeholder)
 
@@ -370,7 +372,7 @@ def main(  # pylint: disable=too-many-arguments
     else:
         gen = run(
             mapper=mapper,
-            apply=apply,
+            applier=applier,
             in_stream=in_stream,
             imports=imports,
             placeholder=placeholder,
@@ -382,11 +384,7 @@ def main(  # pylint: disable=too-many-arguments
         click.echo(line, nl=False)
 
 
-@click.command()
-@click.argument('command', default=None, required=False)
-@click.option(
-    '--apply',
-    help='Apply function to entire input together instead of processing one line at a time.')
+@click.group(chain=True, invoke_without_command=True)
 @click.option(
     '--newlines',
     '-n',
@@ -413,33 +411,65 @@ def main(  # pylint: disable=too-many-arguments
 @click.option('--async', 'do_async', is_flag=True, default=False)
 def cli(
         imports,
-        command,
         placeholder,
         autoimport,
         newlines,
         do_async,
-        apply,
 ):
     """
     Pipe data through Python functions.
 
     """
-    in_stream = click.get_text_stream('stdin')
+    print('cli:', locals())
 
+
+def str_to_bool(string, strict=False):
     true_strings = {s: True for s in ['true', 'yes', 't', 'y']}
     false_strings = {s: False for s in ['false', 'no', 'f', 'n']}
-    str_to_bool = {
+    mapping = {
         **true_strings,
         **false_strings,
     }
+    try:
+        return mapping[string]
+    except KeyError:
+        if not strict:
+            return string
+        raise
 
-    gen = main(
-        command,
-        apply,
-        in_stream,
-        imports,
-        placeholder,
-        autoimport,
-        str_to_bool.get(newlines, newlines),
-        do_async,
-    )
+
+@cli.resultcallback()
+def process_pipeline(processors, **kwargs):
+
+    in_stream = click.get_text_stream('stdin')
+
+    print('process_pipeline: ', locals())
+
+    options = dict(kwargs)
+    options['newlines'] = str_to_bool(kwargs['newlines'])
+    print(options)
+
+    for processor in processors:
+        in_stream = processor(in_stream=in_stream, **options)
+
+
+@cli.command('apply')
+@click.argument('applier')
+def cli_apply(applier):
+    print('cli_apply:', locals())
+
+    def wrapped(**kwargs):
+        return main(applier=applier, **kwargs)
+
+    return wrapped
+
+
+@cli.command('map')
+@click.argument('mapper')
+def cli_map(mapper):
+    print('cli_map:', locals())
+
+    def wrapped(**kwargs):
+        return main(mapper=mapper, **kwargs)
+
+    return wrapped
