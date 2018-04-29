@@ -17,7 +17,7 @@ import attr
 import click
 import toolz
 import treq
-from twisted.internet import reactor
+from twisted.internet import reactor, task
 from twisted.internet.defer import Deferred, inlineCallbacks, DeferredList
 from twisted.python.log import err
 
@@ -269,6 +269,38 @@ def _pipestring_to_function(multicommand_string, modules=None, symbol='?', separ
     return toolz.compose(*reversed(functions))
 
 
+def _async_do_item(mapper_functions, item):
+    d = Deferred()
+    for function in mapper_functions:
+        d.addCallback(function)
+    d.addCallbacks(print, err)
+    d.callback(item)
+    return d
+
+
+def _async_react_map(reactor, mapper_functions, items):
+    running = [0]
+    finished = Deferred()
+
+    def check(result):
+        running[0] -= 1
+        if not running[0]:
+            finished.callback(None)
+        return result
+
+    def wrap(it):
+        for d in it:
+            running[0] += 1
+            d.addBoth(check)
+            yield
+
+    deferreds = (_async_do_item(mapper_functions, item) for item in items)
+    for _ in wrap(deferreds):
+        pass
+
+    return finished
+
+
 def _async_main(
         mapper,
         in_stream=None,
@@ -283,17 +315,7 @@ def _async_main(
     modules = _get_modules(commands, imports, autoimport)
     mapper_functions = _pipestring_to_functions(mapper, modules, placeholder)
 
-    for item in in_stream:
-        print(item)
-        d = Deferred()
-        for function in mapper_functions:
-            d.addCallback(function)
-        d.addCallbacks(print, err)
-
-        d.callback(item)
-
-    print('about to run reactor')
-    reactor.run()
+    task.react(_async_react_map, [mapper_functions, in_stream])
 
 
 def main(  # pylint: disable=too-many-arguments
