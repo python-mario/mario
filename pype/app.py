@@ -410,7 +410,12 @@ def main(  # pylint: disable=too-many-arguments
     default='?',
     help='String to replace with data. Defaults to ?',
 )
-@click.option('--async', 'do_async', is_flag=True, default=False)
+@click.option(
+    '--async',
+    'do_async',
+    is_flag=True,
+    default=False,
+    help='Run commands on each input item in asynchronously.')
 def cli(
         imports,
         placeholder,
