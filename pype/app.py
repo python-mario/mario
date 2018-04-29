@@ -131,22 +131,8 @@ def _add_short_placeholder(command_string, short_placeholder='?'):
     return f'{command_string}({short_placeholder})'
 
 
-def _make_pipeline_strings(command, placeholder, star_args=False):
-    """Parse pipeline into individual components."""
-    command_strings = command.split('||')
-    pipeline = []
-    for string in command_strings:
-        string = string.strip()
-        if placeholder not in string:
-            string = string + '({star}{placeholder})'.format(
-                star='*' if star_args else '', placeholder=placeholder)
-        stage = string.replace(placeholder, _PYPE_VALUE).strip()
-        pipeline.append(stage)
-    return pipeline
-
-
-def _get_autoimports(string):
-    components = [comp.strip() for comp in string.split('||')]
+def _get_autoimports(string, separator='||'):
+    components = [comp.strip() for comp in string.split(separator)]
     name_to_module = {}
     for component in components:
         identifiers = _get_maybe_namespaced_identifiers(component)

@@ -33,21 +33,6 @@ def _runner():
 
 
 @pytest.mark.parametrize(
-    'command, expected',
-    [
-        ('str.upper(?)', [f'str.upper({_PYPE_VALUE})']),
-        ('str.upper', [f'str.upper({_PYPE_VALUE})']),
-        (
-            'str.upper(?) || "X".join',
-            [f'str.upper({_PYPE_VALUE})', f'"X".join({_PYPE_VALUE})'],
-        ),
-    ],
-)
-def test_make_pipeline(command, expected):
-    assert pype.app._make_pipeline_strings(command, '?') == expected
-
-
-@pytest.mark.parametrize(
     'command_string,symbol,expected',
     [
         ('int', '?', 'int(?)'),
