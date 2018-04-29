@@ -380,8 +380,10 @@ def main(  # pylint: disable=too-many-arguments
             newlines=newlines,
         )
 
-    for line in gen:
-        click.echo(line, nl=False)
+    # for line in gen:
+    #     click.echo(line, nl=False)
+
+    return gen
 
 
 @click.group(chain=True, invoke_without_command=True)
@@ -451,6 +453,10 @@ def process_pipeline(processors, **kwargs):
 
     for processor in processors:
         in_stream = processor(in_stream=in_stream, **options)
+
+    out = _maybe_add_newlines(in_stream)
+    for item in out:
+        click.echo(item, nl=False)
 
 
 @cli.command('apply')
