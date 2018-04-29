@@ -436,6 +436,9 @@ def process_pipeline(processors, **kwargs):
     options = dict(kwargs)
     options['newlines'] = str_to_bool(kwargs['newlines'])
 
+    if 'do_async' in kwargs:
+        options['reactor'] = reactor
+
     for processor in processors:
         in_stream = processor(in_stream=in_stream, **options)
 
