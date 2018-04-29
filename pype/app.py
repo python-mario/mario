@@ -353,7 +353,6 @@ def main(  # pylint: disable=too-many-arguments
         reactor=reactor,
 ):
 
-    print('main: ', locals())
     if mapper:
         _check_parsing(mapper, placeholder)
 
