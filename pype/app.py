@@ -16,7 +16,6 @@ from tokenize import tokenize, untokenize
 import attr
 import click
 import toolz
-import treq
 from twisted.internet import reactor, task
 from twisted.internet.defer import Deferred, inlineCallbacks, DeferredList
 from twisted.python.log import err
