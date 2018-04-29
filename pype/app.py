@@ -296,7 +296,7 @@ def _async_react_map(reactor, mapper_functions, items):
     return finished
 
 
-def _async_main(
+def _async_run(
         mapper,
         in_stream=None,
         imports=(),
@@ -313,32 +313,15 @@ def _async_main(
     task.react(_async_react_map, [mapper_functions, in_stream])
 
 
-def main(  # pylint: disable=too-many-arguments
+def run(  # pylint: disable=too-many-arguments
         mapper=None,
+        apply=None,
         in_stream=None,
         imports=(),
         placeholder='?',
         autoimport=True,
         newlines='auto',
-        do_async=False,
-        reactor=reactor,
-        apply=None,
 ):
-    if mapper:
-        _check_parsing(mapper, placeholder)
-
-    if do_async:
-        _async_main(
-            mapper=mapper,
-            in_stream=in_stream,
-            imports=imports,
-            placeholder=placeholder,
-            autoimport=autoimport,
-            newlines=newlines,
-            reactor=reactor,
-        )
-        sys.exit()
-
     commands = (x for x in [mapper, apply] if x)
     modules = _get_modules(commands, imports, autoimport)
 
@@ -354,6 +337,47 @@ def main(  # pylint: disable=too-many-arguments
 
     for item in result:
         yield item
+
+
+def main(  # pylint: disable=too-many-arguments
+        mapper=None,
+        apply=None,
+        in_stream=None,
+        imports=(),
+        placeholder='?',
+        autoimport=True,
+        newlines='auto',
+        do_async=False,
+        reactor=reactor,
+):
+    if mapper:
+        _check_parsing(mapper, placeholder)
+
+    if do_async:
+        _async_run(
+            mapper=mapper,
+            in_stream=in_stream,
+            imports=imports,
+            placeholder=placeholder,
+            autoimport=autoimport,
+            newlines=newlines,
+            reactor=reactor,
+        )
+        sys.exit()
+
+    else:
+        gen = run(
+            mapper=mapper,
+            apply=apply,
+            in_stream=in_stream,
+            imports=imports,
+            placeholder=placeholder,
+            autoimport=autoimport,
+            newlines=newlines,
+        )
+
+    for line in gen:
+        click.echo(line, nl=False)
 
 
 @click.command()
@@ -436,14 +460,11 @@ $ printf 'a\\nab\\nabc\\n' | pype -t -i json -i toolz -i collections 'collection
 
     gen = main(
         command,
+        apply,
         in_stream,
         imports,
         placeholder,
         autoimport,
         str_to_bool.get(newlines, newlines),
         do_async,
-        apply=apply,
     )
-
-    for line in gen:
-        click.echo(line, nl=False)
