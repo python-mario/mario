@@ -116,6 +116,7 @@ def test_cli_raises_without_autoimport(runner):
 
     args = [
         '--no-autoimport',
+        'map',
         'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
     ]
     in_stream = 'a.b.c\n'
@@ -128,6 +129,7 @@ def test_cli_raises_without_autoimport(runner):
 def test_raises_on_missing_module(runner):
 
     args = [
+        'map',
         '_missing_module.replace(?, ".", "!") || collections.Counter || json.dumps ',
     ]
     in_stream = 'a.b.c\n'
@@ -238,7 +240,7 @@ def test_get_identifiers_matches_str_isidentifier(string):
         (
             {
                 'newlines': False,
-                'apply': 'functools.partial(map, str.upper)',
+                'applier': 'functools.partial(map, str.upper)',
                 'in_stream': ['a\nbb\nccc\n'],
             },
             ['A\nBB\nCCC\n'],
@@ -343,6 +345,7 @@ def test_main_autoimport_placeholder_does_not_raise(string):
 def test_cli_autoimport_placeholder(string, runner):
     args = [
         '--newlines=yes',
+        'map',
         'str || collections.Counter || ?.keys() || "".join ',
     ]
 
@@ -361,6 +364,7 @@ def test_cli_autoimport_placeholder(string, runner):
     [
         (
             [
+                'map',
                 'str.replace(?, ".", "!")',
             ],
             'a.b.c\n',
@@ -369,6 +373,7 @@ def test_cli_autoimport_placeholder(string, runner):
         (
             [
                 '--placeholder=$',
+                'map',
                 'str.replace($, ".", "!")',
             ],
             'a.b.c\n',
@@ -378,6 +383,7 @@ def test_cli_autoimport_placeholder(string, runner):
             [
                 '-icollections',
                 '-ijson',
+                'map',
                 'json.dumps(dict(collections.Counter(str.replace(?, ".", "!"))))',
             ],
             'a.b.c\n',
@@ -387,6 +393,7 @@ def test_cli_autoimport_placeholder(string, runner):
             [
                 '-icollections',
                 '-ijson',
+                'map',
                 'str.replace(?, ".", "!") || collections.Counter(?) || dict(?) || json.dumps(?) ',
             ],
             'a.b.c\n',
@@ -396,6 +403,7 @@ def test_cli_autoimport_placeholder(string, runner):
             [
                 '-icollections',
                 '-ijson',
+                'map',
                 'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
             ],
             'a.b.c\n',
@@ -405,6 +413,7 @@ def test_cli_autoimport_placeholder(string, runner):
             [
                 '-icollections',
                 '-ijson',
+                'map',
                 'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
             ],
             'a.b.c\nd.e.f\n',
@@ -412,6 +421,7 @@ def test_cli_autoimport_placeholder(string, runner):
         ),
         (
             [
+                'map',
                 'str.replace(?, ".", "!") || collections.Counter(?) || json.dumps(?) ',
             ],
             'a.b.c\n',
@@ -420,6 +430,7 @@ def test_cli_autoimport_placeholder(string, runner):
         (
             [
                 '--newlines=yes',
+                'map',
                 'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
             ],
             'a.b.c\n',
@@ -428,14 +439,15 @@ def test_cli_autoimport_placeholder(string, runner):
         (
             [
                 '--newlines=no',
+                'map',
                 'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
             ],
-            'a.b.c\n',
-            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}',
+            'a.b.c',
+            '{"a": 1, "!": 2, "b": 1, "c": 1}',
         ),
         (
             [
-                "--apply",
+                "apply",
                 'enumerate || list || reversed || enumerate || list',
             ],
             'a\nbb\nccc\n',
@@ -447,7 +459,7 @@ def test_cli_autoimport_placeholder(string, runner):
         (
             [
                 '--newlines=no',
-                "--apply",
+                "apply",
                 'functools.partial(map, str.upper)',
             ],
             'a\nbb\nccc\n',
@@ -478,7 +490,7 @@ def test_cli_async(runner):
     letters = string.ascii_lowercase
     in_stream = '\n'.join(base_url.format(c) for c in letters)
     command = 'str.upper || ?.rstrip() || treq.get || treq.text_content '
-    args = ['--async', command]
+    args = ['--async', 'map', command]
     expected = [f'Hello, {letter.upper()}' for letter in letters]
 
     with Timer() as t:
