@@ -421,34 +421,7 @@ def cli(
         apply,
 ):
     """
-Pipe data through python functions.
-
-\b
-$ printf 'a.b.c\\nd.e.f\\n' |
-pype -i collections -i json 'str.replace(?, ".", "!") || str.upper || collections.Counter || json.dumps '
-
-\b
-{"A": 1, "!": 2, "B": 1, "C": 1, "\\n": 1}
-{"D": 1, "!": 2, "E": 1, "F": 1, "\\n": 1}
-
-\b
-$ printf 'aa.bbb\\n' | pype -i collections -i json 'str.replace(?, ".", "!") || str.upper || collections.Counter || {v:k for k,v in ?.items()} || json.dumps'
-
-\b
-{"2": "A", "1": "\\n", "3": "B"}
-
-\b
-$ printf 'a\\nab\\nabc\\n' | pype -i json -i toolz -i collections 'collections.Counter' 'toolz.merge_with(sum, ?)' 'json.dumps'
-
-\b
-{"a": 3, "\\n": 3, "b": 2, "c": 1}
-
-\b
-$ printf 'a\\nab\\nabc\\n' | pype -t -i json -i toolz -i collections 'collections.Counter || json.dumps'
-
-\b
-{"a": 3, "\\n": 3, "b": 2, "c": 1}
-
+    Pipe data through Python functions.
 
     """
     in_stream = click.get_text_stream('stdin')
