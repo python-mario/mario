@@ -238,11 +238,6 @@ def _async_do_segment(value, modules, pipeline):
     return d
 
 
-# TODO make reduce async, using a function _async_do_reduce
-# TODO async reduce should fire on two callbacks rather than using a DeferredList
-# TODO add --nonstop option like tail -F
-
-
 def _command_string_to_function(command, modules=None, symbol='?'):
     if modules is None:
         modules = {}
