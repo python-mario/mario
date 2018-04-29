@@ -3,12 +3,13 @@
 from __future__ import generator_stop
 
 import collections
-
 import os
 import string
 import urllib
 import textwrap
+from datetime import timedelta
 
+import arrow
 import pytest
 from click.testing import CliRunner
 from hypothesis import given
@@ -462,14 +463,27 @@ def test_cli(args, in_stream, expected, runner):
     assert result.output == expected
 
 
+class Timer:
+    def __enter__(self):
+        self.start = arrow.now()
+        return self
+
+    def __exit__(self, *args):
+        self.end = arrow.now()
+        self.elapsed = self.end - self.start
+
+
 def test_cli_async(runner):
     base_url = 'http://localhost:8080/{}'
-    in_stream = '\n'.join(base_url.format(c) for c in string.ascii_lowercase)
+    letters = string.ascii_lowercase
+    in_stream = '\n'.join(base_url.format(c) for c in letters)
     command = 'str.upper || ?.rstrip() || treq.get || treq.text_content '
     args = ['--async', command]
-    expected = [f'Hello, {letter.upper()}' for letter in string.ascii_lowercase]
+    expected = [f'Hello, {letter.upper()}' for letter in letters]
 
-    result = runner.invoke(pype.app.cli, args, input=in_stream)
+    with Timer() as t:
+        result = runner.invoke(pype.app.cli, args, input=in_stream)
+
     lines = result.output.splitlines()
     starts = [line[:8] for line in lines]
     sorted_starts = sorted(starts)
@@ -477,3 +491,4 @@ def test_cli_async(runner):
     assert not result.exception
     assert result.exit_code == 0
     assert sorted_starts == expected
+    assert t.elapsed < timedelta(seconds=4)
