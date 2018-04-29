@@ -322,20 +322,22 @@ def run(  # pylint: disable=too-many-arguments
         autoimport=True,
         newlines='auto',
 ):
-    commands = (x for x in [mapper, apply] if x)
-    modules = _get_modules(commands, imports, autoimport)
+    pipestrings = (x for x in [mapper, apply] if x)
+    modules = _get_modules(pipestrings, imports, autoimport)
+
+    items = in_stream
+
+    if mapper:
+        mapper_function = _pipestring_to_function(mapper, modules, placeholder)
+        items = map(mapper_function, items)
 
     if apply:
         apply_function = _pipestring_to_function(apply, modules, placeholder)
-        result = apply_function(in_stream)
+        items = apply_function(items)
 
-    else:
-        mapper_function = _pipestring_to_function(mapper, modules, placeholder)
-        result = map(mapper_function, in_stream)
+    items = _maybe_add_newlines(items, newlines)
 
-    result = _maybe_add_newlines(result, newlines)
-
-    for item in result:
+    for item in items:
         yield item
 
 

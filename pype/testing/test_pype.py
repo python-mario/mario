@@ -151,7 +151,7 @@ def test_str_simple_mappers(mapper, string):
 
     expected = [str(mapper(string)) + '\n']
     qualname = mapper.__qualname__
-    result = list(pype.app.main(qualname, in_stream=[string], newlines='yes'))
+    result = list(pype.app.run(qualname, in_stream=[string], newlines='yes'))
 
     assert result == expected
 
@@ -165,7 +165,7 @@ def test_str_simple_mappers(mapper, string):
 @given(in_stream=st.integers())
 def test_main_mappers_int(mapper, in_stream):
     qualname = mapper.__qualname__
-    result = list(pype.app.main(qualname, in_stream=[in_stream]))
+    result = list(pype.app.run(qualname, in_stream=[in_stream]))
 
     expected = [str(mapper(in_stream)) + '\n']
 
@@ -246,7 +246,7 @@ def test_get_identifiers_matches_str_isidentifier(string):
     ],
 )
 def test_main_example(kwargs, expected):
-    result = pype.app.main(**kwargs)
+    result = pype.app.run(**kwargs)
     assert list(result) == expected
 
 
@@ -313,7 +313,7 @@ def test_fn_autoimport_counter_keys(string):
     string = string + '\n'
     in_stream = [string]
     expected = [str(collections.Counter(string).keys()) + '\n']
-    result = pype.app.main(mapper=mapper, in_stream=in_stream)
+    result = pype.app.run(mapper=mapper, in_stream=in_stream)
     assert list(result) == expected
 
 
