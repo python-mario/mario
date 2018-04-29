@@ -292,6 +292,7 @@ def _async_run(
         autoimport=True,
         newlines='auto',
         reactor=reactor,
+        processors=(),
 ):
 
     commands = (x for x in [mapper] if x)
@@ -339,6 +340,7 @@ def main(  # pylint: disable=too-many-arguments
         newlines='auto',
         do_async=False,
         reactor=reactor,
+        processors=(),
 ):
 
     if mapper:
@@ -353,6 +355,7 @@ def main(  # pylint: disable=too-many-arguments
             autoimport=autoimport,
             newlines=newlines,
             reactor=reactor,
+            processors=processors,
         )
         sys.exit()
 
@@ -435,9 +438,14 @@ def process_pipeline(processors, **kwargs):
 
     options = dict(kwargs)
     options['newlines'] = str_to_bool(kwargs['newlines'])
+    options['processors'] = processors
 
-    if 'do_async' in kwargs:
+    if kwargs['do_async']:
         options['reactor'] = reactor
+
+    if kwargs['do_async'] and len(processors) > 1:
+        raise PypeException('Async multi-stage pipeline not implemented.')
+
 
     for processor in processors:
         in_stream = processor(in_stream=in_stream, **options)
