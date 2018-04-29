@@ -25,6 +25,7 @@ REQUIRED = [
     'attrs',
     'click',
     'toolz',
+    'twisted',
 ]
 
 # The rest you shouldn't have to touch too much :)
