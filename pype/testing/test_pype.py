@@ -22,7 +22,8 @@ from pype.app import _PYPE_VALUE, PypeParseError
 
 settings.register_profile("ci", max_examples=1000)
 settings.register_profile("dev", max_examples=10)
-settings.register_profile("debug", max_examples=10, verbosity=Verbosity.verbose)
+settings.register_profile("debug", max_examples=10,
+                          verbosity=Verbosity.verbose)
 settings.load_profile(os.getenv('HYPOTHESIS_PROFILE', 'default'))
 
 
@@ -36,7 +37,10 @@ def _runner():
     [
         ('str.upper(?)', [f'str.upper({_PYPE_VALUE})']),
         ('str.upper', [f'str.upper({_PYPE_VALUE})']),
-        ('str.upper(?) || "X".join', [f'str.upper({_PYPE_VALUE})', f'"X".join({_PYPE_VALUE})']),
+        (
+            'str.upper(?) || "X".join',
+            [f'str.upper({_PYPE_VALUE})', f'"X".join({_PYPE_VALUE})'],
+        ),
     ],
 )
 def test_make_pipeline(command, expected):
@@ -77,7 +81,8 @@ def test_command_string_to_function():
     ],
 )
 def test_pipestring_to_function(pipestring, modules, value, expected):
-    assert pype.app._pipestring_to_function(pipestring, modules)(value) == expected
+    assert pype.app._pipestring_to_function(
+        pipestring, modules)(value) == expected
 
 
 @pytest.mark.parametrize(
@@ -104,7 +109,8 @@ def test_get_module(name, expected):
         ('collections.Counter(?)', {'collections.Counter'}),
         ('urllib.parse.urlparse', {'urllib.parse.urlparse'}),
         ('1 + 2', set()),
-        ('json.dumps(collections.Counter)', {'json.dumps', 'collections.Counter'}),
+        ('json.dumps(collections.Counter)', {
+         'json.dumps', 'collections.Counter'}),
         ('str.__add__(?, "bc") ', {'str.__add__'}),
     ],
 )
@@ -210,6 +216,22 @@ def test_get_identifiers_matches_str_isidentifier(string):
     [
         (
             {
+                'mapper': 'str.upper',
+                'newlines': False,
+                'in_stream': ['abc'],
+            },
+            ['ABC'],
+        ),
+        (
+            {
+                'mapper': 'str.upper',
+                'newlines': True,
+                'in_stream': ['abc'],
+            },
+            ['ABC\n'],
+        ),
+        (
+            {
                 'mapper': 'collections.Counter || ?.keys() ',
                 'in_stream': ['abbccc\n'],
             },
@@ -300,7 +322,8 @@ def test_main_raises_parse_error(kwargs, expected):
 @pytest.mark.xfail(strict=True)
 def test_main_f_string():
 
-    result = list(pype.app.main("""f'"{?}"'""", in_stream=['abc'], newlines='no'))
+    result = list(pype.app.main(
+        """f'"{?}"'""", in_stream=['abc'], newlines='no'))
     assert result == ['"abc"']
 
 
@@ -344,16 +367,16 @@ def test_main_autoimport_placeholder_does_not_raise(string):
 @given(string=st.text())
 def test_cli_autoimport_placeholder(string, runner):
     args = [
-        '--newlines=yes',
+        '--newlines=no',
         'map',
         'str || collections.Counter || ?.keys() || "".join ',
     ]
 
-    in_stream = string + '\n'
+    in_stream = string
 
     result = runner.invoke(pype.app.cli, args, input=in_stream)
 
-    expected = ''.join(collections.Counter(in_stream).keys()) + '\n'
+    expected = ''.join(collections.Counter(in_stream).keys())
     assert not result.exception
     assert result.exit_code == 0
     assert result.output == expected

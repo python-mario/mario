@@ -70,7 +70,8 @@ class _StringScanner:
     def _maybe_update(self):
         if self._current_tokens and _is_name_token(self._current_tokens[-1]):
             if _is_name_token(self._current_tokens[0]):
-                self._identifier_strings.add(_tokens_to_string(self._current_tokens))
+                self._identifier_strings.add(
+                    _tokens_to_string(self._current_tokens))
             self._current_tokens = []
 
     def scan(self):
@@ -159,7 +160,8 @@ def _get_modules(commands, named_imports, autoimport):
     named_modules = _get_named_modules(named_imports)
     if not autoimport:
         return named_modules
-    autoimports = toolz.merge(_get_autoimports(command) for command in commands)
+    autoimports = toolz.merge(_get_autoimports(command)
+                              for command in commands)
     # named modules have priority
     modules = {**autoimports, **named_modules}
     return modules
@@ -254,12 +256,14 @@ def _pipestring_to_functions(multicommand_string, modules=None, symbol='?', sepa
     command_strings = multicommand_string.split(separator)
     functions = []
     for command_string in command_strings:
-        functions.append(_command_string_to_function(command_string, modules, symbol))
+        functions.append(_command_string_to_function(
+            command_string, modules, symbol))
     return functions
 
 
 def _pipestring_to_function(multicommand_string, modules=None, symbol='?', separator='||'):
-    functions = _pipestring_to_functions(multicommand_string, modules, symbol, separator)
+    functions = _pipestring_to_functions(
+        multicommand_string, modules, symbol, separator)
     return toolz.compose(*reversed(functions))
 
 
@@ -449,8 +453,7 @@ def process_pipeline(processors, **kwargs):
     for processor in processors:
         in_stream = processor(in_stream=in_stream, **options)
 
-    out = _maybe_add_newlines(in_stream)
-    for item in out:
+    for item in in_stream:
         click.echo(item, nl=False)
 
 
