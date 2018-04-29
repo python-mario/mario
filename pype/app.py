@@ -378,9 +378,6 @@ def main(  # pylint: disable=too-many-arguments
             newlines=newlines,
         )
 
-    # for line in gen:
-    #     click.echo(line, nl=False)
-
     return gen
 
 
