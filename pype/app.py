@@ -20,6 +20,9 @@ from twisted.internet import reactor, task
 from twisted.internet.defer import Deferred, inlineCallbacks, DeferredList
 from twisted.python.log import err
 
+import pype
+import pype._version
+
 _PYPE_VALUE = '__PYPE_VALUE_'
 
 
@@ -373,7 +376,7 @@ def main(  # pylint: disable=too-many-arguments
     return gen
 
 
-@click.group(chain=True)
+@click.group(chain=True, invoke_without_command=True)
 @click.option(
     '--newlines',
     '-n',
@@ -403,17 +406,20 @@ def main(  # pylint: disable=too-many-arguments
     is_flag=True,
     default=False,
     help='Run commands on each input item in asynchronously.')
+@click.option('--version', is_flag=True, help='Show the version and exit.')
 def cli(
         imports,
         placeholder,
         autoimport,
         newlines,
         do_async,
+        version
 ):
     """
     Pipe data through Python functions.
 
     """
+
 
 
 def str_to_bool(string, strict=False):
@@ -433,6 +439,10 @@ def str_to_bool(string, strict=False):
 
 @cli.resultcallback()
 def process_pipeline(processors, **kwargs):
+
+    if kwargs['version']:
+        print(f'{pype.__name__} {pype._version.VERSION}')
+        sys.exit()
 
     in_stream = click.get_text_stream('stdin')
 
