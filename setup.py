@@ -18,7 +18,6 @@ URL = 'https://github.com/me/myproject'
 EMAIL = 'me@example.com'
 AUTHOR = 'Me'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '0.0.6'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
@@ -42,11 +41,8 @@ with io.open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 # Load the package's _version.py module as a dictionary.
 about = {}
-if not VERSION:
-    with open(os.path.join(here, NAME, '_version.py')) as f:
-        exec(f.read(), about)
-else:
-    about['__version__'] = VERSION
+with open(os.path.join(here, NAME, '_version.py')) as f:
+    exec(f.read(), about)
 
 
 class UploadCommand(Command):
