@@ -344,6 +344,7 @@ def main(  # pylint: disable=too-many-arguments
         do_async=False,
         reactor=reactor,
         processors=(),
+        **kwargs,
 ):
 
     if mapper:

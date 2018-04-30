@@ -22,8 +22,7 @@ from pype.app import _PYPE_VALUE, PypeParseError
 
 settings.register_profile("ci", max_examples=1000)
 settings.register_profile("dev", max_examples=10)
-settings.register_profile("debug", max_examples=10,
-                          verbosity=Verbosity.verbose)
+settings.register_profile("debug", max_examples=10, verbosity=Verbosity.verbose)
 settings.load_profile(os.getenv('HYPOTHESIS_PROFILE', 'default'))
 
 
@@ -31,10 +30,12 @@ settings.load_profile(os.getenv('HYPOTHESIS_PROFILE', 'default'))
 def _runner():
     return CliRunner()
 
+
 @pytest.fixture(name='reactor')
 def _reactor():
     from twisted.internet import reactor
     return reactor
+
 
 @pytest.mark.parametrize(
     'command_string,symbol,expected',
@@ -70,8 +71,7 @@ def test_command_string_to_function():
     ],
 )
 def test_pipestring_to_function(pipestring, modules, value, expected):
-    assert pype.app._pipestring_to_function(
-        pipestring, modules)(value) == expected
+    assert pype.app._pipestring_to_function(pipestring, modules)(value) == expected
 
 
 @pytest.mark.parametrize(
@@ -98,8 +98,7 @@ def test_get_module(name, expected):
         ('collections.Counter(?)', {'collections.Counter'}),
         ('urllib.parse.urlparse', {'urllib.parse.urlparse'}),
         ('1 + 2', set()),
-        ('json.dumps(collections.Counter)', {
-         'json.dumps', 'collections.Counter'}),
+        ('json.dumps(collections.Counter)', {'json.dumps', 'collections.Counter'}),
         ('str.__add__(?, "bc") ', {'str.__add__'}),
     ],
 )
@@ -311,8 +310,7 @@ def test_main_raises_parse_error(kwargs, expected):
 @pytest.mark.xfail(strict=True)
 def test_main_f_string():
 
-    result = list(pype.app.main(
-        """f'"{?}"'""", in_stream=['abc'], newlines='no'))
+    result = list(pype.app.main("""f'"{?}"'""", in_stream=['abc'], newlines='no'))
     assert result == ['"abc"']
 
 
@@ -496,7 +494,7 @@ class Timer:
         self.end = arrow.now()
         self.elapsed = self.end - self.start
 
-@pytest.mark.skip
+
 def test_cli_async(runner, reactor):
     base_url = 'http://localhost:8080/{}'
     letters = string.ascii_lowercase
@@ -518,6 +516,7 @@ def test_cli_async(runner, reactor):
     assert t.elapsed < timedelta(seconds=4)
 
 
+@pytest.mark.xfail(strict=True)
 def test_cli_async_chain_map_apply(runner, reactor):
     base_url = 'http://localhost:8080/{}'
     letters = string.ascii_lowercase
