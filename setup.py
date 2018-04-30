@@ -23,6 +23,7 @@ REQUIRES_PYTHON = '>=3.6.0'
 REQUIRED = [
     'attrs',
     'click',
+    'click-default-gruop',
     'toolz',
     'twisted',
 ]
