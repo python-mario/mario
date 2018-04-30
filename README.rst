@@ -98,6 +98,7 @@ TBD
 
 Caveats
 =======
+
 * Security
 
   * ``pype`` assumes trusted commands arguments and untrusted input stream data.
