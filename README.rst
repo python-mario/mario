@@ -101,7 +101,7 @@ Caveats
 
 * Security
 
-  * ``pype`` uses ``eval`` on your arguments, which can have unintended consequences. ``pype`` assumes trusted command arguments and untrusted input stream data. I haven't yet seen an input stream that executes arbitrary code (without using ``exec``, ``eval``, ``subprocess``, or similar command arguments) but they may exist. There may be ways to make this package dangerous that I don't know about. Use it at your own risk.
+  * ``pype`` assumes *trusted command arguments* and *untrusted input stream data*. It uses ``eval`` on your arguments. I haven't seen an input stream that executes arbitrary code (without using ``exec``, ``eval``, ``subprocess``, or similar command arguments) but they may exist. Use it at your own risk.
 
   * If you use ``exec``, ``eval`` or ``subprocess`` (or similar) commands, you can execute arbitrary code from the input.
 
