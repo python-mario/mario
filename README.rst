@@ -103,7 +103,7 @@ Caveats
 
   * ``pype`` assumes *trusted command arguments* and *untrusted input stream data*. It uses ``eval`` on your arguments. I haven't seen an input stream that executes arbitrary code (without using ``exec``, ``eval``, ``subprocess``, or similar command arguments) but they may exist. Use it at your own risk.
 
-  * If you use ``exec``, ``eval`` or ``subprocess`` (or similar) commands, you can execute arbitrary code from the input stream.
+  * If you use ``exec``, ``eval``, ``subprocess``, or similar commands, you can execute arbitrary code from the input stream.
 
 * ``--async``
 
