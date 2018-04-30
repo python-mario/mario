@@ -61,17 +61,17 @@ Use ``map`` to act on each input item (``map`` is the default command). Use ``ap
 
 Making sequential requests is slow. Use ``--async`` to make I/O really fast (see caveats below). ::
 
-   $ time pype 'str.strip || requests.get || ?.text'  < urls.txt
+  $ time pype 'str.strip || requests.get || ?.text'  < urls.txt
 
-   7938
-   7939
-   7940
-   7941
-   7942
+  Hello, Requester_254. You are client number 8061 for this server.
+  Hello, Requester_083. You are client number 8062 for this server.
+  Hello, Requester_128. You are client number 8063 for this server.
+  Hello, Requester_064. You are client number 8064 for this server.
+  Hello, Requester_276. You are client number 8065 for this server.
 
-   real	0m10.439s
-   user	0m0.359s
-   sys	0m0.025s
+  real	0m10.640s
+  user	0m0.548s
+  sys	0m0.022s
 
 
 Making concurrent requests is much faster: ::
