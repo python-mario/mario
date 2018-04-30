@@ -32,7 +32,7 @@ Use ``?`` as a placeholder for the input at each stage: ::
 
 
 
-Given a server responding to ``http://localhost:8080/`` a list of urls in ``urls.txt`` : ::
+Given a server responding to ``http://localhost:8080/`` and a list of urls in ``urls.txt`` : ::
 
   http://localhost:8080/Requester_254
   http://localhost:8080/Requester_083
