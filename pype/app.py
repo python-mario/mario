@@ -15,6 +15,7 @@ from tokenize import tokenize, untokenize
 
 import attr
 import click
+from click_default_group import DefaultGroup
 import toolz
 from twisted.internet import reactor, task
 from twisted.internet.defer import Deferred, inlineCallbacks, DeferredList
@@ -377,7 +378,12 @@ def main(  # pylint: disable=too-many-arguments
     return gen
 
 
-@click.group(chain=True, invoke_without_command=True)
+@click.group(
+    cls=DefaultGroup,
+    default='map',
+    default_if_no_args=True,
+    chain=True,
+)
 @click.option(
     '--newlines',
     '-n',

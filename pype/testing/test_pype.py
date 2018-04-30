@@ -475,6 +475,14 @@ def test_cli_autoimport_placeholder(string, runner):
             'a\nbb\nccc\n',
             'A\nBB\nCCC\n',
         ),
+        (
+            [
+                '--newlines=no',
+                'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
+            ],
+            'a.b.c',
+            '{"a": 1, "!": 2, "b": 1, "c": 1}',
+        ),
     ],
 )
 def test_cli(args, in_stream, expected, runner):
