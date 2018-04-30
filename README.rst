@@ -99,6 +99,7 @@ TBD
 Caveats
 =======
 * Security
+
   * ``pype`` assumes trusted commands arguments and untrusted input stream data.
 
   * ``pype`` uses ``eval`` on your arguments, which can have unintended consequences.
