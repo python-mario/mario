@@ -109,7 +109,7 @@ Caveats
 
   * There may be ways to make this package dangerous that I don't know about. Use it at your own risk.
 
-* ```--async``
+* ``--async``
 
   * ``--async`` isn't throttled, so **please** use it only for small batches of requests (otherwise you may interfere with your target servers).
 
