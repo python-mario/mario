@@ -43,7 +43,7 @@ At the command prompt, use ``map`` to act on each item in the file: ::
    Hello, Requester_064. You are client number 7906 for this server.
    Hello, Requester_276. You are client number 7907 for this server.
 
-Use ``apply`` to act on the iterable. Here we get the largest number we receive from the server: ::
+Use ``apply`` to act on the iterable. Finding the largest number returned from the server: ::
 
     $ pype --newlines=no map 'str.strip || requests.get || ?.text || ?.split()[6] || int' apply 'max'  < urls.txt
 
