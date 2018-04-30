@@ -88,3 +88,9 @@ Installation
 ============
 
 TBD
+
+
+Status
+======
+
+* This package is experimental pre-alpha and changes often
