@@ -1,7 +1,7 @@
 pype: command-line pipes with Python
 ####################################
 
-USAGE
+Usage
 =====
 
 Suppose we have a list of urls in ``urls.txt``: ::
