@@ -441,7 +441,7 @@ def str_to_bool(string, strict=False):
 def process_pipeline(processors, **kwargs):
 
     if kwargs['version']:
-        print(f'{pype.__name__} {pype._version.VERSION}')
+        print(f'{pype.__name__} {pype._version.__version__}')
         sys.exit()
 
     in_stream = click.get_text_stream('stdin')
