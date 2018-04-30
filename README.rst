@@ -59,9 +59,9 @@ Use ``map`` to act on each input item (``map`` is the default command). Use ``ap
     7933
 
 
-Use ``--async`` to make I/O really fast (see caveats below). Making sequential requests is slow: ::
+Making sequential requests is slow. Use ``--async`` to make I/O really fast (see caveats below). ::
 
-   $ time pype map 'str.strip || requests.get || ?.text || ?.split()[6] || int'  < urls.txt
+   $ time pype 'str.strip || requests.get || ?.text'  < urls.txt
 
    7938
    7939
@@ -73,20 +73,20 @@ Use ``--async`` to make I/O really fast (see caveats below). Making sequential r
    user	0m0.359s
    sys	0m0.025s
 
+
 Making concurrent requests is much faster: ::
 
-   $ time pype --async map 'str.strip || treq.get || treq.text_content || ?.split()[6] || int'  < urls.txt
+   $ time pype --async 'str.strip || treq.get || treq.text_content'  < urls.txt
 
-   7943
-   7943
-   7943
-   7943
-   7943
+   Hello, Requester_254. You are client number 8025 for this server.
+   Hello, Requester_083. You are client number 8025 for this server.
+   Hello, Requester_128. You are client number 8025 for this server.
+   Hello, Requester_064. You are client number 8025 for this server.
+   Hello, Requester_276. You are client number 8025 for this server.
 
-   real	0m2.435s
-   user	0m0.385s
-   sys	0m0.042s
-
+   real	0m2.626s
+   user	0m0.574s
+   sys	0m0.044s
 
 * ``--async`` isn't throttled, so **please** use it only for small batches of requests (otherwise you may interfere with your target servers).
 * ``--async`` currently works only with ``pype map``, not ``pype apply`` and works only for a single ``map`` command, e.g. ``pype map 'str.upper || len || ? & 1``, not for chains, e.g. ``pype map str.upper map len map '? & 1'``.
