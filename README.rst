@@ -16,13 +16,13 @@ At the command prompt, use ``pype`` to act on each item in the file with python 
 
 Chain python functions together with ```||``: ::
 
-  printf 'Hello'  | pype 'str.upper || len'
+  $ printf 'Hello'  | pype 'str.upper || len'
 
   5
 
 Use ``?`` as a placeholder for the input at each stage: ::
 
-  printf 'Hello World'  | pype 'str.split || ?[0].upper() + "!"'
+  $ printf 'Hello World'  | pype 'str.split || ?[0].upper() + "!"'
 
   HELLO!
 
@@ -52,7 +52,7 @@ Automatically import required modules and use their functions: ::
    Hello, Requester_276. You are client number 7907 for this server.
 
 
-Use ``map`` to act on each input item (``map`` is the default command). Use ` ``apply`` to act on the sequence of items. Finding the largest number returned from the server: ::
+Use ``map`` to act on each input item (``map`` is the default command). Use ``apply`` to act on the sequence of items. Finding the largest number returned from the server: ::
 
     $ pype --newlines=no map 'str.strip || requests.get || ?.text || ?.split()[6] || int' apply 'max'  < urls.txt
 
@@ -75,7 +75,7 @@ Use ``--async`` to make I/O really fast (see caveats below). Making sequential r
 
 Making concurrent requests is much faster: ::
 
-   time pype --async map 'str.strip || treq.get || treq.text_content || ?.split()[6] || int'  < urls.txt
+   $ time pype --async map 'str.strip || treq.get || treq.text_content || ?.split()[6] || int'  < urls.txt
 
    7943
    7943
