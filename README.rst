@@ -96,18 +96,20 @@ Installation
 TBD
 
 
-
-
-
 Caveats
 =======
 * Security
-  * If you use ``exec``, ``eval`` or ``subprocess`` commands, you can execute arbitrary code from the input.
+  * ``pype`` assumes trusted commands arguments and untrusted input stream data.
+  * ``pype`` uses ``eval`` on your arguments, which can have unintended consequences.
+  * If you use ``exec``, ``eval`` or ``subprocess`` (or similar) commands, you can execute arbitrary code from the input.
+  * I haven't yet seen an input stream that executes arbitrary code (without using ``exec``, ``eval``, ``subprocess``, or similar command arguments) but they may exist.
   * There may be ways to make this package dangerous that I don't know about. Use it at your own risk.
 * ```--async``
   * ``--async`` isn't throttled, so **please** use it only for small batches of requests (otherwise you may interfere with your target servers).
   * ``--async`` currently works only with ``pype map``, not ``pype apply`` and works only for a single ``map`` command, e.g. ``pype map 'str.upper || len || ? & 1``, not for chains, e.g. ``pype map str.upper map len map '? & 1'``.
   * ``--async`` works only with async APIs like ``treq`` instead of synchronous APIs like ``requests``.
+* Quoting
+  * Quoting the separator ``||`` is not handled correctly yet.
 
 
 Status
