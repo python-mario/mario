@@ -237,7 +237,7 @@ def _command_string_to_function(command, modules=None, symbol='?'):
     command = command.replace(symbol, _PYPE_VALUE)
 
     def function(value):
-        return eval(command, {_PYPE_VALUE: value}, modules)
+        return eval(command, modules, {_PYPE_VALUE: value})
 
     return function
 
