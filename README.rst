@@ -43,7 +43,7 @@ Given a server responding to ``http://localhost:8080/`` and a list of urls in ``
 
 Automatically import required modules and use their functions: ::
 
-   $ pype map 'str.strip || requests.get || ?.text ' < urls.txt
+   $ pype 'str.strip || requests.get || ?.text ' < urls.txt
 
    Hello, Requester_254. You are client number 7903 for this server.
    Hello, Requester_083. You are client number 7904 for this server.
