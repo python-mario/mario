@@ -14,7 +14,7 @@ At the command prompt, use ``pype`` to act on each item in the file with python 
   ABC
 
 
-Chain python functions together with ```||``: ::
+Chain python functions together with ``||``: ::
 
   $ printf 'Hello'  | pype 'str.upper || len'
 
@@ -88,15 +88,26 @@ Making concurrent requests is much faster: ::
    user	0m0.574s
    sys	0m0.044s
 
-* ``--async`` isn't throttled, so **please** use it only for small batches of requests (otherwise you may interfere with your target servers).
-* ``--async`` currently works only with ``pype map``, not ``pype apply`` and works only for a single ``map`` command, e.g. ``pype map 'str.upper || len || ? & 1``, not for chains, e.g. ``pype map str.upper map len map '? & 1'``.
-* ``--async`` works only with async APIs like ``treq`` instead of synchronous APIs like ``requests``.
 
 
 Installation
 ============
 
 TBD
+
+
+
+
+
+Caveats
+=======
+* Security
+  * If you use ``exec``, ``eval`` or ``subprocess`` commands, you can execute arbitrary code from the input.
+  * There may be ways to make this package dangerous that I don't know about. Use it at your own risk.
+* ```--async``
+  * ``--async`` isn't throttled, so **please** use it only for small batches of requests (otherwise you may interfere with your target servers).
+  * ``--async`` currently works only with ``pype map``, not ``pype apply`` and works only for a single ``map`` command, e.g. ``pype map 'str.upper || len || ? & 1``, not for chains, e.g. ``pype map str.upper map len map '? & 1'``.
+  * ``--async`` works only with async APIs like ``treq`` instead of synchronous APIs like ``requests``.
 
 
 Status
