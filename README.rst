@@ -4,7 +4,35 @@ pype: command-line pipes with Python
 Usage
 =====
 
-Suppose we have a list of urls in ``urls.txt``: ::
+
+
+
+At the command prompt, use ``pype`` to act on each item in the file with python commands: ::
+
+  $ printf 'abc' | pype str.upper
+
+  ABC
+
+
+Chain python functions together with ```||``: ::
+
+  printf 'Hello'  | pype 'str.upper || len'
+
+  5
+
+Use ``?`` as a placeholder for the input at each stage: ::
+
+  printf 'Hello World'  | pype 'str.split || ?[0].upper() + "!"'
+
+  HELLO!
+
+  $ printf 'Hello World'  | pype 'str.split || ?[0].upper() + "!" || ?.replace("H", "J")'
+
+  JELLO!
+
+
+
+Given a server responding to ``http://localhost:8080/`` a list of urls in ``urls.txt`` : ::
 
   http://localhost:8080/Requester_254
   http://localhost:8080/Requester_083
@@ -13,29 +41,9 @@ Suppose we have a list of urls in ``urls.txt``: ::
   http://localhost:8080/Requester_276
 
 
+Automatically import required modules and use their functions: ::
 
-
-At the command prompt, use ``map`` to act on each item in the file: ::
-
-  $ pype map str.upper < urls.txt
-
-   HTTP://LOCALHOST:8080/REQUESTER_254
-   HTTP://LOCALHOST:8080/REQUESTER_083
-   HTTP://LOCALHOST:8080/REQUESTER_128
-   HTTP://LOCALHOST:8080/REQUESTER_064
-   HTTP://LOCALHOST:8080/REQUESTER_276
-
-
-   $ pype map '?.rsplit("/", 1) || "{}/{}".format(?[0], ?[1].upper())' < urls.txt
-
-   http://localhost:8080/REQUESTER_254
-   http://localhost:8080/REQUESTER_083
-   http://localhost:8080/REQUESTER_128
-   http://localhost:8080/REQUESTER_064
-   http://localhost:8080/REQUESTER_276
-
-
-   $ pype map 'str.strip || requests.get || ?.text ' < urls.txt # While running a local server
+   $ pype map 'str.strip || requests.get || ?.text ' < urls.txt
 
    Hello, Requester_254. You are client number 7903 for this server.
    Hello, Requester_083. You are client number 7904 for this server.
@@ -43,7 +51,8 @@ At the command prompt, use ``map`` to act on each item in the file: ::
    Hello, Requester_064. You are client number 7906 for this server.
    Hello, Requester_276. You are client number 7907 for this server.
 
-Use ``apply`` to act on the iterable. Finding the largest number returned from the server: ::
+
+Use ``map`` to act on each input item (``map`` is the default command). Use ` ``apply`` to act on the sequence of items. Finding the largest number returned from the server: ::
 
     $ pype --newlines=no map 'str.strip || requests.get || ?.text || ?.split()[6] || int' apply 'max'  < urls.txt
 
@@ -93,4 +102,4 @@ TBD
 Status
 ======
 
-* This package is experimental pre-alpha and changes often
+* This package is experimental pre-alpha and is subject to change.
