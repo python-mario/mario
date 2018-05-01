@@ -341,11 +341,11 @@ def test_fn_autoimport_counter_keys(string):
         ((['ab'], True), ['ab\n']),
         ((['ab'], False), ['ab']),
         ((['ab\n', 'cd\n'], 'auto'), ['ab\n', 'cd\n']),
-        ((['ab\n', 'cd\n'], True), ['ab\n', 'cd\n']),
+        ((['ab\n', 'cd\n'], True), ['ab\n\n', 'cd\n\n']),
         ((['ab\n', 'cd\n'], False), ['ab\n', 'cd\n']),
     ],
 )
-def test_maybe_add_newlines_auto(args, expected):
+def test_maybe_add_newlines(args, expected):
     assert list(pype.app._maybe_add_newlines(*args)) == expected
 
 
