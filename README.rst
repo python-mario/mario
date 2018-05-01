@@ -109,7 +109,7 @@ Caveats
 
   * ``--async`` isn't throttled, so **please** use it only for small batches of requests (otherwise you may interfere with your target servers).
 
-  * ``--async`` currently works only with ``map``, not ``apply`` and works only for a single ``map`` command, e.g. ``map 'str.upper || len || ? & 1``, not for chains, e.g. ``map str.upper map len map '? & 1'``.
+  * ``--async`` currently works only with ``map``, not ``apply`` and works only for a single ``map`` pipe-string, e.g. ``map 'str.upper || len || ? & 1'``, not for chains, e.g. ``map str.upper map len map '? & 1'``.
 
   * ``--async`` works only with async APIs like ``treq`` instead of synchronous APIs like ``requests``.
 
