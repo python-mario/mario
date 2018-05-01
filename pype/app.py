@@ -163,12 +163,6 @@ def _maybe_add_newlines(iterator, newlines_setting='auto'):
         raise ValueError(f'Invalid newlines_setting: `{newlines_setting}`')
 
     if newlines_setting == 'auto':
-        # try:
-        #     first, iterator = toolz.peek(iterator)
-        # except StopIteration:
-        #     add_newlines = False
-        # else:
-        #     add_newlines = not str(first).endswith('\n')
         add_newlines = False
     else:
         add_newlines = newlines_setting

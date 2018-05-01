@@ -336,8 +336,8 @@ def test_fn_autoimport_counter_keys(string):
 @pytest.mark.parametrize(
     'args,expected',
     [
-        ((['ab'], ), ['ab\n']),
-        ((['ab'], 'auto'), ['ab\n']),
+        ((['ab'], ), ['ab']),
+        ((['ab'], 'auto'), ['ab']),
         ((['ab'], True), ['ab\n']),
         ((['ab'], False), ['ab']),
         ((['ab\n', 'cd\n'], 'auto'), ['ab\n', 'cd\n']),
