@@ -412,7 +412,7 @@ def main(  # pylint: disable=too-many-arguments
     'do_async',
     is_flag=True,
     default=False,
-    help='Run commands on each input item in asynchronously.')
+    help='Run commands on each input item asynchronously.')
 @click.option('--version', is_flag=True, help='Show the version and exit.')
 def cli(
         imports,
