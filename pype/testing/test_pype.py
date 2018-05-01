@@ -146,9 +146,9 @@ def test_raises_on_missing_module(runner):
 @given(string=st.text())
 def test_str_simple_mappers(mapper, string):
 
-    expected = [str(mapper(string)) + '\n']
+    expected = [str(mapper(string))]
     qualname = mapper.__qualname__
-    result = list(pype.app.run(qualname, in_stream=[string], newlines='yes'))
+    result = list(pype.app.run(qualname, in_stream=[string], newlines=False))
 
     assert result == expected
 
@@ -162,9 +162,9 @@ def test_str_simple_mappers(mapper, string):
 @given(in_stream=st.integers())
 def test_main_mappers_int(mapper, in_stream):
     qualname = mapper.__qualname__
-    result = list(pype.app.run(qualname, in_stream=[in_stream]))
+    result = list(pype.app.run(qualname, in_stream=[in_stream], newlines=False))
 
-    expected = [str(mapper(in_stream)) + '\n']
+    expected = [str(mapper(in_stream)) ]
 
     assert result == expected
 
@@ -223,13 +223,15 @@ def test_get_identifiers_matches_str_isidentifier(string):
             {
                 'mapper': 'collections.Counter || ?.keys() ',
                 'in_stream': ['abbccc\n'],
+                'newlines': False,
             },
-            [str({'a': 1, 'b': 2, 'c': 3, '\n': 1}.keys()) + '\n'],
+            [str({'a': 1, 'b': 2, 'c': 3, '\n': 1}.keys())],
         ),
         (
             {
                 'mapper': 'collections.Counter || ?.keys() || "".join ',
                 'in_stream': ['abbccc\n'],
+                'newlines':False,
             },
             ['abc\n'],
         ),
@@ -237,16 +239,17 @@ def test_get_identifiers_matches_str_isidentifier(string):
             {
                 'mapper': 'collections.Counter || ?.keys() || "".join ',
                 'in_stream': [''],
+                'newlines': False,
             },
-            ['\n'],
+            [''],
         ),
         (
             {
                 'mapper': 'str.__add__(?, "bc")',
-                'newlines': True,
+                'newlines': False,
                 'in_stream': ['a'],
             },
-            ['abc\n'],
+            ['abc'],
         ),
         (
             {
@@ -325,8 +328,8 @@ def test_fn_autoimport_counter_keys(string):
     mapper = 'collections.Counter || ?.keys() '
     string = string + '\n'
     in_stream = [string]
-    expected = [str(collections.Counter(string).keys()) + '\n']
-    result = pype.app.run(mapper=mapper, in_stream=in_stream)
+    expected = [str(collections.Counter(string).keys()) ]
+    result = pype.app.run(mapper=mapper, in_stream=in_stream, newlines=False)
     assert list(result) == expected
 
 
@@ -337,12 +340,12 @@ def test_fn_autoimport_counter_keys(string):
         ((['ab'], 'auto'), ['ab\n']),
         ((['ab'], True), ['ab\n']),
         ((['ab'], False), ['ab']),
-        ((['ab', 'cd'], 'auto'), ['ab\n', 'cd\n']),
-        ((['ab', 'cd'], True), ['ab\n', 'cd\n']),
-        ((['ab', 'cd'], False), ['ab', 'cd']),
+        ((['ab\n', 'cd\n'], 'auto'), ['ab\n', 'cd\n']),
+        ((['ab\n', 'cd\n'], True), ['ab\n', 'cd\n']),
+        ((['ab\n', 'cd\n'], False), ['ab\n', 'cd\n']),
     ],
 )
-def test__maybe_add_newlines(args, expected):
+def test_maybe_add_newlines_auto(args, expected):
     assert list(pype.app._maybe_add_newlines(*args)) == expected
 
 
@@ -374,6 +377,11 @@ def test_cli_autoimport_placeholder(string, runner):
     'args, in_stream, expected',
     [
         (
+            ['map', '?'],
+            'abc',
+            'abc',
+        ),
+        (
             [
                 'map',
                 'str.replace(?, ".", "!")',
@@ -394,16 +402,18 @@ def test_cli_autoimport_placeholder(string, runner):
             [
                 '-icollections',
                 '-ijson',
+                '--newlines=no',
                 'map',
                 'json.dumps(dict(collections.Counter(str.replace(?, ".", "!"))))',
             ],
-            'a.b.c\n',
-            '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
+            'a.b.c',
+            '{"a": 1, "!": 2, "b": 1, "c": 1}',
         ),
         (
             [
                 '-icollections',
                 '-ijson',
+                '--newlines=yes',
                 'map',
                 'str.replace(?, ".", "!") || collections.Counter(?) || dict(?) || json.dumps(?) ',
             ],
@@ -414,6 +424,7 @@ def test_cli_autoimport_placeholder(string, runner):
             [
                 '-icollections',
                 '-ijson',
+                '--newlines=yes',
                 'map',
                 'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
             ],
@@ -424,6 +435,7 @@ def test_cli_autoimport_placeholder(string, runner):
             [
                 '-icollections',
                 '-ijson',
+                '--newlines=yes',
                 'map',
                 'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
             ],
@@ -432,6 +444,7 @@ def test_cli_autoimport_placeholder(string, runner):
         ),
         (
             [
+                '--newlines=yes',
                 'map',
                 'str.replace(?, ".", "!") || collections.Counter(?) || json.dumps(?) ',
             ],
@@ -458,6 +471,7 @@ def test_cli_autoimport_placeholder(string, runner):
         ),
         (
             [
+                '--newlines=yes',
                 "apply",
                 'enumerate || list || reversed || enumerate || list',
             ],
@@ -492,6 +506,7 @@ def test_cli(args, in_stream, expected, runner):
     assert not result.exception
     assert result.exit_code == 0
     assert result.output == expected
+
 
 
 class Timer:
