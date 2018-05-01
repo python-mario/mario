@@ -1,4 +1,4 @@
-pype: command-line pipes with Python
+pype: command-line pipes in Python
 ####################################
 
 Usage
