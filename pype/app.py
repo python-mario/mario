@@ -383,6 +383,7 @@ def main(  # pylint: disable=too-many-arguments
     default='map',
     default_if_no_args=True,
     chain=True,
+    invoke_without_command=True,
 )
 @click.option(
     '--newlines',
@@ -449,7 +450,7 @@ def process_pipeline(processors, **kwargs):
 
     if kwargs['version']:
         print(f'{pype.__name__} {pype._version.__version__}')
-        sys.exit()
+        return
 
     in_stream = click.get_text_stream('stdin')
 

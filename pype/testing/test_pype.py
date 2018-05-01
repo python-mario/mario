@@ -552,6 +552,6 @@ def test_cli_version(runner):
 
     result = runner.invoke(pype.app.cli, args)
 
-    assert result.output == pype.__name__ + ' ' + pype._version.__version__
+    assert result.output == f'{pype.__name__} {pype._version.__version__}\n'
     assert not result.exception
     assert result.exit_code == 0
