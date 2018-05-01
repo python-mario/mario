@@ -18,6 +18,7 @@ from hypothesis import settings, Verbosity, reproduce_failure
 
 import pype
 import pype.app
+import pype._version
 from pype.app import _PYPE_VALUE, PypeParseError
 
 settings.register_profile("ci", max_examples=1000)
@@ -545,3 +546,12 @@ def test_cli_async_chain_map_apply(runner, reactor):
     assert len(lines) == 1
     assert starts == expected
     assert t.elapsed < timedelta(seconds=4)
+
+def test_cli_version(runner):
+    args = ['--version']
+
+    result = runner.invoke(pype.app.cli, args)
+
+    assert result.output == pype.__name__ + ' ' + pype._version.__version__
+    assert not result.exception
+    assert result.exit_code == 0
