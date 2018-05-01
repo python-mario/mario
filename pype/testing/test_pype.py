@@ -336,17 +336,18 @@ def test_fn_autoimport_counter_keys(string):
 @pytest.mark.parametrize(
     'args,expected',
     [
-        ((['ab'], ), ['ab']),
-        ((['ab'], 'auto'), ['ab']),
-        ((['ab'], True), ['ab\n']),
-        ((['ab'], False), ['ab']),
-        ((['ab\n', 'cd\n'], 'auto'), ['ab\n', 'cd\n']),
-        ((['ab\n', 'cd\n'], True), ['ab\n\n', 'cd\n\n']),
-        ((['ab\n', 'cd\n'], False), ['ab\n', 'cd\n']),
+        ((['ab'], 'auto', False), ['ab']),
+        ((['ab'], True, True), ['ab\n']),
+        ((['ab'], False, True), ['ab']),
+        ((['ab'], True, False), ['ab\n']),
+        ((['ab\n', 'cd\n'], 'auto', True), ['ab\n', 'cd\n']),
+        ((['ab\n', 'cd\n'], True, True), ['ab\n\n', 'cd\n\n']),
+        ((['ab\n', 'cd\n'], False, True), ['ab\n', 'cd\n']),
     ],
 )
 def test_maybe_add_newlines(args, expected):
-    assert list(pype.app._maybe_add_newlines(*args)) == expected
+    text, input_setting, input_has_newlines = args
+    assert list(pype.app._maybe_add_newlines(text, input_setting, input_has_newlines)) == expected
 
 
 @given(string=st.one_of(st.just(''), st.text()))

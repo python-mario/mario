@@ -156,10 +156,21 @@ def _get_modules(commands, named_imports, autoimport):
     modules = {**autoimports, **named_modules}
     return modules
 
+def _xor(a, b):
+    return (a or b) and not (a and b)
 
-def _maybe_add_newlines(iterator, should_add_newlines):
-    if should_add_newlines not in [True, False]:
-        raise ValueError(f'Invalid should_add_newlines: `{should_add_newlines}`')
+
+def _maybe_add_newlines(iterator, newlines_setting, input_has_newlines):
+    if newlines_setting not in [True, False, 'auto']:
+        raise ValueError(f'Invalid newlines_setting: `{newlines_setting}`')
+
+    if newlines_setting is True:
+        should_add_newlines = True
+    elif newlines_setting is False:
+        should_add_newlines = False
+    elif newlines_setting == 'auto':
+        output_has_newlines, iterator = _has_newlines(iterator)
+        should_add_newlines = _xor(input_has_newlines, output_has_newlines)
 
     for item in iterator:
         string = str(item)
@@ -309,6 +320,7 @@ def run(  # pylint: disable=too-many-arguments
     pipestrings = (x for x in [mapper, applier] if x)
     modules = _get_modules(pipestrings, imports, autoimport)
 
+    input_has_newlines, in_stream = _has_newlines(in_stream)
     items = in_stream
 
     if mapper:
@@ -319,7 +331,7 @@ def run(  # pylint: disable=too-many-arguments
         apply_function = _pipestring_to_function(applier, modules, placeholder)
         items = apply_function(items)
 
-    items = _maybe_add_newlines(items, newlines)
+    items = _maybe_add_newlines(items, newlines, input_has_newlines)
 
     for item in items:
         yield item
@@ -334,21 +346,7 @@ def _has_newlines(iterator):
 
 
 
-def _should_add_newlines(iterator, newlines_setting):
-    if newlines_setting is True:
-        return True, iterator
-    if newlines_setting is False:
-        return False, iterator
-    if newlines_setting == 'auto':
-        try:
-            first, iterator = toolz.peek(iterator)
-        except StopIteration:
-            add_newlines = False
-        else:
-            add_newlines = not str(first).endswith('\n')
-            print(locals(), len(first))
-        return add_newlines, iterator
-    raise ValueError(f'Invalid newlines_setting `{newlines_setting}`.')
+
 
 def main(  # pylint: disable=too-many-arguments
         mapper=None,
@@ -367,7 +365,6 @@ def main(  # pylint: disable=too-many-arguments
     if mapper:
         _check_parsing(mapper, placeholder)
 
-    input_has_newlines, in_stream = _has_newlines(in_stream)
 
 
     if do_async:
@@ -377,7 +374,7 @@ def main(  # pylint: disable=too-many-arguments
             imports=imports,
             placeholder=placeholder,
             autoimport=autoimport,
-            newlines=should_add_newlines,
+            newlines=newlines,
             reactor=reactor,
             processors=processors,
         )
@@ -391,7 +388,7 @@ def main(  # pylint: disable=too-many-arguments
             imports=imports,
             placeholder=placeholder,
             autoimport=autoimport,
-            newlines=should_add_newlines,
+            newlines=newlines,
         )
 
     return gen
