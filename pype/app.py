@@ -157,19 +157,13 @@ def _get_modules(commands, named_imports, autoimport):
     return modules
 
 
-def _maybe_add_newlines(iterator, newlines_setting='auto'):
-
-    if newlines_setting not in ['auto', True, False]:
-        raise ValueError(f'Invalid newlines_setting: `{newlines_setting}`')
-
-    if newlines_setting == 'auto':
-        add_newlines = False
-    else:
-        add_newlines = newlines_setting
+def _maybe_add_newlines(iterator, should_add_newlines):
+    if should_add_newlines not in [True, False]:
+        raise ValueError(f'Invalid should_add_newlines: `{should_add_newlines}`')
 
     for item in iterator:
         string = str(item)
-        if add_newlines:
+        if should_add_newlines:
             yield string + os.linesep
         else:
             yield string
@@ -331,6 +325,31 @@ def run(  # pylint: disable=too-many-arguments
         yield item
 
 
+def _has_newlines(iterator):
+    try:
+        first, iterator = toolz.peek(iterator)
+    except StopIteration:
+        return False, iterator
+    return str(first).endswith('\n'), iterator
+
+
+
+def _should_add_newlines(iterator, newlines_setting):
+    if newlines_setting is True:
+        return True, iterator
+    if newlines_setting is False:
+        return False, iterator
+    if newlines_setting == 'auto':
+        try:
+            first, iterator = toolz.peek(iterator)
+        except StopIteration:
+            add_newlines = False
+        else:
+            add_newlines = not str(first).endswith('\n')
+            print(locals(), len(first))
+        return add_newlines, iterator
+    raise ValueError(f'Invalid newlines_setting `{newlines_setting}`.')
+
 def main(  # pylint: disable=too-many-arguments
         mapper=None,
         applier=None,
@@ -348,6 +367,9 @@ def main(  # pylint: disable=too-many-arguments
     if mapper:
         _check_parsing(mapper, placeholder)
 
+    input_has_newlines, in_stream = _has_newlines(in_stream)
+
+
     if do_async:
         _async_run(
             mapper=mapper,
@@ -355,7 +377,7 @@ def main(  # pylint: disable=too-many-arguments
             imports=imports,
             placeholder=placeholder,
             autoimport=autoimport,
-            newlines=newlines,
+            newlines=should_add_newlines,
             reactor=reactor,
             processors=processors,
         )
@@ -369,7 +391,7 @@ def main(  # pylint: disable=too-many-arguments
             imports=imports,
             placeholder=placeholder,
             autoimport=autoimport,
-            newlines=newlines,
+            newlines=should_add_newlines,
         )
 
     return gen
