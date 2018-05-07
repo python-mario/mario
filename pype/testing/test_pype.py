@@ -276,6 +276,14 @@ def test_lambda():
     assert list(result) == expected
 
 
+def test_keyword_arg():
+    mapper = 'str.split || sorted(?, key=operator.itemgetter(-1))'
+    in_stream = ['1 2\n2 1\n']
+    result = pype.app.run(mapper=mapper, newlines=False, in_stream=in_stream)
+    expected = ["['1', '2']\n['1', '2']\n"]
+    assert list(result) == expected
+
+
 @pytest.mark.xfail(strict=True)
 @pytest.mark.parametrize(
     'kwargs, expected',
