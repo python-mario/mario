@@ -121,6 +121,7 @@ def test_cli_raises_without_autoimport(runner):
     assert isinstance(result.exception, NameError)
 
 
+
 def test_raises_on_missing_module(runner):
 
     args = [
@@ -131,7 +132,7 @@ def test_raises_on_missing_module(runner):
 
     result = runner.invoke(pype.app.cli, args, input=in_stream)
 
-    assert isinstance(result.exception, RuntimeError)
+    assert isinstance(result.exception, NameError)
 
 
 @pytest.mark.parametrize(
@@ -272,7 +273,7 @@ def test_lambda():
     mapper = 'str.split || sorted(?, key=lambda x: x[-1])'
     in_stream = ['1 2\n2 1\n']
     result = pype.app.run(mapper=mapper, newlines=False, in_stream=in_stream)
-    expected = ["['1', '2']\n['1', '2']\n"]
+    expected = ["['1', '1', '2', '2']"]
     assert list(result) == expected
 
 
@@ -280,7 +281,7 @@ def test_keyword_arg():
     mapper = 'str.split || sorted(?, key=operator.itemgetter(-1))'
     in_stream = ['1 2\n2 1\n']
     result = pype.app.run(mapper=mapper, newlines=False, in_stream=in_stream)
-    expected = ["['1', '2']\n['1', '2']\n"]
+    expected = ["['1', '1', '2', '2']"]
     assert list(result) == expected
 
 

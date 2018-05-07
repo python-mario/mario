@@ -118,8 +118,7 @@ def _get_autoimport_modules(fullname):
             if module is sys.modules['builtins']:
                 return {}
             return {name: module}
-    raise RuntimeError(f'Could not find {fullname}')
-
+    return {}
 
 def _get_named_modules(imports):
     """Import modules into dict mapping name to module."""
