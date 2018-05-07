@@ -504,3 +504,7 @@ def cli_map(mapper):
         return main(mapper=mapper, **kwargs)
 
     return wrapped
+
+
+if __name__ == '__main__':
+    cli()

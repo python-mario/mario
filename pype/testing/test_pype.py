@@ -259,10 +259,20 @@ def test_get_identifiers_matches_str_isidentifier(string):
             },
             ['A\nBB\nCCC\n'],
         ),
+
+
     ],
 )
 def test_main_example(kwargs, expected):
     result = pype.app.run(**kwargs)
+    assert list(result) == expected
+
+
+def test_lambda():
+    mapper = 'str.split || sorted(?, key=lambda x: x[-1])'
+    in_stream = ['1 2\n2 1\n']
+    result = pype.app.run(mapper=mapper, newlines=False, in_stream=in_stream)
+    expected = ["['1', '2']\n['1', '2']\n"]
     assert list(result) == expected
 
 
