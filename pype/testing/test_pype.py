@@ -269,7 +269,7 @@ def test_get_identifiers_matches_str_isidentifier(string):
                 'applier': '? or time.sleep(1)',
                 'in_stream': ['a\nbb\nccc\n'],
             },
-            'a\nbb\nccc\n',
+            ['a\nbb\nccc\n'],
         ),
 
 
@@ -534,7 +534,7 @@ def test_cli_autoimport_placeholder(string, runner):
         (
             [
                 '--newlines=no',
-                '? or time.sleep(1)',
+                '? or collections.Counter(?)',
             ],
             'a\nbb\nccc\n',
             'a\nbb\nccc\n',
@@ -571,9 +571,15 @@ def test_replace_short_placeholder(string,short_placeholder, separator,  expecte
         ('ab||cd', '||', ['ab', 'cd']),
         ('ab||cd||ef', '||', ['ab', 'cd', 'ef']),
         ('a"b||c"d||ef', '||', ['a"b||cd', 'ef']),
+        ('a', '\\', ['a']),
+        ('ab', '\\', ['ab']),
+        ('ab\\cd', '\\', ['ab', 'cd']),
+        ('ab\\cd\\ef', '\\', ['ab', 'cd', 'ef']),
+        ('a"b\\c"d\\ef', '\\', ['a"b\\cd', 'ef']),
+
     ],
 )
-def test_split_string_on_separator(string, separator,expected):
+def test_split_string_on_separator(string, separator, expected):
     result = pype.app._split_string_on_separator(string, separator)
     assert result == expected
 

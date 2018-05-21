@@ -278,6 +278,8 @@ def _command_string_to_function(command, modules=None, symbol='?'):
 
 
 def _split_string_on_separator(string, separator):
+
+    tokens = _string_to_tokens(string)
     return string.split(separator)
 
 
