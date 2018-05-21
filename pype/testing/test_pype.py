@@ -266,7 +266,7 @@ def test_get_identifiers_matches_str_isidentifier(string):
 
             {
                 'newlines': False,
-                'applier': '? and time.sleep(1)',
+                'applier': '? or time.sleep(1)',
                 'in_stream': ['a\nbb\nccc\n'],
             },
             'a\nbb\nccc\n',
@@ -534,7 +534,7 @@ def test_cli_autoimport_placeholder(string, runner):
         (
             [
                 '--newlines=no',
-                '? and time.sleep(1)',
+                '? or time.sleep(1)',
             ],
             'a\nbb\nccc\n',
             'a\nbb\nccc\n',

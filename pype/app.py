@@ -88,7 +88,7 @@ class _StringScanner:
     _identifier_strings = attr.ib(default=attr.Factory(set))
 
     def _maybe_update(self):
-        print(vars(self))
+
         if self._current_tokens and _is_name_token(self._current_tokens[-1]):
             if _is_name_token(self._current_tokens[0]):
 
@@ -104,16 +104,17 @@ class _StringScanner:
                 if _is_reference_part(tok):
                     self._current_tokens.append(tok)
             elif not _is_reference_part(tok):
-
                 self._maybe_update()
             elif _is_name_token(tok) and _is_name_token(self._current_tokens[-1]):
+
                 self._maybe_update()
                 self._current_tokens.append(tok)
             elif tok.type == token.OP and _is_reference_part(tok):
+
                 self._current_tokens.append(tok)
             elif _is_name_token(tok):
                 self._current_tokens.append(tok)
-                self._maybe_update()
+
 
 
         self._maybe_update()
