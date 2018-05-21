@@ -101,10 +101,12 @@ def test_get_module(name, expected):
         ('1 + 2', set()),
         ('json.dumps(collections.Counter)', {'json.dumps', 'collections.Counter'}),
         ('str.__add__(?, "bc") ', {'str.__add__'}),
+        ('? and time.sleep(1)', {'and', 'time.sleep'}),
     ],
 )
 def test_get_identifiers(string, expected):
-    assert pype.app._get_maybe_namespaced_identifiers(string) == expected
+    result = pype.app._get_maybe_namespaced_identifiers(string)
+    assert result  == expected
 
 
 def test_cli_raises_without_autoimport(runner):
@@ -259,6 +261,15 @@ def test_get_identifiers_matches_str_isidentifier(string):
                 'in_stream': ['a\nbb\nccc\n'],
             },
             ['A\nBB\nCCC\n'],
+        ),
+        (
+
+            {
+                'newlines': False,
+                'applier': '? and time.sleep(1)',
+                'in_stream': ['a\nbb\nccc\n'],
+            },
+            'a\nbb\nccc\n',
         ),
 
 
@@ -547,8 +558,8 @@ def test_cli(args, in_stream, expected, runner):
     ],
 )
 def test_replace_short_placeholder(string,short_placeholder, separator,  expected)    :
-    tokens = pype.app._string_to_tokens(string)
-    result = pype.app._replace_short_placeholder(tokens, short_placeholder, separator)
+
+    result = pype.app._replace_short_placeholder(string, short_placeholder, separator)
     assert result == expected
 
 

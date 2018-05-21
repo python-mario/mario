@@ -60,6 +60,7 @@ def _tokens_to_string(token_objects):
 
 
 def _get_maybe_namespaced_identifiers(string):
+
     scanner = _StringScanner(string)
     results = scanner.scan()
     return results
@@ -67,7 +68,8 @@ def _get_maybe_namespaced_identifiers(string):
 
 
 
-def _replace_short_placeholder(input_tokens, short_placeholder, separator):
+def _replace_short_placeholder(string, short_placeholder, separator):
+    input_tokens = _string_to_tokens(string)
     output_tokens = []
     for tok in input_tokens:
         if tok.type == token.ERRORTOKEN and tok.string == short_placeholder:
@@ -94,11 +96,19 @@ class _StringScanner:
 
     def scan(self):
         tokens = _string_to_tokens(self._string)
-        tokens = list(tokens)
 
-        for token_object in tokens:
-            if _is_reference_part(token_object):
-                self._current_tokens.append(token_object)
+        for tok in tokens:
+            if (
+                    tok.string == '.'
+                    or (
+                        tok.type == token.NAME
+                        and (
+                            not self._current_tokens
+                            or self._current_tokens[-1].type != tok.type
+                        )
+                    )
+            ):
+                self._current_tokens.append(tok)
                 continue
             self._maybe_update()
 
@@ -151,7 +161,8 @@ def _add_short_placeholder(command_string, short_placeholder='?'):
 
 
 def _get_autoimports(string, separator='||'):
-    components = [comp.strip() for comp in string.split(separator)]
+    string = _replace_short_placeholder(string, '?', separator)
+    components = [comp.strip() for comp in _split_string_on_separator(string, separator)]
     name_to_module = {}
     for component in components:
         identifiers = _get_maybe_namespaced_identifiers(component)
