@@ -113,7 +113,9 @@ Caveats
 
 
 
+
 Status
 ======
 
+* Check the issues page for open tickets
 * This package is experimental pre-alpha and is subject to change.
