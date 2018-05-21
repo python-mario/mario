@@ -101,9 +101,7 @@ Caveats
 
 * Security
 
-  * ``pype`` assumes *trusted command arguments* and *untrusted input stream data*. It uses ``eval`` on your arguments, not on the input stream data. I haven't seen an input stream that executes arbitrary code (without using ``exec``, ``eval``, ``subprocess``, or similar command arguments) but such inputs may exist. Use ``pype`` at your own risk.
-
-  * If you use ``exec``, ``eval``, ``subprocess``, or similar commands, you can execute arbitrary code from the input stream.
+  * ``pype`` assumes *trusted command arguments* and *untrusted input stream data*. It uses ``eval`` on your arguments, not on the input stream data. If you use ``exec``, ``eval``, ``subprocess``, or similar commands, you can execute arbitrary code from the input stream.
 
 * ``Asynchronous execution``
 
@@ -112,8 +110,6 @@ Caveats
   * ``--async`` currently works only with ``map``, not ``apply`` and works only for a single ``map`` pipe-string, e.g. ``map 'str.upper || len || ? & 1'``, not for chains, e.g. ``map str.upper map len map '? & 1'``.
 
 * Multiline command strings are not supported
-
-
 
 
 
