@@ -88,8 +88,10 @@ class _StringScanner:
     _identifier_strings = attr.ib(default=attr.Factory(set))
 
     def _maybe_update(self):
+        print(vars(self))
         if self._current_tokens and _is_name_token(self._current_tokens[-1]):
             if _is_name_token(self._current_tokens[0]):
+
                 self._identifier_strings.add(
                     _tokens_to_string(self._current_tokens))
             self._current_tokens = []
@@ -98,19 +100,21 @@ class _StringScanner:
         tokens = _string_to_tokens(self._string)
 
         for tok in tokens:
-            if (
-                    tok.string == '.'
-                    or (
-                        tok.type == token.NAME
-                        and (
-                            not self._current_tokens
-                            or self._current_tokens[-1].type != tok.type
-                        )
-                    )
-            ):
+            if not self._current_tokens:
+                if _is_reference_part(tok):
+                    self._current_tokens.append(tok)
+            elif not _is_reference_part(tok):
+
+                self._maybe_update()
+            elif _is_name_token(tok) and _is_name_token(self._current_tokens[-1]):
+                self._maybe_update()
                 self._current_tokens.append(tok)
-                continue
-            self._maybe_update()
+            elif tok.type == token.OP and _is_reference_part(tok):
+                self._current_tokens.append(tok)
+            elif _is_name_token(tok):
+                self._current_tokens.append(tok)
+                self._maybe_update()
+
 
         self._maybe_update()
 
