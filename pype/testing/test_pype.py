@@ -366,6 +366,8 @@ def test_main_f_string():
     result = list(pype.app.main("""f'"{?}"'""", in_stream=['abc'], newlines='no'))
     assert result == ['"abc"']
 
+def test_multistage_newlines()    :
+    assert 0
 
 def test_parse_error():
     with pytest.raises(PypeParseError):
