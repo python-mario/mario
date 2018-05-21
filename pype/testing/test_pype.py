@@ -122,6 +122,25 @@ def test_cli_raises_without_autoimport(runner):
 
     assert isinstance(result.exception, NameError)
 
+def test_cli_raises_with_multiline_command(runner):
+
+    args = [
+        '--no-autoimport',
+        'map',
+        """
+        (
+        1
+        +
+        ?
+        )
+        """
+    ]
+    in_stream = 'a.b.c\n'
+
+    result = runner.invoke(pype.app.cli, args, input=in_stream)
+
+    assert isinstance(result.exception, pype.app.PypeParseError)
+
 
 
 def test_raises_on_missing_module(runner):
@@ -570,17 +589,17 @@ def test_replace_short_placeholder(string,short_placeholder, separator,  expecte
         ('ab', '||', ['ab']),
         ('ab||cd', '||', ['ab', 'cd']),
         ('ab||cd||ef', '||', ['ab', 'cd', 'ef']),
-        ('a"b||c"d||ef', '||', ['a"b||cd', 'ef']),
+        ('a"b||c"d||ef', '||', ['a"b||c"d', 'ef']),
         ('a', '\\', ['a']),
         ('ab', '\\', ['ab']),
         ('ab\\cd', '\\', ['ab', 'cd']),
         ('ab\\cd\\ef', '\\', ['ab', 'cd', 'ef']),
-        ('a"b\\c"d\\ef', '\\', ['a"b\\cd', 'ef']),
+        ('a"b\\c"d\\ef', '\\', ['a"b\\c"d', 'ef']),
 
     ],
 )
 def test_split_string_on_separator(string, separator, expected):
-    result = pype.app._split_string_on_separator(string, separator)
+    result = list(pype.app._split_string_on_separator(string, separator))
     assert result == expected
 
 

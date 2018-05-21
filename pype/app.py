@@ -277,10 +277,35 @@ def _command_string_to_function(command, modules=None, symbol='?'):
     return function
 
 
-def _split_string_on_separator(string, separator):
+def _find_all(sub, string):
+    start = 0
+    while True:
+        start = string.find(sub, start)
+        if start == -1:
+            return
+        yield start
+        start += len(sub)
 
-    tokens = _string_to_tokens(string)
-    return string.split(separator)
+
+def _split(pattern, string, types=(token.OP, token.ERRORTOKEN)):
+    indexes = list(_find_all(pattern, string))
+    tokens = list(_string_to_tokens(string))
+    position = 0
+    if tokens[-1].end[0] > 2:
+        raise PypeParseError('Cannot parse multiline command strings.')
+    for start_index in indexes:
+        for tok in tokens:
+            # This will fail on multi-line pipestrings:
+            if tok.start <= (1, start_index) < tok.end:
+                if tok.type in types:
+                    yield string[position:start_index]
+                    position = start_index + len(pattern)
+    yield string[position:]
+
+
+def _split_string_on_separator(string, separator):
+    return _split(separator, string)
+
 
 
 def _pipestring_to_functions(multicommand_string, modules=None, symbol='?', separator='||'):
