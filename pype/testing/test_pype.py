@@ -376,6 +376,7 @@ def test_main_autoimport_placeholder_does_not_raise(string):
     pype.app.main(mapper=mapper, in_stream=[string])
 
 
+@reproduce_failure('3.56.5', b'AAEAIwA=')
 @given(string=st.text())
 def test_cli_autoimport_placeholder(string, runner):
     args = [
@@ -519,6 +520,15 @@ def test_cli_autoimport_placeholder(string, runner):
             'a.b.c',
             '{"a": 1, "!": 2, "b": 1, "c": 1}',
         ),
+        (
+            [
+                '--newlines=no',
+                '? and time.sleep(1)',
+            ],
+            'a\nbb\nccc\n',
+            'a\nbb\nccc\n',
+        ),
+
     ],
 )
 def test_cli(args, in_stream, expected, runner):
@@ -528,6 +538,33 @@ def test_cli(args, in_stream, expected, runner):
     assert result.exit_code == 0
     assert result.output == expected
 
+@pytest.mark.parametrize(
+    'string, short_placeholder, separator, expected',
+    [
+        ('?', '?', '||', _PYPE_VALUE + ' '),
+        ('1 + ?', '?', '||', f'1 + {_PYPE_VALUE} '),
+        ('? + 1', '?', '||', f'{_PYPE_VALUE} +1 '),
+    ],
+)
+def test_replace_short_placeholder(string,short_placeholder, separator,  expected)    :
+    tokens = pype.app._string_to_tokens(string)
+    result = pype.app._replace_short_placeholder(tokens, short_placeholder, separator)
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    'string, separator, expected',
+    [
+        ('a', '||', ['a']),
+        ('ab', '||', ['ab']),
+        ('ab||cd', '||', ['ab', 'cd']),
+        ('ab||cd||ef', '||', ['ab', 'cd', 'ef']),
+        ('a"b||c"d||ef', '||', ['a"b||cd', 'ef']),
+    ],
+)
+def test_split_string_on_separator(string, separator,expected):
+    result = pype.app._split_string_on_separator(string, separator)
+    assert result == expected
 
 
 class Timer:

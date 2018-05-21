@@ -61,7 +61,21 @@ def _tokens_to_string(token_objects):
 
 def _get_maybe_namespaced_identifiers(string):
     scanner = _StringScanner(string)
-    return scanner.scan()
+    results = scanner.scan()
+    return results
+
+
+
+
+def _replace_short_placeholder(input_tokens, short_placeholder, separator):
+    output_tokens = []
+    for tok in input_tokens:
+        if tok.type == token.ERRORTOKEN and tok.string == short_placeholder:
+            output_tokens.append((token.NAME, _PYPE_VALUE))
+        else:
+            output_tokens.append(tok)
+    return untokenize(output_tokens).decode('utf-8')
+
 
 
 @attr.s
@@ -80,6 +94,7 @@ class _StringScanner:
 
     def scan(self):
         tokens = _string_to_tokens(self._string)
+        tokens = list(tokens)
 
         for token_object in tokens:
             if _is_reference_part(token_object):
@@ -118,6 +133,7 @@ def _get_autoimport_modules(fullname):
             if module is sys.modules['builtins']:
                 return {}
             return {name: module}
+
     return {}
 
 def _get_named_modules(imports):
@@ -139,6 +155,7 @@ def _get_autoimports(string, separator='||'):
     name_to_module = {}
     for component in components:
         identifiers = _get_maybe_namespaced_identifiers(component)
+
         for identifier in identifiers:
             name_module = _get_autoimport_modules(identifier)
             name_to_module.update(name_module)
@@ -219,6 +236,7 @@ def _check_parsing(command, placeholder):
 
 
 def run_segment(value, segment, modules):
+
     return eval(segment, modules, {_PYPE_VALUE: value})
 
 
@@ -240,12 +258,15 @@ def _command_string_to_function(command, modules=None, symbol='?'):
     def function(value):
         return run_segment(value, command, modules)
 
-
     return function
 
 
+def _split_string_on_separator(string, separator):
+    return string.split(separator)
+
+
 def _pipestring_to_functions(multicommand_string, modules=None, symbol='?', separator='||'):
-    command_strings = multicommand_string.split(separator)
+    command_strings = _split_string_on_separator(multicommand_string, separator)
     functions = []
     for command_string in command_strings:
         functions.append(_command_string_to_function(
