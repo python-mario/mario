@@ -366,8 +366,6 @@ def test_main_f_string():
     result = list(pype.app.main("""f'"{?}"'""", in_stream=['abc'], newlines='no'))
     assert result == ['"abc"']
 
-def test_multistage_newlines()    :
-    assert 0
 
 def test_parse_error():
     with pytest.raises(PypeParseError):
@@ -560,6 +558,15 @@ def test_cli_autoimport_placeholder(string, runner):
             'a\nbb\nccc\n',
             'a\nbb\nccc\n',
         ),
+        (
+            [
+                'apply', 'itertools.islice(?, 1, 3)',
+                'map', 'toolz.first',
+                'apply', '", ".join(?)',
+            ],
+            'a\nbb\nccc\ndddd\n',
+            'b, c\n',
+        )
 
     ],
 )
