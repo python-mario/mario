@@ -12,19 +12,20 @@ from datetime import timedelta
 import arrow
 import pytest
 from click.testing import CliRunner
+import hypothesis
 from hypothesis import given
 import hypothesis.strategies as st
-from hypothesis import settings, Verbosity, reproduce_failure
+from hypothesis import Verbosity, reproduce_failure
 
 import pype
 import pype.app
 import pype._version
 from pype.app import _PYPE_VALUE, PypeParseError
 
-settings.register_profile("ci", max_examples=1000)
-settings.register_profile("dev", max_examples=10)
-settings.register_profile("debug", max_examples=10, verbosity=Verbosity.verbose)
-settings.load_profile(os.getenv('HYPOTHESIS_PROFILE', 'default'))
+hypothesis.settings.register_profile("ci", max_examples=1000)
+hypothesis.settings.register_profile("dev", max_examples=10)
+hypothesis.settings.register_profile("debug", max_examples=10, verbosity=Verbosity.verbose)
+hypothesis.settings.load_profile(os.getenv('HYPOTHESIS_PROFILE', 'default'))
 
 
 @pytest.fixture(name='runner')
