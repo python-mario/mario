@@ -331,6 +331,14 @@ def _async_do_item(mapper_functions, item):
     return d
 
 
+def parallelize(tasks, max_concurrent):
+    cooperator = task.Cooperator()
+    executors = []
+    for _ in range(max_concurrent):
+        executors.append(cooperator.coiterate(tasks))
+    return DeferredList(executors)
+
+
 def _async_react_map(reactor, mapper_functions, items):
     running = [0]
     finished = Deferred()
@@ -347,7 +355,8 @@ def _async_react_map(reactor, mapper_functions, items):
             d.addBoth(check)
 
     deferreds = (_async_do_item(mapper_functions, item) for item in items)
-    wrap(deferreds)
+    deferreds = parallelize(deferreds, 3)
+    # wrap(deferreds)
 
     return finished
 
