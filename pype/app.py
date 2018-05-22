@@ -116,10 +116,7 @@ class _StringScanner:
             elif _is_name_token(tok):
                 self._current_tokens.append(tok)
 
-
-
         self._maybe_update()
-
         return self._identifier_strings
 
 
