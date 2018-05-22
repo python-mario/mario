@@ -168,7 +168,7 @@ def test_raises_on_missing_module(runner):
 @given(string=st.text())
 def test_str_simple_mappers(mapper, string):
 
-    expected = [str(mapper(string))]
+    expected = [mapper(string)]
     qualname = mapper.__qualname__
     result = list(pype.app.run(qualname, in_stream=[string], newlines=False))
 
@@ -186,7 +186,7 @@ def test_main_mappers_int(mapper, in_stream):
     qualname = mapper.__qualname__
     result = list(pype.app.run(qualname, in_stream=[in_stream], newlines=False))
 
-    expected = [str(mapper(in_stream)) ]
+    expected = [mapper(in_stream) ]
 
     assert result == expected
 
@@ -239,7 +239,7 @@ def test_get_identifiers_matches_str_isidentifier(string):
                 'newlines': True,
                 'in_stream': ['abc'],
             },
-            ['ABC\n'],
+            ['ABC'],
         ),
         (
             {
@@ -247,7 +247,7 @@ def test_get_identifiers_matches_str_isidentifier(string):
                 'in_stream': ['abbccc\n'],
                 'newlines': False,
             },
-            [str({'a': 1, 'b': 2, 'c': 3, '\n': 1}.keys())],
+            [{'a': 1, 'b': 2, 'c': 3, '\n': 1}.keys()],
         ),
         (
             {
@@ -303,7 +303,7 @@ def test_lambda():
     mapper = 'str.split || sorted(?, key=lambda x: x[-1])'
     in_stream = ['1 2\n2 1\n']
     result = pype.app.run(mapper=mapper, newlines=False, in_stream=in_stream)
-    expected = ["['1', '1', '2', '2']"]
+    expected = [['1', '1', '2', '2']]
     assert list(result) == expected
 
 
@@ -311,7 +311,7 @@ def test_keyword_arg():
     mapper = 'str.split || sorted(?, key=operator.itemgetter(-1))'
     in_stream = ['1 2\n2 1\n']
     result = pype.app.run(mapper=mapper, newlines=False, in_stream=in_stream)
-    expected = ["['1', '1', '2', '2']"]
+    expected = [['1', '1', '2', '2']]
     assert list(result) == expected
 
 
@@ -377,7 +377,7 @@ def test_fn_autoimport_counter_keys(string):
     mapper = 'collections.Counter || ?.keys() '
     string = string + '\n'
     in_stream = [string]
-    expected = [str(collections.Counter(string).keys()) ]
+    expected = [(collections.Counter(string).keys()) ]
     result = pype.app.run(mapper=mapper, in_stream=in_stream, newlines=False)
     assert list(result) == expected
 
@@ -528,10 +528,7 @@ def test_cli_autoimport_placeholder(string, runner):
                 'enumerate || list || reversed || enumerate || list',
             ],
             'a\nbb\nccc\n',
-            ("""(0, (2, 'ccc\\n'))
-(1, (1, 'bb\\n'))
-(2, (0, 'a\\n'))
-"""),
+            "[(0, (2, 'ccc\\n')), (1, (1, 'bb\\n')), (2, (0, 'a\\n'))]\n",
         ),
         (
             [

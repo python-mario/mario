@@ -4,6 +4,7 @@ from __future__ import generator_stop
 
 from pprint import pprint
 
+import collections
 import importlib
 import itertools
 import os
@@ -193,6 +194,7 @@ def _xor(a, b):
 
 
 def _maybe_add_newlines(iterator, newlines_setting, input_has_newlines):
+
     if newlines_setting not in [True, False, 'auto']:
         raise ValueError(f'Invalid newlines_setting: `{newlines_setting}`')
 
@@ -384,8 +386,7 @@ def run(  # pylint: disable=too-many-arguments
     pipestrings = (x for x in [mapper, applier] if x)
     modules = _get_modules(pipestrings, imports, autoimport)
 
-    input_has_newlines, in_stream = _has_newlines(in_stream)
-    items = in_stream
+    input_has_newlines, items = _has_newlines(in_stream)
 
     if mapper:
         mapper_function = _pipestring_to_function(mapper, modules, placeholder)
@@ -395,8 +396,8 @@ def run(  # pylint: disable=too-many-arguments
         apply_function = _pipestring_to_function(applier, modules, placeholder)
         items = apply_function(items)
 
-    items = _maybe_add_newlines(items, newlines, input_has_newlines)
-
+    if not isinstance(items, collections.abc.Iterator):
+        items = [items]
     for item in items:
         yield item
 
@@ -528,6 +529,7 @@ def str_to_bool(string, strict=False):
 @cli.resultcallback()
 def process_pipeline(processors, **kwargs):
 
+
     if kwargs['version']:
         print(f'{pype.__name__} {pype._version.__version__}')
         return
@@ -544,11 +546,13 @@ def process_pipeline(processors, **kwargs):
     if kwargs['do_async'] and len(processors) > 1:
         raise PypeException('Async multi-stage pipeline not implemented.')
 
-
+    input_has_newlines, items = _has_newlines(in_stream)
     for processor in processors:
-        in_stream = processor(in_stream=in_stream, **options)
+        items = processor(in_stream=items, **options)
 
-    for item in in_stream:
+    items = _maybe_add_newlines(items, str_to_bool(kwargs['newlines']), input_has_newlines)
+
+    for item in items:
         click.echo(item, nl=False)
 
 
