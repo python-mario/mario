@@ -8,6 +8,8 @@ import string
 import urllib
 import textwrap
 from datetime import timedelta
+import subprocess
+import time
 
 import arrow
 import pytest
@@ -38,6 +40,14 @@ def _reactor():
     from twisted.internet import reactor
     return reactor
 
+@pytest.fixture(name='server')
+def _server():
+    # TODO Replace subprocess with reactor
+    command = ['python', 'pype/testing/server.py']
+    proc = subprocess.Popen(command)
+    time.sleep(1)
+    yield
+    proc.terminate()
 
 @pytest.mark.parametrize(
     'command_string,symbol,expected',
@@ -640,7 +650,7 @@ class Timer:
         self.elapsed = self.end - self.start
 
 
-def test_cli_async(runner, reactor):
+def test_cli_async(runner, reactor, server):
     base_url = 'http://localhost:8080/{}'
     letters = string.ascii_lowercase
     in_stream = '\n'.join(base_url.format(c) for c in letters)
