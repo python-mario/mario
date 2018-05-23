@@ -339,7 +339,7 @@ def parallelize(tasks, max_concurrent):
     return DeferredList(executors)
 
 
-def _async_react_map(reactor, mapper_functions, items):
+def _async_react_map(reactor, mapper_functions, items, max_concurrent):
     running = [0]
     finished = Deferred()
 
@@ -350,15 +350,15 @@ def _async_react_map(reactor, mapper_functions, items):
         return result
 
     def wrap(it):
+
         for d in it:
             running[0] += 1
             d.addBoth(check)
 
     deferreds = (_async_do_item(mapper_functions, item) for item in items)
-    deferreds = parallelize(deferreds, 3)
+    deferreds = parallelize(deferreds, max_concurrent)
     # wrap(deferreds)
-
-    return finished
+    return deferreds
 
 
 def _async_run(
@@ -371,13 +371,14 @@ def _async_run(
         newlines='auto',
         reactor=reactor,
         processors=(),
+        max_concurrent=1,
 ):
 
     commands = (x for x in [mapper] if x)
     modules = _get_modules(commands, imports, autoimport)
     mapper_functions = _pipestring_to_functions(mapper, modules, placeholder)
 
-    task.react(_async_react_map, [mapper_functions, in_stream])
+    task.react(_async_react_map, [mapper_functions, in_stream, max_concurrent])
 
 
 def run(  # pylint: disable=too-many-arguments
@@ -430,6 +431,7 @@ def main(  # pylint: disable=too-many-arguments
         do_async=False,
         reactor=reactor,
         processors=(),
+        max_concurrent=1,
         **kwargs,
 ):
 
@@ -448,6 +450,7 @@ def main(  # pylint: disable=too-many-arguments
             newlines=newlines,
             reactor=reactor,
             processors=processors,
+            max_concurrent=max_concurrent,
         )
         sys.exit()
 
@@ -502,13 +505,15 @@ def main(  # pylint: disable=too-many-arguments
     default=False,
     help='Run commands on each input item asynchronously.')
 @click.option('--version', is_flag=True, help='Show the version and exit.')
+@click.option('--max-concurrent', type=int, default=3)
 def cli(
         imports,
         placeholder,
         autoimport,
         newlines,
         do_async,
-        version
+        version,
+        max_concurrent,
 ):
     """
     Pipe data through Python functions.
