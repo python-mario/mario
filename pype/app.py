@@ -25,7 +25,9 @@ from twisted.python.log import err
 import pype
 import pype._version
 
+
 _PYPE_VALUE = '__PYPE_VALUE_'
+CONTEXT_SETTINGS = dict(auto_envvar_prefix='PYPE')
 
 
 class PypeException(Exception):
@@ -456,12 +458,17 @@ def main(  # pylint: disable=too-many-arguments
     return gen
 
 
+
+
+
+
 @click.group(
     cls=DefaultGroup,
     default='map',
     default_if_no_args=True,
     chain=True,
     invoke_without_command=True,
+    context_settings=CONTEXT_SETTINGS,
 )
 @click.option(
     '--newlines',
