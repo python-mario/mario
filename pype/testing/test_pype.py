@@ -625,7 +625,7 @@ def test_cli_async(runner, reactor):
     letters = string.ascii_lowercase
     in_stream = '\n'.join(base_url.format(c) for c in letters)
     command = 'str.upper || ?.rstrip() || treq.get || treq.text_content '
-    args = ['--async', 'map', command]
+    args = ['--max-concurrent', '100', '--async', 'map', command]
     expected = [f'Hello, {letter.upper()}' for letter in letters]
 
     with Timer() as t:
