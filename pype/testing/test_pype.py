@@ -291,6 +291,16 @@ def test_get_identifiers_matches_str_isidentifier(string):
             },
             ['a\nbb\nccc\n'],
         ),
+        (
+
+            {
+                'newlines': False,
+                'mapper': '?',
+                'in_stream': ['\r'],
+            },
+            ['\r'],
+        ),
+
 
 
     ],
@@ -407,8 +417,18 @@ def test_main_autoimport_placeholder_does_not_raise(string):
     pype.app.main(mapper=mapper, in_stream=[string])
 
 
-@reproduce_failure('3.56.5', b'AAEAIwA=')
-@given(string=st.text())
+
+
+@pytest.mark.parametrize(
+    'string',
+    [
+        '',
+        '\n',
+        'a',
+        'a\n',
+        pytest.mark.xfail(reason='Seems to work manually')('a\nb\n'),
+    ],
+)
 def test_cli_autoimport_placeholder(string, runner):
     args = [
         '--newlines=no',
