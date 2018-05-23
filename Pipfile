@@ -7,12 +7,10 @@ url = "https://pypi.python.org/simple"
 
 [packages]
 
+arrow = "*"
 click = "*"
 toolz = "*"
-coverage = "*"
-"e1839a8" = {path = ".", editable = true}
 attrs = "*"
-rope = "*"
 treq = "*"
 click-default-group = "*"
 
@@ -24,7 +22,6 @@ python_version = "3.6"
 
 [dev-packages]
 
-arrow = "*"
 "flake8" = "*"
 bumpversion = "*"
 coverage = "*"
