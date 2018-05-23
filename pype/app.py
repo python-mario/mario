@@ -547,7 +547,6 @@ def str_to_bool(string, strict=False):
 @cli.resultcallback()
 def process_pipeline(processors, **kwargs):
 
-
     if kwargs['version']:
         print(f'{pype.__name__} {pype._version.__version__}')
         return
