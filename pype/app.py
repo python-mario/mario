@@ -214,7 +214,7 @@ def _maybe_add_newlines(iterator, newlines_setting, input_has_newlines):
 
 
 def _check_parsing(command, placeholder):
-    # TODO Fix this...
+
     tokens = _string_to_tokens(command)
     for tok in tokens:
 
