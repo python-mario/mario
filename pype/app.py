@@ -6,9 +6,7 @@ from pprint import pprint
 
 import collections
 import importlib
-import itertools
 import os
-import re
 import sys
 import token
 import io
@@ -19,7 +17,7 @@ import click
 from click_default_group import DefaultGroup
 import toolz
 from twisted.internet import reactor, task
-from twisted.internet.defer import Deferred, inlineCallbacks, DeferredList
+from twisted.internet.defer import Deferred, DeferredList
 from twisted.python.log import err
 
 import pype
@@ -253,16 +251,9 @@ def _check_parsing(command, placeholder):
 
 
 def run_segment(value, segment, modules):
-
     return eval(segment, modules, {_PYPE_VALUE: value})
 
 
-def _async_do_segment(value, modules, pipeline):
-    d = Deferred()
-    for pipeline_segment in pipeline:
-        d.addCallback(run_segment, pipeline_segment, modules)
-    d.callback(value)
-    return d
 
 
 def _command_string_to_function(command, modules=None, symbol='?'):
