@@ -4,6 +4,7 @@ from __future__ import generator_stop
 
 from pprint import pprint
 
+import ast
 import collections
 import importlib
 import os
@@ -158,7 +159,7 @@ def _get_named_modules(imports):
 
 
 def _add_short_placeholder(command_string, short_placeholder='?'):
-    if short_placeholder in command_string:
+    if short_placeholder in command_string or _PYPE_VALUE in command_string:
         return command_string
     return f'{command_string}({short_placeholder})'
 
@@ -213,18 +214,9 @@ def _maybe_add_newlines(iterator, newlines_setting, input_has_newlines):
 
 def _check_parsing(command, placeholder):
 
-    tokens = _string_to_tokens(command)
-    for tok in tokens:
+    other = {'$': '?', '?': '$'}[placeholder]
 
-        if tok.type != token.STRING:
-            continue
-        if placeholder not in tok.string:
-            continue
-        # if re.fullmatch(r'f.*\{.*%s.*\}.*' % placeholder, tok.string):
-        #     continue
-
-        other = {'$': '?', '?': '$'}[placeholder]
-        raise PypeParseError(r'''
+    message = r'''
 
         If data should appear in quotation marks, use 'Hello, {{}}.format(?)':
 
@@ -247,13 +239,17 @@ def _check_parsing(command, placeholder):
             # Is this a question?
 
 
-            '''.format(placeholder=placeholder, other=other))
+            '''
+
+    root = ast.parse(command)
+    for node in ast.walk(root):
+        if isinstance(node, ast.Str):
+            if placeholder in node.s:
+                raise PypeParseError(message.format(placeholder=placeholder, other=other))
 
 
 def run_segment(value, segment, modules):
     return eval(segment, modules, {_PYPE_VALUE: value})
-
-
 
 
 def _command_string_to_function(command, modules=None, symbol='?'):
@@ -425,13 +421,21 @@ def main(  # pylint: disable=too-many-arguments
         reactor=reactor,
         processors=(),
         max_concurrent=1,
+        separator='||',
         **kwargs,
 ):
 
-    if mapper:
-        _check_parsing(mapper, placeholder)
+    if mapper is not None:
+        mapper = _replace_short_placeholder(mapper, placeholder, separator)
+        for segment in _split(separator, mapper):
+            _check_parsing(segment, placeholder)
+        pass
 
 
+    if applier is not None:
+        applier = _replace_short_placeholder(applier, placeholder, '||')
+        for segment in _split(separator, applier):
+            _check_parsing(segment, placeholder)
 
     if do_async:
         _async_run(
