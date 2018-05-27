@@ -214,7 +214,7 @@ def _maybe_add_newlines(iterator, newlines_setting, input_has_newlines):
 
 def _check_parsing(command, placeholder):
 
-    other = {'$': '?', '?': '$'}[placeholder]
+    other = {'$': '?', '?': '$'}.get(placeholder, '?')
 
     message = r'''
 
@@ -497,8 +497,8 @@ def main(  # pylint: disable=too-many-arguments
 )
 @click.option(
     '--placeholder',
-    default='?',
-    help='String to replace with data. Defaults to ?',
+    default='_',
+    help='String to replace with data. Defaults to _',
 )
 @click.option(
     '--async',
