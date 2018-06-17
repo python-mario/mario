@@ -241,7 +241,7 @@ def _check_parsing(command, placeholder):
 
             '''
 
-    root = ast.parse(command)
+    root = ast.parse(command.strip())
     for node in ast.walk(root):
         if isinstance(node, ast.Str):
             if placeholder in node.s:
@@ -252,11 +252,13 @@ def run_segment(value, segment, modules):
     return eval(segment, modules, {_PYPE_VALUE: value})
 
 
-def _command_string_to_function(command, modules=None, symbol='?'):
+def _command_string_to_function(command, modules=None, symbol='?', call=True):
     if modules is None:
         modules = {}
 
-    command = _add_short_placeholder(command, symbol)
+    if call:
+        command = _add_short_placeholder(command, symbol)
+
     command = command.replace(symbol, _PYPE_VALUE)
 
     def function(value):
@@ -296,18 +298,21 @@ def _split_string_on_separator(string, separator):
 
 
 
-def _pipestring_to_functions(multicommand_string, modules=None, symbol='?', separator='||'):
+def _pipestring_to_functions(multicommand_string, modules=None, symbol='?', separator='||', do_eval=False):
     command_strings = _split_string_on_separator(multicommand_string, separator)
     functions = []
-    for command_string in command_strings:
-        functions.append(_command_string_to_function(
-            command_string, modules, symbol))
+    it = iter(command_strings)
+
+    functions.append(_command_string_to_function(next(it), modules, symbol, call=(not do_eval)))
+    for command_string in it:
+        func = _command_string_to_function(command_string, modules, symbol)
+        functions.append(func)
     return functions
 
 
-def _pipestring_to_function(multicommand_string, modules=None, symbol='?', separator='||'):
+def _pipestring_to_function(multicommand_string, modules=None, symbol='?', separator='||', do_eval=False):
     functions = _pipestring_to_functions(
-        multicommand_string, modules, symbol, separator)
+        multicommand_string, modules, symbol, separator, do_eval)
     return toolz.compose(*reversed(functions))
 
 
@@ -378,11 +383,18 @@ def run(  # pylint: disable=too-many-arguments
         placeholder='?',
         autoimport=True,
         newlines='auto',
+        do_eval=False,
 ):
     pipestrings = (x for x in [mapper, applier] if x)
     modules = _get_modules(pipestrings, imports, autoimport)
 
     input_has_newlines, items = _has_newlines(in_stream)
+
+
+    if do_eval:
+        eval_function = _pipestring_to_function(mapper, modules, placeholder, do_eval=True)
+        yield eval_function(None)
+        return
 
     if mapper:
         mapper_function = _pipestring_to_function(mapper, modules, placeholder)
@@ -422,6 +434,7 @@ def main(  # pylint: disable=too-many-arguments
         processors=(),
         max_concurrent=1,
         separator='||',
+        do_eval=False,
         **kwargs,
 ):
 
@@ -460,6 +473,7 @@ def main(  # pylint: disable=too-many-arguments
             placeholder=placeholder,
             autoimport=autoimport,
             newlines=newlines,
+            do_eval=do_eval,
         )
 
     return gen
@@ -497,7 +511,7 @@ def main(  # pylint: disable=too-many-arguments
 )
 @click.option(
     '--placeholder',
-    default='_',
+    default='?',
     help='String to replace with data. Defaults to _',
 )
 @click.option(
@@ -508,6 +522,7 @@ def main(  # pylint: disable=too-many-arguments
     help='Run commands on each input item asynchronously.')
 @click.option('--version', is_flag=True, help='Show the version and exit.')
 @click.option('--max-concurrent', type=int, default=3)
+@click.option('--eval', '-e', 'do_eval', is_flag=True, help='Evaluate the expression without taking input.')
 def cli(
         imports,
         placeholder,
@@ -516,6 +531,7 @@ def cli(
         do_async,
         version,
         max_concurrent,
+        do_eval,
 ):
     """
     Pipe data through Python functions.
