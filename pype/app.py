@@ -562,7 +562,11 @@ def process_pipeline(processors, **kwargs):
         print(f'{pype.__name__} {pype._version.__version__}')
         return
 
-    in_stream = click.get_text_stream('stdin')
+    if kwargs['do_eval']:
+        in_stream = '\n'
+    else:
+        in_stream = click.get_text_stream('stdin')
+
 
     options = dict(kwargs)
     options['newlines'] = str_to_bool(kwargs['newlines'])
