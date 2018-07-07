@@ -294,8 +294,7 @@ def _split(pattern, string, types=(token.OP, token.ERRORTOKEN)):
 
 
 def _split_string_on_separator(string, separator):
-    return _split(separator, string)
-
+    return [s.strip() for s in _split(separator, string)]
 
 
 def _pipestring_to_functions(multicommand_string, modules=None, symbol='?', separator='||', do_eval=False):
