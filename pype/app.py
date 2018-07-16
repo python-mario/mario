@@ -183,9 +183,9 @@ def _get_modules(commands, named_imports, autoimport):
         return named_modules
     autoimports = toolz.merge(_get_autoimports(command)
                               for command in commands)
-    # named modules have priority
+    # Named modules have priority.
     modules = {**autoimports, **named_modules}
-    # only top-level modules can be referenced in eval's globals dict
+    # Only top-level modules can be referenced in eval's globals dict.
     modules = {k.split('.')[0]: v for k,v in modules.items()}
     return modules
 
