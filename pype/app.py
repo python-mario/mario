@@ -126,8 +126,8 @@ def _get_named_module(name):
     if hasattr(builtins, name):
         return builtins
     try:
-        return importlib.import_module(name)
-    except ImportError:
+        return __import__(name, {}, {})
+    except ImportError as e:
         pass
     raise LookupError(f'Could not find {name}')
 
@@ -185,6 +185,8 @@ def _get_modules(commands, named_imports, autoimport):
                               for command in commands)
     # named modules have priority
     modules = {**autoimports, **named_modules}
+    # only top-level modules can be referenced in eval's globals dict
+    modules = {k.split('.')[0]: v for k,v in modules.items()}
     return modules
 
 def _xor(a, b):
