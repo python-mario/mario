@@ -4,23 +4,23 @@ from __future__ import generator_stop
 
 from pprint import pprint
 
-import ast
 import collections
 import importlib
 import os
 import sys
 import token
 import io
-from tokenize import tokenize, untokenize
+import tokenize
 
 import attr
 import parso
 import click
-from click_default_group import DefaultGroup
+import click_default_group
 import toolz
-from twisted.internet import reactor, task
-from twisted.internet.defer import Deferred, DeferredList
-from twisted.python.log import err
+import twisted.internet.reactor
+from twisted.internet import task
+from twisted.internet import defer
+from twisted.python import log
 
 import pype
 import pype._version
@@ -53,7 +53,7 @@ def _is_reference_part(token_object):
 def _string_to_tokens(string):
     bytestring = string.encode("utf-8")
     bytesio = io.BytesIO(bytestring)
-    tokens = tokenize(bytesio.readline)
+    tokens = tokenize.tokenize(bytesio.readline)
     return tokens
 
 
@@ -300,10 +300,10 @@ def _replace_short_placeholder(command, placeholder, separator='||'):
 
 
 def _async_do_item(mapper_functions, item):
-    d = Deferred()
+    d = defer.Deferred()
     for function in mapper_functions:
         d.addCallback(function)
-    d.addCallbacks(print, err)
+    d.addCallbacks(print, log.err)
     d.callback(item)
     return d
 
@@ -313,12 +313,12 @@ def parallelize(tasks, max_concurrent):
     executors = []
     for _ in range(max_concurrent):
         executors.append(cooperator.coiterate(tasks))
-    return DeferredList(executors)
+    return defer.DeferredList(executors)
 
 
 def _async_react_map(reactor, mapper_functions, items, max_concurrent):
     running = [0]
-    finished = Deferred()
+    finished = defer.Deferred()
 
     def check(result):
         running[0] -= 1
@@ -346,7 +346,7 @@ def _async_run(
     placeholder="?",
     autoimport=True,
     newlines="auto",
-    reactor=reactor,
+    reactor=twisted.internet.reactor,
     processors=(),
     max_concurrent=1,
 ):
@@ -411,7 +411,7 @@ def main(  # pylint: disable=too-many-arguments
     autoimport=True,
     newlines="auto",
     do_async=False,
-    reactor=reactor,
+    reactor=twisted.internet.reactor,
     processors=(),
     max_concurrent=1,
     separator="||",
@@ -434,7 +434,7 @@ def main(  # pylint: disable=too-many-arguments
             placeholder=placeholder,
             autoimport=autoimport,
             newlines=newlines,
-            reactor=reactor,
+            reactor=twisted.internet.reactor,
             processors=processors,
             max_concurrent=max_concurrent,
         )
@@ -456,7 +456,7 @@ def main(  # pylint: disable=too-many-arguments
 
 
 @click.group(
-    cls=DefaultGroup,
+    cls=click_default_group.DefaultGroup,
     default="map",
     default_if_no_args=True,
     chain=True,
@@ -543,7 +543,7 @@ def process_pipeline(processors, **kwargs):
     options["processors"] = processors
 
     if kwargs["do_async"]:
-        options["reactor"] = reactor
+        options["reactor"] = twisted.internet.reactor
 
     if kwargs["do_async"] and len(processors) > 1:
         raise PypeException("Async multi-stage pipeline not implemented.")

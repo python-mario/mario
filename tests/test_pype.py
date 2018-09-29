@@ -6,36 +6,31 @@ import collections
 import os
 import string
 import urllib
-import textwrap
-from datetime import timedelta
 import subprocess
 import time
 
-import arrow
+import click.testing
 import pytest
-from click.testing import CliRunner
 import hypothesis
-from hypothesis import given
 import hypothesis.strategies as st
-from hypothesis import Verbosity, reproduce_failure
+
 
 import pype
 import pype.app
 import pype._version
-from pype.app import _PYPE_VALUE, PypeParseError
 from tests import config
 
 hypothesis.settings.register_profile("ci", max_examples=1000)
 hypothesis.settings.register_profile("dev", max_examples=10)
 hypothesis.settings.register_profile(
-    "debug", max_examples=10, verbosity=Verbosity.verbose
+    "debug", max_examples=10, verbosity=hypothesis.Verbosity.verbose
 )
 hypothesis.settings.load_profile(os.getenv("HYPOTHESIS_PROFILE", "default"))
 
 
 @pytest.fixture(name="runner")
 def _runner():
-    return CliRunner()
+    return click.testing.CliRunner()
 
 
 @pytest.fixture(name="reactor")
@@ -202,7 +197,7 @@ def test_raises_on_missing_module(runner):
         str.upper,
     ],
 )
-@given(string=st.text())
+@hypothesis.given(string=st.text())
 def test_str_simple_mappers(mapper, string):
 
     expected = [mapper(string)]
@@ -213,7 +208,7 @@ def test_str_simple_mappers(mapper, string):
 
 
 @pytest.mark.parametrize("mapper", [int.bit_length])
-@given(in_stream=st.integers())
+@hypothesis.given(in_stream=st.integers())
 def test_main_mappers_int(mapper, in_stream):
     qualname = mapper.__qualname__
     result = list(pype.app.run(qualname, in_stream=[in_stream], newlines=False))
@@ -239,7 +234,7 @@ def test_raises_on_nonexistent_option(option, runner):
 
 
 @pytest.mark.xfail(strict=True)
-@given(st.text())
+@hypothesis.given(st.text())
 def test_get_identifiers_matches_str_isidentifier(string):
     identifiers = pype.app._get_maybe_namespaced_identifiers(string)
     assert all([identifier.isidentifier() for identifier in identifiers])
@@ -318,24 +313,14 @@ def test_keyword_arg():
     assert list(result) == expected
 
 
-@pytest.mark.xfail(strict=True)
-@pytest.mark.parametrize(
-    "kwargs, expected",
-    [({"mapper": '"_"', "newlines": "no", "in_stream": ["abc"]}, ['"abc"'])],
-)
-def test_quoting_error(kwargs, expected):
-    result = pype.app.main(**kwargs)
-    assert list(result) == expected
-
-
 
 
 @pytest.mark.parametrize(
     "command, placeholder, expected",
     [
-        ("?", "?", _PYPE_VALUE),
+        ("?", "?", pype.app._PYPE_VALUE),
         ('"?"', "?", '"?"'),
-        ('f"{?}"', "?", 'f"{' + _PYPE_VALUE + '}"'),
+        ('f"{?}"', "?", 'f"{' + pype.app._PYPE_VALUE + '}"'),
     ],
 )
 def test_replace_short_placeholder_parso(command, placeholder, expected):
@@ -349,7 +334,7 @@ def test_main_f_string():
     assert result == ['"abc"']
 
 
-@given(string=st.text())
+@hypothesis.given(string=st.text())
 def test_fn_autoimport_counter_keys(string):
     mapper = "collections.Counter || ?.keys() "
     string = string + "\n"
@@ -380,7 +365,7 @@ def test_maybe_add_newlines(args, expected):
     )
 
 
-@given(string=st.one_of(st.just(""), st.text()))
+@hypothesis.given(string=st.one_of(st.just(""), st.text()))
 def test_main_autoimport_placeholder_does_not_raise(string):
     mapper = 'collections.Counter || ?.keys() || "".join '
     pype.app.main(mapper=mapper, in_stream=[string])
@@ -393,7 +378,6 @@ def test_main_autoimport_placeholder_does_not_raise(string):
         "\n",
         "a",
         "a\n",
-        pytest.mark.xfail(reason="Seems to work manually")("a\nb\n"),
     ],
 )
 def test_cli_autoimport_placeholder(string, runner):
@@ -561,11 +545,11 @@ def test_split_string_on_separator(string, separator, expected):
 
 class Timer:
     def __enter__(self):
-        self.start = arrow.now()
+        self.start = time.monotonic()
         return self
 
     def __exit__(self, *args):
-        self.end = arrow.now()
+        self.end = time.monotonic()
         self.elapsed = self.end - self.start
 
 
@@ -587,7 +571,9 @@ def test_cli_async(runner, reactor, server):
     assert not result.exception
     assert result.exit_code == 0
     assert sorted_starts == expected
-    assert t.elapsed < timedelta(seconds=4)
+    limit_seconds = 4.0
+    assert t.elapsed < limit_seconds
+
 
 
 @pytest.mark.xfail(strict=True)
@@ -610,7 +596,8 @@ def test_cli_async_chain_map_apply(runner, reactor):
     assert result.exit_code == 0
     assert len(lines) == 1
     assert starts == expected
-    assert t.elapsed < timedelta(seconds=4)
+    limit_seconds = 4.0
+    assert t.elapsed < limit_seconds
 
 
 def test_cli_version(runner):
