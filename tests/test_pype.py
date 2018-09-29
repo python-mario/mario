@@ -23,6 +23,7 @@ import pype
 import pype.app
 import pype._version
 from pype.app import _PYPE_VALUE, PypeParseError
+from tests import config
 
 hypothesis.settings.register_profile("ci", max_examples=1000)
 hypothesis.settings.register_profile("dev", max_examples=10)
@@ -43,7 +44,7 @@ def _reactor():
 @pytest.fixture(name='server')
 def _server():
     # TODO Replace subprocess with reactor
-    command = ['python', 'pype/testing/server.py']
+    command = ['python', config.TEST_DIR /'server.py']
     proc = subprocess.Popen(command)
     time.sleep(1)
     yield
@@ -360,7 +361,7 @@ def test_quoting_error(kwargs, expected):
     [
         (
             {
-                'mapper': '"_"',
+                'mapper': '"?"',
                 'newlines': 'no',
                 'in_stream': 'abc',
             },
@@ -368,7 +369,7 @@ def test_quoting_error(kwargs, expected):
         ),
         (
             {
-                'mapper': """'I say, "Hello, {_}!"'""",
+                'mapper': """'I say, "Hello, {?}!"'""",
                 'newlines': 'no',
                 'in_stream': ['World'],
             },
