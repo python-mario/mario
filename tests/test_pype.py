@@ -390,7 +390,7 @@ def test_main_f_string():
 
 def test_parse_error():
     with pytest.raises(PypeParseError):
-        pype.app._check_parsing('"_"', '_')
+        pype.app._check_parsing('"?"', '?')
 
 
 @given(string=st.text())
