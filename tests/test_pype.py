@@ -27,37 +27,42 @@ from tests import config
 
 hypothesis.settings.register_profile("ci", max_examples=1000)
 hypothesis.settings.register_profile("dev", max_examples=10)
-hypothesis.settings.register_profile("debug", max_examples=10, verbosity=Verbosity.verbose)
-hypothesis.settings.load_profile(os.getenv('HYPOTHESIS_PROFILE', 'default'))
+hypothesis.settings.register_profile(
+    "debug", max_examples=10, verbosity=Verbosity.verbose
+)
+hypothesis.settings.load_profile(os.getenv("HYPOTHESIS_PROFILE", "default"))
 
 
-@pytest.fixture(name='runner')
+@pytest.fixture(name="runner")
 def _runner():
     return CliRunner()
 
 
-@pytest.fixture(name='reactor')
+@pytest.fixture(name="reactor")
 def _reactor():
     from twisted.internet import reactor
+
     return reactor
 
-@pytest.fixture(name='server')
+
+@pytest.fixture(name="server")
 def _server():
     # TODO Replace subprocess with reactor
-    command = ['python', config.TEST_DIR /'server.py']
+    command = ["python", config.TEST_DIR / "server.py"]
     proc = subprocess.Popen(command)
     time.sleep(1)
     yield
     proc.terminate()
 
+
 @pytest.mark.parametrize(
-    'command_string,symbol,expected',
+    "command_string,symbol,expected",
     [
-        ('int', '?', 'int(?)'),
-        ('int(?)', '?', 'int(?)'),
-        ('str.upper', '?', 'str.upper(?)'),
-        ('str.upper(?)', '?', 'str.upper(?)'),
-        ('int', '$', 'int($)'),
+        ("int", "?", "int(?)"),
+        ("int(?)", "?", "int(?)"),
+        ("str.upper", "?", "str.upper(?)"),
+        ("str.upper(?)", "?", "str.upper(?)"),
+        ("int", "$", "int($)"),
     ],
 )
 def test_add_short_placeholder(command_string, symbol, expected):
@@ -65,21 +70,21 @@ def test_add_short_placeholder(command_string, symbol, expected):
 
 
 def test_command_string_to_function():
-    assert pype.app._command_string_to_function('int')('4') == 4
-    assert pype.app._command_string_to_function('str.upper')('abc') == 'ABC'
+    assert pype.app._command_string_to_function("int")("4") == 4
+    assert pype.app._command_string_to_function("str.upper")("abc") == "ABC"
 
 
 @pytest.mark.parametrize(
-    'pipestring, modules, value, expected',
+    "pipestring, modules, value, expected",
     [
-        ('str.upper', None, 'abc', 'ABC'),
-        ('str.upper || ? + "z" ', None, 'abc', 'ABCz'),
-        ('str.upper || ? + "z" || set', None, 'abc', set('ABCz')),
+        ("str.upper", None, "abc", "ABC"),
+        ('str.upper || ? + "z" ', None, "abc", "ABCz"),
+        ('str.upper || ? + "z" || set', None, "abc", set("ABCz")),
         (
-            'str.upper || collections.Counter || dict',
-            {'collections': collections},
-            'abbccc',
-            {'A': 1, 'B': 2, 'C': 3},
+            "str.upper || collections.Counter || dict",
+            {"collections": collections},
+            "abbccc",
+            {"A": 1, "B": 2, "C": 3},
         ),
     ],
 )
@@ -88,13 +93,13 @@ def test_pipestring_to_function(pipestring, modules, value, expected):
 
 
 @pytest.mark.parametrize(
-    'name, expected',
+    "name, expected",
     [
-        ('str.upper', {}),
-        ('os.path.join', {'os.path': os}),
-        ('map', {}),
-        ('collections.Counter', {'collections': collections}),
-        ('urllib.parse.urlparse', {'urllib.parse': urllib}),
+        ("str.upper", {}),
+        ("os.path.join", {"os.path": os}),
+        ("map", {}),
+        ("collections.Counter", {"collections": collections}),
+        ("urllib.parse.urlparse", {"urllib.parse": urllib}),
     ],
 )
 def test_get_module(name, expected):
@@ -102,66 +107,66 @@ def test_get_module(name, expected):
 
 
 @pytest.mark.parametrize(
-    'string, expected',
+    "string, expected",
     [
-        ('a', {'a'}),
-        ('?.upper', set()),
-        ('map', {'map'}),
-        ('map(json.dumps)', {'map', 'json.dumps'}),
-        ('collections.Counter(?)', {'collections.Counter'}),
-        ('urllib.parse.urlparse', {'urllib.parse.urlparse'}),
-        ('1 + 2', set()),
-        ('json.dumps(collections.Counter)', {'json.dumps', 'collections.Counter'}),
-        ('str.__add__(?, "bc") ', {'str.__add__'}),
-        ('? and time.sleep(1)', {'and', 'time.sleep'}),
+        ("a", {"a"}),
+        ("?.upper", set()),
+        ("map", {"map"}),
+        ("map(json.dumps)", {"map", "json.dumps"}),
+        ("collections.Counter(?)", {"collections.Counter"}),
+        ("urllib.parse.urlparse", {"urllib.parse.urlparse"}),
+        ("1 + 2", set()),
+        ("json.dumps(collections.Counter)", {"json.dumps", "collections.Counter"}),
+        ('str.__add__(?, "bc") ', {"str.__add__"}),
+        ("? and time.sleep(1)", {"and", "time.sleep"}),
     ],
 )
 def test_get_identifiers(string, expected):
     result = pype.app._get_maybe_namespaced_identifiers(string)
-    assert result  == expected
+    assert result == expected
 
 
 def test_cli_raises_without_autoimport(runner):
 
     args = [
-        '--no-autoimport',
-        'map',
+        "--no-autoimport",
+        "map",
         'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
     ]
-    in_stream = 'a.b.c\n'
+    in_stream = "a.b.c\n"
 
     result = runner.invoke(pype.app.cli, args, input=in_stream)
 
     assert isinstance(result.exception, NameError)
 
+
 def test_cli_raises_with_multiline_command(runner):
 
     args = [
-        '--no-autoimport',
-        'map',
+        "--no-autoimport",
+        "map",
         """
         (
         1
         +
         _
         )
-        """
+        """,
     ]
-    in_stream = 'a.b.c\n'
+    in_stream = "a.b.c\n"
 
     result = runner.invoke(pype.app.cli, args, input=in_stream)
 
     assert isinstance(result.exception, pype.app.PypeParseError)
 
 
-
 def test_raises_on_missing_module(runner):
 
     args = [
-        'map',
+        "map",
         '_missing_module.replace(_, ".", "!") || collections.Counter || json.dumps ',
     ]
-    in_stream = 'a.b.c\n'
+    in_stream = "a.b.c\n"
 
     result = runner.invoke(pype.app.cli, args, input=in_stream)
 
@@ -169,12 +174,32 @@ def test_raises_on_missing_module(runner):
 
 
 @pytest.mark.parametrize(
-    'mapper',
+    "mapper",
     [
-        str.capitalize, str.casefold, str.expandtabs, str.isalnum, str.isalpha, str.isdecimal,
-        str.isdigit, str.isidentifier, str.islower, str.isnumeric, str.isprintable, str.isspace,
-        str.istitle, str.isupper, str.lower, str.lstrip, str.rsplit, str.rstrip, str.split,
-        str.splitlines, str.strip, str.swapcase, str.title, str.upper
+        str.capitalize,
+        str.casefold,
+        str.expandtabs,
+        str.isalnum,
+        str.isalpha,
+        str.isdecimal,
+        str.isdigit,
+        str.isidentifier,
+        str.islower,
+        str.isnumeric,
+        str.isprintable,
+        str.isspace,
+        str.istitle,
+        str.isupper,
+        str.lower,
+        str.lstrip,
+        str.rsplit,
+        str.rstrip,
+        str.split,
+        str.splitlines,
+        str.strip,
+        str.swapcase,
+        str.title,
+        str.upper,
     ],
 )
 @given(string=st.text())
@@ -187,18 +212,13 @@ def test_str_simple_mappers(mapper, string):
     assert result == expected
 
 
-@pytest.mark.parametrize(
-    'mapper',
-    [
-        int.bit_length,
-    ],
-)
+@pytest.mark.parametrize("mapper", [int.bit_length])
 @given(in_stream=st.integers())
 def test_main_mappers_int(mapper, in_stream):
     qualname = mapper.__qualname__
     result = list(pype.app.run(qualname, in_stream=[in_stream], newlines=False))
 
-    expected = [mapper(in_stream) ]
+    expected = [mapper(in_stream)]
 
     assert result == expected
 
@@ -208,23 +228,14 @@ def assert_exception_equal(e1, e2):
     assert e1.args == e2.args
 
 
-@pytest.mark.parametrize(
-    'option',
-    [
-        '--invented-option',
-        '-J',
-    ],
-)
+@pytest.mark.parametrize("option", ["--invented-option", "-J"])
 def test_raises_on_nonexistent_option(option, runner):
-    args = [
-        option,
-        'print',
-    ]
-    in_stream = 'a.b.c\n'
+    args = [option, "print"]
+    in_stream = "a.b.c\n"
 
     result = runner.invoke(pype.app.cli, args, input=in_stream)
 
-    assert_exception_equal(result.exception, SystemExit(2, ))
+    assert_exception_equal(result.exception, SystemExit(2))
 
 
 @pytest.mark.xfail(strict=True)
@@ -235,85 +246,55 @@ def test_get_identifiers_matches_str_isidentifier(string):
 
 
 @pytest.mark.parametrize(
-    'kwargs,expected',
+    "kwargs,expected",
     [
+        ({"mapper": "str.upper", "newlines": False, "in_stream": ["abc"]}, ["ABC"]),
+        ({"mapper": "str.upper", "newlines": True, "in_stream": ["abc"]}, ["ABC"]),
         (
             {
-                'mapper': 'str.upper',
-                'newlines': False,
-                'in_stream': ['abc'],
+                "mapper": "collections.Counter || ?.keys() ",
+                "in_stream": ["abbccc\n"],
+                "newlines": False,
             },
-            ['ABC'],
+            [{"a": 1, "b": 2, "c": 3, "\n": 1}.keys()],
         ),
         (
             {
-                'mapper': 'str.upper',
-                'newlines': True,
-                'in_stream': ['abc'],
+                "mapper": 'collections.Counter || ?.keys() || "".join ',
+                "in_stream": ["abbccc\n"],
+                "newlines": False,
             },
-            ['ABC'],
+            ["abc\n"],
         ),
         (
             {
-                'mapper': 'collections.Counter || ?.keys() ',
-                'in_stream': ['abbccc\n'],
-                'newlines': False,
+                "mapper": 'collections.Counter || ?.keys() || "".join ',
+                "in_stream": [""],
+                "newlines": False,
             },
-            [{'a': 1, 'b': 2, 'c': 3, '\n': 1}.keys()],
+            [""],
+        ),
+        (
+            {"mapper": 'str.__add__(?, "bc")', "newlines": False, "in_stream": ["a"]},
+            ["abc"],
         ),
         (
             {
-                'mapper': 'collections.Counter || ?.keys() || "".join ',
-                'in_stream': ['abbccc\n'],
-                'newlines':False,
+                "newlines": False,
+                "applier": "functools.partial(map, str.upper)",
+                "in_stream": ["a\nbb\nccc\n"],
             },
-            ['abc\n'],
+            ["A\nBB\nCCC\n"],
         ),
         (
             {
-                'mapper': 'collections.Counter || ?.keys() || "".join ',
-                'in_stream': [''],
-                'newlines': False,
+                "newlines": False,
+                "applier": "? or time.sleep(1)",
+                "in_stream": ["a\nbb\nccc\n"],
             },
-            [''],
+            ["a\nbb\nccc\n"],
         ),
-        (
-            {
-                'mapper': 'str.__add__(?, "bc")',
-                'newlines': False,
-                'in_stream': ['a'],
-            },
-            ['abc'],
-        ),
-        (
-            {
-                'newlines': False,
-                'applier': 'functools.partial(map, str.upper)',
-                'in_stream': ['a\nbb\nccc\n'],
-            },
-            ['A\nBB\nCCC\n'],
-        ),
-        (
-
-            {
-                'newlines': False,
-                'applier': '? or time.sleep(1)',
-                'in_stream': ['a\nbb\nccc\n'],
-            },
-            ['a\nbb\nccc\n'],
-        ),
-        (
-
-            {
-                'newlines': False,
-                'mapper': '?',
-                'in_stream': ['\r'],
-            },
-            ['\r'],
-        ),
-
-
-
+        ({"newlines": False, "mapper": "?", "in_stream": ["\r"]}, ["\r"]),
     ],
 )
 def test_main_example(kwargs, expected):
@@ -322,127 +303,109 @@ def test_main_example(kwargs, expected):
 
 
 def test_lambda():
-    mapper = 'str.split || sorted(?, key=lambda x: x[-1])'
-    in_stream = ['1 2\n2 1\n']
+    mapper = "str.split || sorted(?, key=lambda x: x[-1])"
+    in_stream = ["1 2\n2 1\n"]
     result = pype.app.run(mapper=mapper, newlines=False, in_stream=in_stream)
-    expected = [['1', '1', '2', '2']]
+    expected = [["1", "1", "2", "2"]]
     assert list(result) == expected
 
 
 def test_keyword_arg():
-    mapper = 'str.split || sorted(?, key=operator.itemgetter(-1))'
-    in_stream = ['1 2\n2 1\n']
+    mapper = "str.split || sorted(?, key=operator.itemgetter(-1))"
+    in_stream = ["1 2\n2 1\n"]
     result = pype.app.run(mapper=mapper, newlines=False, in_stream=in_stream)
-    expected = [['1', '1', '2', '2']]
+    expected = [["1", "1", "2", "2"]]
     assert list(result) == expected
 
 
 @pytest.mark.xfail(strict=True)
 @pytest.mark.parametrize(
-    'kwargs, expected',
-    [
-        (
-            {
-                'mapper': '"_"',
-                'newlines': 'no',
-                'in_stream': ['abc'],
-            },
-            ['"abc"'],
-        ),
-    ],
+    "kwargs, expected",
+    [({"mapper": '"_"', "newlines": "no", "in_stream": ["abc"]}, ['"abc"'])],
 )
 def test_quoting_error(kwargs, expected):
     result = pype.app.main(**kwargs)
     assert list(result) == expected
 
 
+
+
 @pytest.mark.parametrize(
-    'kwargs, expected',
+    "command, placeholder, expected",
     [
-        (
-            {
-                'mapper': '"?"',
-                'newlines': 'no',
-                'in_stream': 'abc',
-            },
-            ['abc'],
-        ),
-        (
-            {
-                'mapper': """'I say, "Hello, {?}!"'""",
-                'newlines': 'no',
-                'in_stream': ['World'],
-            },
-            ['I say, "Hello, World!"'],
-        ),
+        ("?", "?", _PYPE_VALUE),
+        ('"?"', "?", '"?"'),
+        ('f"{?}"', "?", 'f"{' + _PYPE_VALUE + '}"'),
     ],
 )
-def test_main_raises_parse_error(kwargs, expected):
-    with pytest.raises(PypeParseError):
-        list(pype.app.main(**kwargs))
+def test_replace_short_placeholder_parso(command, placeholder, expected):
+    result = pype.app._replace_short_placeholder(command, placeholder)
+    assert result == expected
 
 
 def test_main_f_string():
 
-    result = list(pype.app.main("""f'"{?}"'""", in_stream=['abc'], newlines='no'))
+    result = list(pype.app.main("""f'"{?}"'""", in_stream=["abc"], newlines="no"))
     assert result == ['"abc"']
 
 
+@pytest.mark.skip
 def test_parse_error():
     with pytest.raises(PypeParseError):
-        pype.app._check_parsing('"?"', '?')
+        pype.app._check_parsing('"?"', "?")
 
 
 @given(string=st.text())
 def test_fn_autoimport_counter_keys(string):
-    mapper = 'collections.Counter || ?.keys() '
-    string = string + '\n'
+    mapper = "collections.Counter || ?.keys() "
+    string = string + "\n"
     in_stream = [string]
-    expected = [(collections.Counter(string).keys()) ]
+    expected = [(collections.Counter(string).keys())]
     result = pype.app.run(mapper=mapper, in_stream=in_stream, newlines=False)
     assert list(result) == expected
 
 
 @pytest.mark.parametrize(
-    'args,expected',
+    "args,expected",
     [
-        ((['ab'], 'auto', True), ['ab\n']),
-        ((['ab'], 'auto', False), ['ab']),
-        ((['ab'], True, True), ['ab\n']),
-        ((['ab'], False, True), ['ab']),
-        ((['ab'], True, False), ['ab\n']),
-        ((['ab\n', 'cd\n'], 'auto', True), ['ab\n', 'cd\n']),
-        ((['ab\n', 'cd\n'], True, True), ['ab\n\n', 'cd\n\n']),
-        ((['ab\n', 'cd\n'], False, True), ['ab\n', 'cd\n']),
+        ((["ab"], "auto", True), ["ab\n"]),
+        ((["ab"], "auto", False), ["ab"]),
+        ((["ab"], True, True), ["ab\n"]),
+        ((["ab"], False, True), ["ab"]),
+        ((["ab"], True, False), ["ab\n"]),
+        ((["ab\n", "cd\n"], "auto", True), ["ab\n", "cd\n"]),
+        ((["ab\n", "cd\n"], True, True), ["ab\n\n", "cd\n\n"]),
+        ((["ab\n", "cd\n"], False, True), ["ab\n", "cd\n"]),
     ],
 )
 def test_maybe_add_newlines(args, expected):
     text, input_setting, input_has_newlines = args
-    assert list(pype.app._maybe_add_newlines(text, input_setting, input_has_newlines)) == expected
+    assert (
+        list(pype.app._maybe_add_newlines(text, input_setting, input_has_newlines))
+        == expected
+    )
 
 
-@given(string=st.one_of(st.just(''), st.text()))
+@given(string=st.one_of(st.just(""), st.text()))
 def test_main_autoimport_placeholder_does_not_raise(string):
     mapper = 'collections.Counter || ?.keys() || "".join '
     pype.app.main(mapper=mapper, in_stream=[string])
 
 
-
-
 @pytest.mark.parametrize(
-    'string',
+    "string",
     [
-        '',
-        '\n',
-        'a',
-        'a\n',
-        pytest.mark.xfail(reason='Seems to work manually')('a\nb\n'),
+        "",
+        "\n",
+        "a",
+        "a\n",
+        pytest.mark.xfail(reason="Seems to work manually")("a\nb\n"),
     ],
 )
 def test_cli_autoimport_placeholder(string, runner):
     args = [
-        '--newlines=no',
-        'map',
+        "--newlines=no",
+        "map",
         'str || collections.Counter || ?.keys() || "".join ',
     ]
 
@@ -450,152 +413,128 @@ def test_cli_autoimport_placeholder(string, runner):
 
     result = runner.invoke(pype.app.cli, args, input=in_stream)
 
-    expected = ''.join(collections.Counter(in_stream).keys())
+    expected = "".join(collections.Counter(in_stream).keys())
     assert not result.exception
     assert result.exit_code == 0
     assert result.output == expected
 
 
 @pytest.mark.parametrize(
-    'args, in_stream, expected',
+    "args, in_stream, expected",
     [
-        (
-            ['map', '?'],
-            'abc',
-            'abc',
-        ),
+        (["map", "?"], "abc", "abc"),
+        (["map", 'str.replace(?, ".", "!")'], "a.b.c\n", "a!b!c\n"),
+        (["--placeholder=$", "map", 'str.replace($, ".", "!")'], "a.b.c\n", "a!b!c\n"),
         (
             [
-                'map',
-                'str.replace(?, ".", "!")',
-            ],
-            'a.b.c\n',
-            'a!b!c\n',
-        ),
-        (
-            [
-                '--placeholder=$',
-                'map',
-                'str.replace($, ".", "!")',
-            ],
-            'a.b.c\n',
-            'a!b!c\n',
-        ),
-        (
-            [
-                '-icollections',
-                '-ijson',
-                '--newlines=no',
-                'map',
+                "-icollections",
+                "-ijson",
+                "--newlines=no",
+                "map",
                 'json.dumps(dict(collections.Counter(str.replace(?, ".", "!"))))',
             ],
-            'a.b.c',
+            "a.b.c",
             '{"a": 1, "!": 2, "b": 1, "c": 1}',
         ),
         (
             [
-                '-icollections',
-                '-ijson',
-                '--newlines=yes',
-                'map',
+                "-icollections",
+                "-ijson",
+                "--newlines=yes",
+                "map",
                 'str.replace(?, ".", "!") || collections.Counter(?) || dict(?) || json.dumps(?) ',
             ],
-            'a.b.c\n',
+            "a.b.c\n",
             '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
         ),
         (
             [
-                '-icollections',
-                '-ijson',
-                '--newlines=yes',
-                'map',
+                "-icollections",
+                "-ijson",
+                "--newlines=yes",
+                "map",
                 'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
             ],
-            'a.b.c\n',
+            "a.b.c\n",
             '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
         ),
         (
             [
-                '-icollections',
-                '-ijson',
-                '--newlines=yes',
-                'map',
+                "-icollections",
+                "-ijson",
+                "--newlines=yes",
+                "map",
                 'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
             ],
-            'a.b.c\nd.e.f\n',
+            "a.b.c\nd.e.f\n",
             '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n{"d": 1, "!": 2, "e": 1, "f": 1, "\\n": 1}\n',
         ),
         (
             [
-                '--newlines=yes',
-                'map',
+                "--newlines=yes",
+                "map",
                 'str.replace(?, ".", "!") || collections.Counter(?) || json.dumps(?) ',
             ],
-            'a.b.c\n',
+            "a.b.c\n",
             '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
         ),
         (
             [
-                '--newlines=yes',
-                'map',
+                "--newlines=yes",
+                "map",
                 'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
             ],
-            'a.b.c\n',
+            "a.b.c\n",
             '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
         ),
         (
             [
-                '--newlines=no',
-                'map',
+                "--newlines=no",
+                "map",
                 'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
             ],
-            'a.b.c',
+            "a.b.c",
             '{"a": 1, "!": 2, "b": 1, "c": 1}',
         ),
         (
             [
-                '--newlines=yes',
+                "--newlines=yes",
                 "apply",
-                'enumerate || list || reversed || enumerate || list',
+                "enumerate || list || reversed || enumerate || list",
             ],
-            'a\nbb\nccc\n',
+            "a\nbb\nccc\n",
             "[(0, (2, 'ccc\\n')), (1, (1, 'bb\\n')), (2, (0, 'a\\n'))]\n",
         ),
         (
-            [
-                '--newlines=no',
-                "apply",
-                'functools.partial(map, str.upper)',
-            ],
-            'a\nbb\nccc\n',
-            'A\nBB\nCCC\n',
+            ["--newlines=no", "apply", "functools.partial(map, str.upper)"],
+            "a\nbb\nccc\n",
+            "A\nBB\nCCC\n",
         ),
         (
             [
-                '--newlines=no',
+                "--newlines=no",
                 'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
             ],
-            'a.b.c',
+            "a.b.c",
             '{"a": 1, "!": 2, "b": 1, "c": 1}',
         ),
         (
-            [
-                '--newlines=no',
-                '? or collections.Counter(?)',
-            ],
-            'a\nbb\nccc\n',
-            'a\nbb\nccc\n',
+            ["--newlines=no", "? or collections.Counter(?)"],
+            "a\nbb\nccc\n",
+            "a\nbb\nccc\n",
         ),
         (
             [
-                'apply', 'itertools.islice(?, 1, 3)',
-                'map', 'toolz.first',
-                'apply', '", ".join(?)',
+                "apply",
+                "itertools.islice(?, 1, 3)",
+                "map",
+                "toolz.first",
+                "apply",
+                '", ".join(?)',
             ],
-            'a\nbb\nccc\ndddd\n',
-            'b, c\n',
-        )
-
+            "a\nbb\nccc\ndddd\n",
+            "b, c\n",
+        ),
     ],
 )
 def test_cli(args, in_stream, expected, runner):
@@ -605,34 +544,20 @@ def test_cli(args, in_stream, expected, runner):
     assert result.exit_code == 0
     assert result.output == expected
 
-@pytest.mark.parametrize(
-    'string, short_placeholder, separator, expected',
-    [
-        ('?', '?', '||', _PYPE_VALUE + ' '),
-        ('1 + ?', '?', '||', f'1 + {_PYPE_VALUE} '),
-        ('? + 1', '?', '||', f'{_PYPE_VALUE} +1 '),
-    ],
-)
-def test_replace_short_placeholder(string,short_placeholder, separator,  expected)    :
-
-    result = pype.app._replace_short_placeholder(string, short_placeholder, separator)
-    assert result == expected
-
 
 @pytest.mark.parametrize(
-    'string, separator, expected',
+    "string, separator, expected",
     [
-        ('a', '||', ['a']),
-        ('ab', '||', ['ab']),
-        ('ab||cd', '||', ['ab', 'cd']),
-        ('ab||cd||ef', '||', ['ab', 'cd', 'ef']),
-        ('a"b||c"d||ef', '||', ['a"b||c"d', 'ef']),
-        ('a', '\\', ['a']),
-        ('ab', '\\', ['ab']),
-        ('ab\\cd', '\\', ['ab', 'cd']),
-        ('ab\\cd\\ef', '\\', ['ab', 'cd', 'ef']),
-        ('a"b\\c"d\\ef', '\\', ['a"b\\c"d', 'ef']),
-
+        ("a", "||", ["a"]),
+        ("ab", "||", ["ab"]),
+        ("ab||cd", "||", ["ab", "cd"]),
+        ("ab||cd||ef", "||", ["ab", "cd", "ef"]),
+        ('a"b||c"d||ef', "||", ['a"b||c"d', "ef"]),
+        ("a", "\\", ["a"]),
+        ("ab", "\\", ["ab"]),
+        ("ab\\cd", "\\", ["ab", "cd"]),
+        ("ab\\cd\\ef", "\\", ["ab", "cd", "ef"]),
+        ('a"b\\c"d\\ef', "\\", ['a"b\\c"d', "ef"]),
     ],
 )
 def test_split_string_on_separator(string, separator, expected):
@@ -651,12 +576,12 @@ class Timer:
 
 
 def test_cli_async(runner, reactor, server):
-    base_url = 'http://localhost:8080/{}'
+    base_url = "http://localhost:8080/{}"
     letters = string.ascii_lowercase
-    in_stream = '\n'.join(base_url.format(c) for c in letters)
-    command = 'str.upper || ?.rstrip() || treq.get || treq.text_content '
-    args = ['--max-concurrent', '100', '--async', 'map', command]
-    expected = [f'Hello, {letter.upper()}' for letter in letters]
+    in_stream = "\n".join(base_url.format(c) for c in letters)
+    command = "str.upper || ?.rstrip() || treq.get || treq.text_content "
+    args = ["--max-concurrent", "100", "--async", "map", command]
+    expected = [f"Hello, {letter.upper()}" for letter in letters]
 
     with Timer() as t:
         result = runner.invoke(pype.app.cli, args, input=in_stream)
@@ -673,13 +598,13 @@ def test_cli_async(runner, reactor, server):
 
 @pytest.mark.xfail(strict=True)
 def test_cli_async_chain_map_apply(runner, reactor):
-    base_url = 'http://localhost:8080/{}'
+    base_url = "http://localhost:8080/{}"
     letters = string.ascii_lowercase
-    in_stream = '\n'.join(base_url.format(c) for c in letters)
-    mapper = 'str.upper || _.rstrip() || treq.get || treq.text_content '
-    applier = 'max'
-    args = ['--async', 'map', mapper, 'apply', applier]
-    expected = ['Hello, Z']
+    in_stream = "\n".join(base_url.format(c) for c in letters)
+    mapper = "str.upper || _.rstrip() || treq.get || treq.text_content "
+    applier = "max"
+    args = ["--async", "map", mapper, "apply", applier]
+    expected = ["Hello, Z"]
 
     with Timer() as t:
         result = runner.invoke(pype.app.cli, args, input=in_stream)
@@ -693,11 +618,12 @@ def test_cli_async_chain_map_apply(runner, reactor):
     assert starts == expected
     assert t.elapsed < timedelta(seconds=4)
 
+
 def test_cli_version(runner):
-    args = ['--version']
+    args = ["--version"]
 
     result = runner.invoke(pype.app.cli, args)
 
-    assert result.output == f'{pype.__name__} {pype._version.__version__}\n'
+    assert result.output == f"{pype.__name__} {pype._version.__version__}\n"
     assert not result.exception
     assert result.exit_code == 0

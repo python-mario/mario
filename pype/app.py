@@ -14,6 +14,7 @@ import io
 from tokenize import tokenize, untokenize
 
 import attr
+import parso
 import click
 from click_default_group import DefaultGroup
 import toolz
@@ -25,8 +26,8 @@ import pype
 import pype._version
 
 
-_PYPE_VALUE = '__PYPE_VALUE_'
-CONTEXT_SETTINGS = dict(auto_envvar_prefix='PYPE')
+_PYPE_VALUE = "__PYPE_VALUE_"
+CONTEXT_SETTINGS = dict(auto_envvar_prefix="PYPE")
 
 
 class PypeException(Exception):
@@ -38,19 +39,19 @@ class PypeParseError(PypeException):
 
 
 def _is_name_token(token_object):
-    return token.tok_name[token_object.type] == 'NAME'
+    return token.tok_name[token_object.type] == "NAME"
 
 
 def _is_reference_part(token_object):
     if _is_name_token(token_object):
         return True
-    if token_object.string == '.':
+    if token_object.string == ".":
         return True
     return False
 
 
 def _string_to_tokens(string):
-    bytestring = string.encode('utf-8')
+    bytestring = string.encode("utf-8")
     bytesio = io.BytesIO(bytestring)
     tokens = tokenize(bytesio.readline)
     return tokens
@@ -58,7 +59,7 @@ def _string_to_tokens(string):
 
 def _tokens_to_string(token_objects):
     """Untokenize, ignoring whitespace."""
-    return ''.join(t.string for t in token_objects)
+    return "".join(t.string for t in token_objects)
 
 
 def _get_maybe_namespaced_identifiers(string):
@@ -66,19 +67,6 @@ def _get_maybe_namespaced_identifiers(string):
     scanner = _StringScanner(string)
     results = scanner.scan()
     return results
-
-
-
-
-def _replace_short_placeholder(string, short_placeholder, separator):
-    input_tokens = _string_to_tokens(string)
-    output_tokens = []
-    for tok in input_tokens:
-        if tok.type == token.ERRORTOKEN and tok.string == short_placeholder:
-            output_tokens.append((token.NAME, _PYPE_VALUE))
-        else:
-            output_tokens.append(tok)
-    return untokenize(output_tokens).decode('utf-8')
 
 
 
@@ -94,8 +82,7 @@ class _StringScanner:
         if self._current_tokens and _is_name_token(self._current_tokens[-1]):
             if _is_name_token(self._current_tokens[0]):
 
-                self._identifier_strings.add(
-                    _tokens_to_string(self._current_tokens))
+                self._identifier_strings.add(_tokens_to_string(self._current_tokens))
             self._current_tokens = []
 
     def scan(self):
@@ -122,21 +109,21 @@ class _StringScanner:
 
 
 def _get_named_module(name):
-    builtins = sys.modules['builtins']
+    builtins = sys.modules["builtins"]
     if hasattr(builtins, name):
         return builtins
     try:
         return __import__(name, {}, {})
     except ImportError as e:
         pass
-    raise LookupError(f'Could not find {name}')
+    raise LookupError(f"Could not find {name}")
 
 
 def _get_autoimport_modules(fullname):
-    name_parts = fullname.split('.')
+    name_parts = fullname.split(".")
     try_names = []
     for idx in range(len(name_parts)):
-        try_names.insert(0, '.'.join(name_parts[:idx + 1]))
+        try_names.insert(0, ".".join(name_parts[: idx + 1]))
 
     for name in try_names:
         try:
@@ -144,11 +131,12 @@ def _get_autoimport_modules(fullname):
         except LookupError:
             pass
         else:
-            if module is sys.modules['builtins']:
+            if module is sys.modules["builtins"]:
                 return {}
             return {name: module}
 
     return {}
+
 
 def _get_named_modules(imports):
     """Import modules into dict mapping name to module."""
@@ -158,15 +146,17 @@ def _get_named_modules(imports):
     return modules
 
 
-def _add_short_placeholder(command_string, short_placeholder='?'):
+def _add_short_placeholder(command_string, short_placeholder="?"):
     if short_placeholder in command_string or _PYPE_VALUE in command_string:
         return command_string
-    return f'{command_string}({short_placeholder})'
+    return f"{command_string}({short_placeholder})"
 
 
-def _get_autoimports(string, separator='||'):
-    string = _replace_short_placeholder(string, '?', separator)
-    components = [comp.strip() for comp in _split_string_on_separator(string, separator)]
+def _get_autoimports(string, separator="||"):
+    string = _replace_short_placeholder(string, "?", separator)
+    components = [
+        comp.strip() for comp in _split_string_on_separator(string, separator)
+    ]
     name_to_module = {}
     for component in components:
         identifiers = _get_maybe_namespaced_identifiers(component)
@@ -181,13 +171,13 @@ def _get_modules(commands, named_imports, autoimport):
     named_modules = _get_named_modules(named_imports)
     if not autoimport:
         return named_modules
-    autoimports = toolz.merge(_get_autoimports(command)
-                              for command in commands)
+    autoimports = toolz.merge(_get_autoimports(command) for command in commands)
     # Named modules have priority.
     modules = {**autoimports, **named_modules}
     # Only top-level modules can be referenced in eval's globals dict.
-    modules = {k.split('.')[0]: v for k,v in modules.items()}
+    modules = {k.split(".")[0]: v for k, v in modules.items()}
     return modules
+
 
 def _xor(a, b):
     return (a or b) and not (a and b)
@@ -195,14 +185,14 @@ def _xor(a, b):
 
 def _maybe_add_newlines(iterator, newlines_setting, input_has_newlines):
 
-    if newlines_setting not in [True, False, 'auto']:
-        raise ValueError(f'Invalid newlines_setting: `{newlines_setting}`')
+    if newlines_setting not in [True, False, "auto"]:
+        raise ValueError(f"Invalid newlines_setting: `{newlines_setting}`")
 
     if newlines_setting is True:
         should_add_newlines = True
     elif newlines_setting is False:
         should_add_newlines = False
-    elif newlines_setting == 'auto':
+    elif newlines_setting == "auto":
         output_has_newlines, iterator = _has_newlines(iterator)
         should_add_newlines = _xor(input_has_newlines, output_has_newlines)
 
@@ -215,12 +205,12 @@ def _maybe_add_newlines(iterator, newlines_setting, input_has_newlines):
 
 
 def _check_parsing(command, placeholder):
+    return
+    other = {"$": "?", "?": "$"}.get(placeholder, "?")
 
-    other = {'$': '?', '?': '$'}.get(placeholder, '?')
+    message = r"""
 
-    message = r'''
-
-        If data should appear in quotation marks, use 'Hello, {{}}.format(?)':
+        If data should appear in quotation marks, use '"Hello, {{}}".format(?)':
 
 
             printf 'World' | pype '"Hello, {{}}!".format(?)'
@@ -241,27 +231,33 @@ def _check_parsing(command, placeholder):
             # Is this a question?
 
 
-            '''
-
-    root = ast.parse(command.strip())
+            """
+    try:
+        root = ast.parse(command.strip())
+    except SyntaxError as e:
+        raise PypeParseError(
+            "This is a known issue in pype. Please use a different placeholder with `--placeholder=_`when using f-strings."
+        )
     for node in ast.walk(root):
         if isinstance(node, ast.Str):
             if placeholder in node.s:
-                raise PypeParseError(message.format(placeholder=placeholder, other=other))
+                raise PypeParseError(
+                    message.format(placeholder=placeholder, other=other)
+                )
 
 
 def run_segment(value, segment, modules):
     return eval(segment, modules, {_PYPE_VALUE: value})
 
 
-def _command_string_to_function(command, modules=None, symbol='?', call=True):
+def _command_string_to_function(command, modules=None, symbol="?", call=True):
     if modules is None:
         modules = {}
 
     if call:
         command = _add_short_placeholder(command, symbol)
 
-    command = command.replace(symbol, _PYPE_VALUE)
+    command = _replace_short_placeholder(command, symbol)
 
     def function(value):
         return run_segment(value, command, modules)
@@ -284,7 +280,7 @@ def _split(pattern, string, types=(token.OP, token.ERRORTOKEN)):
     tokens = list(_string_to_tokens(string))
     position = 0
     if tokens[-1].end[0] > 2:
-        raise PypeParseError('Cannot parse multiline command strings.')
+        raise PypeParseError("Cannot parse multiline command strings.")
     for start_index in indexes:
         for tok in tokens:
             # This will fail on multi-line pipestrings:
@@ -299,22 +295,49 @@ def _split_string_on_separator(string, separator):
     return [s.strip() for s in _split(separator, string)]
 
 
-def _pipestring_to_functions(multicommand_string, modules=None, symbol='?', separator='||', do_eval=False):
+def _pipestring_to_functions(
+    multicommand_string, modules=None, symbol="?", separator="||", do_eval=False
+):
     command_strings = _split_string_on_separator(multicommand_string, separator)
     functions = []
     it = iter(command_strings)
 
-    functions.append(_command_string_to_function(next(it), modules, symbol, call=(not do_eval)))
+    functions.append(
+        _command_string_to_function(next(it), modules, symbol, call=(not do_eval))
+    )
     for command_string in it:
         func = _command_string_to_function(command_string, modules, symbol)
         functions.append(func)
     return functions
 
 
-def _pipestring_to_function(multicommand_string, modules=None, symbol='?', separator='||', do_eval=False):
+def _pipestring_to_function(
+    multicommand_string, modules=None, symbol="?", separator="||", do_eval=False
+):
     functions = _pipestring_to_functions(
-        multicommand_string, modules, symbol, separator, do_eval)
+        multicommand_string, modules, symbol, separator, do_eval
+    )
     return toolz.compose(*reversed(functions))
+
+
+def _replace_node(node, placeholder, replacement):
+    try:
+        token_type = node.token_type
+    except AttributeError:
+        return node
+    if token_type != "ERRORTOKEN":
+        return node
+    if node.value != placeholder:
+        return node
+    return parso.python.tree.Name(replacement, node.start_pos)
+
+
+def _replace_short_placeholder(command, placeholder, separator='||'):
+    tree = parso.parse(command)
+    new_children = [
+        _replace_node(node, placeholder, _PYPE_VALUE) for node in tree.children
+    ]
+    return "".join(node.get_code() for node in new_children)
 
 
 def _async_do_item(mapper_functions, item):
@@ -357,16 +380,16 @@ def _async_react_map(reactor, mapper_functions, items, max_concurrent):
 
 
 def _async_run(
-        mapper,
-        applier=None,
-        in_stream=None,
-        imports=(),
-        placeholder='?',
-        autoimport=True,
-        newlines='auto',
-        reactor=reactor,
-        processors=(),
-        max_concurrent=1,
+    mapper,
+    applier=None,
+    in_stream=None,
+    imports=(),
+    placeholder="?",
+    autoimport=True,
+    newlines="auto",
+    reactor=reactor,
+    processors=(),
+    max_concurrent=1,
 ):
 
     commands = (x for x in [mapper] if x)
@@ -377,23 +400,24 @@ def _async_run(
 
 
 def run(  # pylint: disable=too-many-arguments
-        mapper=None,
-        applier=None,
-        in_stream=None,
-        imports=(),
-        placeholder='?',
-        autoimport=True,
-        newlines='auto',
-        do_eval=False,
+    mapper=None,
+    applier=None,
+    in_stream=None,
+    imports=(),
+    placeholder="?",
+    autoimport=True,
+    newlines="auto",
+    do_eval=False,
 ):
     pipestrings = (x for x in [mapper, applier] if x)
     modules = _get_modules(pipestrings, imports, autoimport)
 
     input_has_newlines, items = _has_newlines(in_stream)
 
-
     if do_eval:
-        eval_function = _pipestring_to_function(mapper, modules, placeholder, do_eval=True)
+        eval_function = _pipestring_to_function(
+            mapper, modules, placeholder, do_eval=True
+        )
         yield eval_function(None)
         return
 
@@ -416,28 +440,26 @@ def _has_newlines(iterator):
         first, iterator = toolz.peek(iterator)
     except StopIteration:
         return False, iterator
-    return str(first).endswith('\n'), iterator
-
-
-
+    return str(first).endswith("\n"), iterator
 
 
 def main(  # pylint: disable=too-many-arguments
-        mapper=None,
-        applier=None,
-        in_stream=None,
-        imports=(),
-        placeholder='?',
-        autoimport=True,
-        newlines='auto',
-        do_async=False,
-        reactor=reactor,
-        processors=(),
-        max_concurrent=1,
-        separator='||',
-        do_eval=False,
-        **kwargs,
+    mapper=None,
+    applier=None,
+    in_stream=None,
+    imports=(),
+    placeholder="?",
+    autoimport=True,
+    newlines="auto",
+    do_async=False,
+    reactor=reactor,
+    processors=(),
+    max_concurrent=1,
+    separator="||",
+    do_eval=False,
+    **kwargs,
 ):
+
 
     if mapper is not None:
         mapper = _replace_short_placeholder(mapper, placeholder, separator)
@@ -445,9 +467,8 @@ def main(  # pylint: disable=too-many-arguments
             _check_parsing(segment, placeholder)
         pass
 
-
     if applier is not None:
-        applier = _replace_short_placeholder(applier, placeholder, '||')
+        applier = _replace_short_placeholder(applier, placeholder, "||")
         for segment in _split(separator, applier):
             _check_parsing(segment, placeholder)
 
@@ -480,59 +501,58 @@ def main(  # pylint: disable=too-many-arguments
     return gen
 
 
-
-
-
-
 @click.group(
     cls=DefaultGroup,
-    default='map',
+    default="map",
     default_if_no_args=True,
     chain=True,
     invoke_without_command=True,
     context_settings=CONTEXT_SETTINGS,
 )
 @click.option(
-    '--newlines',
-    '-n',
-    type=click.Choice(['auto', 'yes', 'no']),
-    default='auto',
-    help='Add newlines.')
+    "--newlines",
+    "-n",
+    type=click.Choice(["auto", "yes", "no"]),
+    default="auto",
+    help="Add newlines.",
+)
 @click.option(
-    '--autoimport/--no-autoimport',
+    "--autoimport/--no-autoimport",
     is_flag=True,
     default=True,
-    help='Automatically import modules.')
-@click.option(
-    '--import',
-    '-i',
-    'imports',
-    multiple=True,
-    help='Modules to import explicitly.',
+    help="Automatically import modules.",
 )
 @click.option(
-    '--placeholder',
-    default='?',
-    help='String to replace with data. Defaults to _',
+    "--import", "-i", "imports", multiple=True, help="Modules to import explicitly."
 )
 @click.option(
-    '--async',
-    'do_async',
+    "--placeholder", default="?", help="String to replace with data. Defaults to _"
+)
+@click.option(
+    "--async",
+    "do_async",
     is_flag=True,
     default=False,
-    help='Run commands on each input item asynchronously.')
-@click.option('--version', is_flag=True, help='Show the version and exit.')
-@click.option('--max-concurrent', type=int, default=3)
-@click.option('--eval', '-e', 'do_eval', is_flag=True, help='Evaluate the expression without taking input.')
+    help="Run commands on each input item asynchronously.",
+)
+@click.option("--version", is_flag=True, help="Show the version and exit.")
+@click.option("--max-concurrent", type=int, default=3)
+@click.option(
+    "--eval",
+    "-e",
+    "do_eval",
+    is_flag=True,
+    help="Evaluate the expression without taking input.",
+)
 def cli(
-        imports,
-        placeholder,
-        autoimport,
-        newlines,
-        do_async,
-        version,
-        max_concurrent,
-        do_eval,
+    imports,
+    placeholder,
+    autoimport,
+    newlines,
+    do_async,
+    version,
+    max_concurrent,
+    do_eval,
 ):
     """
     Pipe data through Python functions.
@@ -540,14 +560,10 @@ def cli(
     """
 
 
-
 def str_to_bool(string, strict=False):
-    true_strings = {s: True for s in ['true', 'yes', 't', 'y']}
-    false_strings = {s: False for s in ['false', 'no', 'f', 'n']}
-    mapping = {
-        **true_strings,
-        **false_strings,
-    }
+    true_strings = {s: True for s in ["true", "yes", "t", "y"]}
+    false_strings = {s: False for s in ["false", "no", "f", "n"]}
+    mapping = {**true_strings, **false_strings}
     try:
         return mapping[string]
     except KeyError:
@@ -559,38 +575,39 @@ def str_to_bool(string, strict=False):
 @cli.resultcallback()
 def process_pipeline(processors, **kwargs):
 
-    if kwargs['version']:
-        print(f'{pype.__name__} {pype._version.__version__}')
+    if kwargs["version"]:
+        print(f"{pype.__name__} {pype._version.__version__}")
         return
 
-    if kwargs['do_eval']:
-        in_stream = '\n'
+    if kwargs["do_eval"]:
+        in_stream = "\n"
     else:
-        in_stream = click.get_text_stream('stdin')
-
+        in_stream = click.get_text_stream("stdin")
 
     options = dict(kwargs)
-    options['newlines'] = str_to_bool(kwargs['newlines'])
-    options['processors'] = processors
+    options["newlines"] = str_to_bool(kwargs["newlines"])
+    options["processors"] = processors
 
-    if kwargs['do_async']:
-        options['reactor'] = reactor
+    if kwargs["do_async"]:
+        options["reactor"] = reactor
 
-    if kwargs['do_async'] and len(processors) > 1:
-        raise PypeException('Async multi-stage pipeline not implemented.')
+    if kwargs["do_async"] and len(processors) > 1:
+        raise PypeException("Async multi-stage pipeline not implemented.")
 
     input_has_newlines, items = _has_newlines(in_stream)
     for processor in processors:
         items = processor(in_stream=items, **options)
 
-    items = _maybe_add_newlines(items, str_to_bool(kwargs['newlines']), input_has_newlines)
+    items = _maybe_add_newlines(
+        items, str_to_bool(kwargs["newlines"]), input_has_newlines
+    )
 
     for item in items:
         click.echo(item, nl=False)
 
 
-@cli.command('apply')
-@click.argument('applier')
+@cli.command("apply")
+@click.argument("applier")
 def cli_apply(applier):
     def wrapped(**kwargs):
         return main(applier=applier, **kwargs)
@@ -598,8 +615,8 @@ def cli_apply(applier):
     return wrapped
 
 
-@cli.command('map')
-@click.argument('mapper')
+@cli.command("map")
+@click.argument("mapper")
 def cli_map(mapper):
     def wrapped(**kwargs):
         return main(mapper=mapper, **kwargs)
@@ -607,5 +624,5 @@ def cli_map(mapper):
     return wrapped
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()
