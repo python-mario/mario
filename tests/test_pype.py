@@ -349,12 +349,6 @@ def test_main_f_string():
     assert result == ['"abc"']
 
 
-@pytest.mark.skip
-def test_parse_error():
-    with pytest.raises(PypeParseError):
-        pype.app._check_parsing('"?"', "?")
-
-
 @given(string=st.text())
 def test_fn_autoimport_counter_keys(string):
     mapper = "collections.Counter || ?.keys() "

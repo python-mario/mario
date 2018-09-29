@@ -204,47 +204,6 @@ def _maybe_add_newlines(iterator, newlines_setting, input_has_newlines):
             yield string
 
 
-def _check_parsing(command, placeholder):
-    return
-    other = {"$": "?", "?": "$"}.get(placeholder, "?")
-
-    message = r"""
-
-        If data should appear in quotation marks, use '"Hello, {{}}".format(?)':
-
-
-            printf 'World' | pype '"Hello, {{}}!".format(?)'
-
-            # Hello, World!
-
-
-            printf 'World' | pype $'"I say, \'Hello, {{}}!\'".format(?)'
-
-            # I say, 'Hello, World!'
-
-
-        If {placeholder} should appear in quotation marks, use another placeholder:
-
-
-            printf 'Is this a question' | pype --placeholder=$ '$ + "?"'
-
-            # Is this a question?
-
-
-            """
-    try:
-        root = ast.parse(command.strip())
-    except SyntaxError as e:
-        raise PypeParseError(
-            "This is a known issue in pype. Please use a different placeholder with `--placeholder=_`when using f-strings."
-        )
-    for node in ast.walk(root):
-        if isinstance(node, ast.Str):
-            if placeholder in node.s:
-                raise PypeParseError(
-                    message.format(placeholder=placeholder, other=other)
-                )
-
 
 def run_segment(value, segment, modules):
     return eval(segment, modules, {_PYPE_VALUE: value})
@@ -463,14 +422,9 @@ def main(  # pylint: disable=too-many-arguments
 
     if mapper is not None:
         mapper = _replace_short_placeholder(mapper, placeholder, separator)
-        for segment in _split(separator, mapper):
-            _check_parsing(segment, placeholder)
-        pass
 
     if applier is not None:
         applier = _replace_short_placeholder(applier, placeholder, "||")
-        for segment in _split(separator, applier):
-            _check_parsing(segment, placeholder)
 
     if do_async:
         _async_run(
