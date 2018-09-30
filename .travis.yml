@@ -2,8 +2,7 @@ language: python
 python:
   "3.6"
 install:
-  - pip install pipenv
-  - pipenv sync --dev
-  - pipenv install -e .
+  - pip install poetry
+  - poetry install --dev
 script:
   - pytest
