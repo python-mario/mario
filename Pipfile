@@ -4,13 +4,12 @@ name = "pypi"
 url = "https://pypi.python.org/simple"
 
 [packages]
-arrow = "*"
 click = "*"
 toolz = "*"
 attrs = "*"
-treq = "*"
 click-default-group = "*"
 parso = "*"
+twisted = "*"
 
 [requires]
 python_version = "3.6"
@@ -30,3 +29,4 @@ yapf = "*"
 parso = "*"
 twine = "*"
 vulture = "*"
+treq = "*"

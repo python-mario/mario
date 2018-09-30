@@ -12,7 +12,8 @@ from shutil import rmtree
 from setuptools import find_packages, setup, Command
 
 # Package meta-data.
-NAME = 'pype'
+DISTRIBUTION_PACKAGE_NAME = 'python-pype'
+IMPORT_PACKAGE_NAME = 'pype'
 DESCRIPTION = 'Command line pipes for python.'
 URL = 'https://github.com/me/myproject'
 EMAIL = 'me@example.com'
@@ -24,6 +25,7 @@ REQUIRED = [
     'attrs',
     'click',
     'click_default_group',
+    'parso',
     'toolz',
     'twisted',
 ]
@@ -42,7 +44,7 @@ with io.open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 # Load the package's _version.py module as a dictionary.
 about = {}
-with open(os.path.join(here, NAME, '_version.py')) as f:
+with open(os.path.join(here, IMPORT_PACKAGE_NAME, '_version.py')) as f:
     exec(f.read(), about)
 
 
@@ -85,7 +87,7 @@ class UploadCommand(Command):
 
 # Where the magic happens:
 setup(
-    name=NAME,
+    name=DISTRIBUTION_PACKAGE_NAME,
     version=about['__version__'],
     description=DESCRIPTION,
     long_description=long_description,
