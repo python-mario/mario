@@ -160,7 +160,7 @@ def test_raises_on_missing_module(runner):
 
     args = [
         "map",
-        '_missing_module.replace(_, ".", "!") ! collections.Counter ! json.dumps ',
+        '_missing_module.replace(?, ".", "!") ! collections.Counter ! json.dumps ',
     ]
     in_stream = "a.b.c\n"
 
