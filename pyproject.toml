@@ -40,4 +40,4 @@ poetry = "*"
 
 [tool.poetry.scripts]
 
-pype = 'pype.app:cli'
+pype = 'app:cli'
