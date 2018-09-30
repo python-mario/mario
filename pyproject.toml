@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "python-pype"
+version = "0.0.29"
+description = ""
+authors = ["author <author@example.com>"]
+readme = "README.rst"
+packages = [
+         {include = "pype"}
+]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+
+click = "*"
+toolz = "*"
+attrs = "*"
+click-default-group = "*"
+parso = "*"
+twisted = "*"
+
+
+[tool.poetry.dev-dependencies]
+"flake8" = "*"
+bumpversion = "*"
+coverage = "*"
+hypothesis = "*"
+pylint = "*"
+pytest = "*"
+requests = "*"
+aiohttp = "*"
+jedi = "*"
+"autopep8" = "*"
+yapf = "*"
+parso = "*"
+twine = "*"
+vulture = "*"
+treq = "*"
+poetry = "*"
+
+
+[tool.poetry.scripts]
+
+pype = 'pype:pype.app.cli'
