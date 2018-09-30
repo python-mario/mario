@@ -106,7 +106,6 @@ Caveats
 
 * Multiline command strings are not supported
 
-* F-strings are not supported
 
 
 Status
