@@ -73,10 +73,10 @@ def test_command_string_to_function():
     "pipestring, modules, value, expected",
     [
         ("str.upper", None, "abc", "ABC"),
-        ('str.upper || ? + "z" ', None, "abc", "ABCz"),
-        ('str.upper || ? + "z" || set', None, "abc", set("ABCz")),
+        ('str.upper ! ? + "z" ', None, "abc", "ABCz"),
+        ('str.upper ! ? + "z" ! set', None, "abc", set("ABCz")),
         (
-            "str.upper || collections.Counter || dict",
+            "str.upper ! collections.Counter ! dict",
             {"collections": collections},
             "abbccc",
             {"A": 1, "B": 2, "C": 3},
@@ -126,7 +126,7 @@ def test_cli_raises_without_autoimport(runner):
     args = [
         "--no-autoimport",
         "map",
-        'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
+        'str.replace(?, ".", "!") ! collections.Counter ! json.dumps ',
     ]
     in_stream = "a.b.c\n"
 
@@ -135,31 +135,32 @@ def test_cli_raises_without_autoimport(runner):
     assert isinstance(result.exception, NameError)
 
 
-def test_cli_raises_with_multiline_command(runner):
+
+
+def test_cli_works_with_multiline_command(runner):
 
     args = [
         "--no-autoimport",
         "map",
         """
         (
-        1
-        +
-        _
+         'x'
+         + ?
         )
         """,
     ]
-    in_stream = "a.b.c\n"
+    in_stream = "a\n"
 
     result = runner.invoke(pype.app.cli, args, input=in_stream)
-
-    assert isinstance(result.exception, pype.app.PypeParseError)
+    assert not result.exception
+    assert result.stdout == 'xa\n'
 
 
 def test_raises_on_missing_module(runner):
 
     args = [
         "map",
-        '_missing_module.replace(_, ".", "!") || collections.Counter || json.dumps ',
+        '_missing_module.replace(_, ".", "!") ! collections.Counter ! json.dumps ',
     ]
     in_stream = "a.b.c\n"
 
@@ -247,7 +248,7 @@ def test_get_identifiers_matches_str_isidentifier(string):
         ({"mapper": "str.upper", "newlines": True, "in_stream": ["abc"]}, ["ABC"]),
         (
             {
-                "mapper": "collections.Counter || ?.keys() ",
+                "mapper": "collections.Counter ! ?.keys() ",
                 "in_stream": ["abbccc\n"],
                 "newlines": False,
             },
@@ -255,7 +256,7 @@ def test_get_identifiers_matches_str_isidentifier(string):
         ),
         (
             {
-                "mapper": 'collections.Counter || ?.keys() || "".join ',
+                "mapper": 'collections.Counter ! ?.keys() ! "".join ',
                 "in_stream": ["abbccc\n"],
                 "newlines": False,
             },
@@ -263,7 +264,7 @@ def test_get_identifiers_matches_str_isidentifier(string):
         ),
         (
             {
-                "mapper": 'collections.Counter || ?.keys() || "".join ',
+                "mapper": 'collections.Counter ! ?.keys() ! "".join ',
                 "in_stream": [""],
                 "newlines": False,
             },
@@ -298,7 +299,7 @@ def test_main_example(kwargs, expected):
 
 
 def test_lambda():
-    mapper = "str.split || sorted(?, key=lambda x: x[-1])"
+    mapper = "str.split ! sorted(?, key=lambda x: x[-1])"
     in_stream = ["1 2\n2 1\n"]
     result = pype.app.run(mapper=mapper, newlines=False, in_stream=in_stream)
     expected = [["1", "1", "2", "2"]]
@@ -306,7 +307,7 @@ def test_lambda():
 
 
 def test_keyword_arg():
-    mapper = "str.split || sorted(?, key=operator.itemgetter(-1))"
+    mapper = "str.split ! sorted(?, key=operator.itemgetter(-1))"
     in_stream = ["1 2\n2 1\n"]
     result = pype.app.run(mapper=mapper, newlines=False, in_stream=in_stream)
     expected = [["1", "1", "2", "2"]]
@@ -336,7 +337,7 @@ def test_main_f_string():
 
 @hypothesis.given(string=st.text())
 def test_fn_autoimport_counter_keys(string):
-    mapper = "collections.Counter || ?.keys() "
+    mapper = "collections.Counter ! ?.keys() "
     string = string + "\n"
     in_stream = [string]
     expected = [(collections.Counter(string).keys())]
@@ -367,7 +368,7 @@ def test_maybe_add_newlines(args, expected):
 
 @hypothesis.given(string=st.one_of(st.just(""), st.text()))
 def test_main_autoimport_placeholder_does_not_raise(string):
-    mapper = 'collections.Counter || ?.keys() || "".join '
+    mapper = 'collections.Counter ! ?.keys() ! "".join '
     pype.app.main(mapper=mapper, in_stream=[string])
 
 
@@ -384,7 +385,7 @@ def test_cli_autoimport_placeholder(string, runner):
     args = [
         "--newlines=no",
         "map",
-        'str || collections.Counter || ?.keys() || "".join ',
+        'str ! collections.Counter ! ?.keys() ! "".join ',
     ]
 
     in_stream = string
@@ -420,7 +421,7 @@ def test_cli_autoimport_placeholder(string, runner):
                 "-ijson",
                 "--newlines=yes",
                 "map",
-                'str.replace(?, ".", "!") || collections.Counter(?) || dict(?) || json.dumps(?) ',
+                'str.replace(?, ".", "!") ! collections.Counter(?) ! dict(?) ! json.dumps(?) ',
             ],
             "a.b.c\n",
             '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
@@ -431,7 +432,7 @@ def test_cli_autoimport_placeholder(string, runner):
                 "-ijson",
                 "--newlines=yes",
                 "map",
-                'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
+                'str.replace(?, ".", "!") ! collections.Counter ! dict ! json.dumps ',
             ],
             "a.b.c\n",
             '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
@@ -442,7 +443,7 @@ def test_cli_autoimport_placeholder(string, runner):
                 "-ijson",
                 "--newlines=yes",
                 "map",
-                'str.replace(?, ".", "!") || collections.Counter || json.dumps ',
+                'str.replace(?, ".", "!") ! collections.Counter ! json.dumps ',
             ],
             "a.b.c\nd.e.f\n",
             '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n{"d": 1, "!": 2, "e": 1, "f": 1, "\\n": 1}\n',
@@ -451,7 +452,7 @@ def test_cli_autoimport_placeholder(string, runner):
             [
                 "--newlines=yes",
                 "map",
-                'str.replace(?, ".", "!") || collections.Counter(?) || json.dumps(?) ',
+                'str.replace(?, ".", "!") ! collections.Counter(?) ! json.dumps(?) ',
             ],
             "a.b.c\n",
             '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
@@ -460,7 +461,7 @@ def test_cli_autoimport_placeholder(string, runner):
             [
                 "--newlines=yes",
                 "map",
-                'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
+                'str.replace(?, ".", "!") ! collections.Counter ! dict ! json.dumps ',
             ],
             "a.b.c\n",
             '{"a": 1, "!": 2, "b": 1, "c": 1, "\\n": 1}\n',
@@ -469,7 +470,7 @@ def test_cli_autoimport_placeholder(string, runner):
             [
                 "--newlines=no",
                 "map",
-                'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
+                'str.replace(?, ".", "!") ! collections.Counter ! dict ! json.dumps ',
             ],
             "a.b.c",
             '{"a": 1, "!": 2, "b": 1, "c": 1}',
@@ -478,7 +479,7 @@ def test_cli_autoimport_placeholder(string, runner):
             [
                 "--newlines=yes",
                 "apply",
-                "enumerate || list || reversed || enumerate || list",
+                "enumerate ! list ! reversed ! enumerate ! list",
             ],
             "a\nbb\nccc\n",
             "[(0, (2, 'ccc\\n')), (1, (1, 'bb\\n')), (2, (0, 'a\\n'))]\n",
@@ -491,7 +492,7 @@ def test_cli_autoimport_placeholder(string, runner):
         (
             [
                 "--newlines=no",
-                'str.replace(?, ".", "!") || collections.Counter || dict || json.dumps ',
+                'str.replace(?, ".", "!") ! collections.Counter ! dict ! json.dumps ',
             ],
             "a.b.c",
             '{"a": 1, "!": 2, "b": 1, "c": 1}',
@@ -526,16 +527,17 @@ def test_cli(args, in_stream, expected, runner):
 @pytest.mark.parametrize(
     "string, separator, expected",
     [
-        ("a", "||", ["a"]),
-        ("ab", "||", ["ab"]),
-        ("ab||cd", "||", ["ab", "cd"]),
-        ("ab||cd||ef", "||", ["ab", "cd", "ef"]),
-        ('a"b||c"d||ef', "||", ['a"b||c"d', "ef"]),
+        ("a", "!", ["a"]),
+        ("ab", "!", ["ab"]),
+        ("ab!cd", "!", ["ab", "cd"]),
+        ("ab!cd!ef", "!", ["ab", "cd", "ef"]),
+        ('a"b!c"d!ef', "!", ['a"b!c"d', "ef"]),
         ("a", "\\", ["a"]),
         ("ab", "\\", ["ab"]),
         ("ab\\cd", "\\", ["ab", "cd"]),
         ("ab\\cd\\ef", "\\", ["ab", "cd", "ef"]),
         ('a"b\\c"d\\ef', "\\", ['a"b\\c"d', "ef"]),
+        ('str.upper ! ? + "z"', '!', ['str.upper', ' ? + "z"'])
     ],
 )
 def test_split_string_on_separator(string, separator, expected):
@@ -557,7 +559,7 @@ def test_cli_async(runner, reactor, server):
     base_url = "http://localhost:8080/{}"
     letters = string.ascii_lowercase
     in_stream = "\n".join(base_url.format(c) for c in letters)
-    command = "str.upper || ?.rstrip() || treq.get || treq.text_content "
+    command = "str.upper ! ?.rstrip() ! treq.get ! treq.text_content "
     args = ["--max-concurrent", "100", "--async", "map", command]
     expected = [f"Hello, {letter.upper()}" for letter in letters]
 
@@ -581,7 +583,7 @@ def test_cli_async_chain_map_apply(runner, reactor):
     base_url = "http://localhost:8080/{}"
     letters = string.ascii_lowercase
     in_stream = "\n".join(base_url.format(c) for c in letters)
-    mapper = "str.upper || _.rstrip() || treq.get || treq.text_content "
+    mapper = "str.upper ! ?.rstrip() ! treq.get ! treq.text_content "
     applier = "max"
     args = ["--async", "map", mapper, "apply", applier]
     expected = ["Hello, Z"]

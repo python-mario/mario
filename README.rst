@@ -104,7 +104,6 @@ Caveats
 
 * ``--async`` currently works only with ``map``, not ``apply`` and works only for a single ``map`` pipe-string, e.g. ``map 'str.upper || len || ? & 1'``, not for chains, e.g. ``map str.upper map len map '? & 1'``.
 
-* Multiline command strings are not supported
 
 
 

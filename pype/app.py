@@ -6,11 +6,13 @@ from pprint import pprint
 
 import collections
 import importlib
+import io
 import os
 import sys
+import textwrap
 import token
-import io
 import tokenize
+
 
 import attr
 import parso
@@ -67,7 +69,6 @@ def _get_maybe_namespaced_identifiers(string):
     scanner = _StringScanner(string)
     results = scanner.scan()
     return results
-
 
 
 @attr.s
@@ -152,7 +153,7 @@ def _add_short_placeholder(command_string, short_placeholder="?"):
     return f"{command_string}({short_placeholder})"
 
 
-def _get_autoimports(string, separator="||"):
+def _get_autoimports(string, separator="!"):
     string = _replace_short_placeholder(string, "?", separator)
     components = [
         comp.strip() for comp in _split_string_on_separator(string, separator)
@@ -204,7 +205,6 @@ def _maybe_add_newlines(iterator, newlines_setting, input_has_newlines):
             yield string
 
 
-
 def run_segment(value, segment, modules):
     return eval(segment, modules, {_PYPE_VALUE: value})
 
@@ -217,6 +217,7 @@ def _command_string_to_function(command, modules=None, symbol="?", call=True):
         command = _add_short_placeholder(command, symbol)
 
     command = _replace_short_placeholder(command, symbol)
+    command = textwrap.dedent(command)
 
     def function(value):
         return run_segment(value, command, modules)
@@ -254,8 +255,28 @@ def _split_string_on_separator(string, separator):
     return [s.strip() for s in _split(separator, string)]
 
 
+def _split_string_on_separator(string, separator):
+    nodes = parso.parse(string).children
+    segments = []
+    segment_nodes = []
+    for node in nodes:
+        try:
+            token_type = node.token_type
+        except AttributeError:
+            segment_nodes.append(node.get_code())
+            continue
+        if node.get_code().strip() == separator.strip():
+            segments.append(segment_nodes)
+            segment_nodes = []
+        else:
+            segment_nodes.append(node.get_code())
+            continue
+    segments.append(segment_nodes)
+    return ["".join(segment) for segment in segments]
+
+
 def _pipestring_to_functions(
-    multicommand_string, modules=None, symbol="?", separator="||", do_eval=False
+    multicommand_string, modules=None, symbol="?", separator="!", do_eval=False
 ):
     command_strings = _split_string_on_separator(multicommand_string, separator)
     functions = []
@@ -271,7 +292,7 @@ def _pipestring_to_functions(
 
 
 def _pipestring_to_function(
-    multicommand_string, modules=None, symbol="?", separator="||", do_eval=False
+    multicommand_string, modules=None, symbol="?", separator="!", do_eval=False
 ):
     functions = _pipestring_to_functions(
         multicommand_string, modules, symbol, separator, do_eval
@@ -291,7 +312,7 @@ def _replace_node(node, placeholder, replacement):
     return parso.python.tree.Name(replacement, node.start_pos)
 
 
-def _replace_short_placeholder(command, placeholder, separator='||'):
+def _replace_short_placeholder(command, placeholder, separator="!"):
     tree = parso.parse(command)
     new_children = [
         _replace_node(node, placeholder, _PYPE_VALUE) for node in tree.children
@@ -349,11 +370,14 @@ def _async_run(
     reactor=twisted.internet.reactor,
     processors=(),
     max_concurrent=1,
+    separator="!",
 ):
 
     commands = (x for x in [mapper] if x)
     modules = _get_modules(commands, imports, autoimport)
-    mapper_functions = _pipestring_to_functions(mapper, modules, placeholder)
+    mapper_functions = _pipestring_to_functions(
+        mapper, modules, placeholder, separator=separator
+    )
 
     task.react(_async_react_map, [mapper_functions, in_stream, max_concurrent])
 
@@ -367,6 +391,7 @@ def run(  # pylint: disable=too-many-arguments
     autoimport=True,
     newlines="auto",
     do_eval=False,
+    separator="!",
 ):
     pipestrings = (x for x in [mapper, applier] if x)
     modules = _get_modules(pipestrings, imports, autoimport)
@@ -375,17 +400,21 @@ def run(  # pylint: disable=too-many-arguments
 
     if do_eval:
         eval_function = _pipestring_to_function(
-            mapper, modules, placeholder, do_eval=True
+            mapper, modules, placeholder, do_eval=True, separator=separator
         )
         yield eval_function(None)
         return
 
     if mapper:
-        mapper_function = _pipestring_to_function(mapper, modules, placeholder)
+        mapper_function = _pipestring_to_function(
+            mapper, modules, placeholder, separator=separator
+        )
         items = map(mapper_function, items)
 
     if applier:
-        apply_function = _pipestring_to_function(applier, modules, placeholder)
+        apply_function = _pipestring_to_function(
+            applier, modules, placeholder, separator=separator
+        )
         items = apply_function(items)
 
     if not isinstance(items, collections.abc.Iterator):
@@ -414,17 +443,16 @@ def main(  # pylint: disable=too-many-arguments
     reactor=twisted.internet.reactor,
     processors=(),
     max_concurrent=1,
-    separator="||",
+    separator="!",
     do_eval=False,
     **kwargs,
 ):
-
 
     if mapper is not None:
         mapper = _replace_short_placeholder(mapper, placeholder, separator)
 
     if applier is not None:
-        applier = _replace_short_placeholder(applier, placeholder, "||")
+        applier = _replace_short_placeholder(applier, placeholder, separator)
 
     if do_async:
         _async_run(
@@ -437,6 +465,7 @@ def main(  # pylint: disable=too-many-arguments
             reactor=twisted.internet.reactor,
             processors=processors,
             max_concurrent=max_concurrent,
+            separator=separator,
         )
         sys.exit()
 
@@ -450,6 +479,7 @@ def main(  # pylint: disable=too-many-arguments
             autoimport=autoimport,
             newlines=newlines,
             do_eval=do_eval,
+            separator=separator,
         )
 
     return gen
@@ -498,6 +528,7 @@ def main(  # pylint: disable=too-many-arguments
     is_flag=True,
     help="Evaluate the expression without taking input.",
 )
+@click.option("--sep", "separator", default="!")
 def cli(
     imports,
     placeholder,
@@ -507,6 +538,7 @@ def cli(
     version,
     max_concurrent,
     do_eval,
+    separator,
 ):
     """
     Pipe data through Python functions.
