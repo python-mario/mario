@@ -135,8 +135,6 @@ def test_cli_raises_without_autoimport(runner):
     assert isinstance(result.exception, NameError)
 
 
-
-
 def test_cli_works_with_multiline_command(runner):
 
     args = [
@@ -153,7 +151,7 @@ def test_cli_works_with_multiline_command(runner):
 
     result = runner.invoke(pype.app.cli, args, input=in_stream)
     assert not result.exception
-    assert result.stdout == 'xa\n'
+    assert result.stdout == "xa\n"
 
 
 def test_raises_on_missing_module(runner):
@@ -314,8 +312,6 @@ def test_keyword_arg():
     assert list(result) == expected
 
 
-
-
 @pytest.mark.parametrize(
     "command, placeholder, expected",
     [
@@ -372,21 +368,9 @@ def test_main_autoimport_placeholder_does_not_raise(string):
     pype.app.main(mapper=mapper, in_stream=[string])
 
 
-@pytest.mark.parametrize(
-    "string",
-    [
-        "",
-        "\n",
-        "a",
-        "a\n",
-    ],
-)
+@pytest.mark.parametrize("string", ["", "\n", "a", "a\n"])
 def test_cli_autoimport_placeholder(string, runner):
-    args = [
-        "--newlines=no",
-        "map",
-        'str ! collections.Counter ! ?.keys() ! "".join ',
-    ]
+    args = ["--newlines=no", "map", 'str ! collections.Counter ! ?.keys() ! "".join ']
 
     in_stream = string
 
@@ -514,6 +498,8 @@ def test_cli_autoimport_placeholder(string, runner):
             "a\nbb\nccc\ndddd\n",
             "b, c\n",
         ),
+        (["stack", "len"], "a\nbb\n", "5\n"),
+        (["list", 'len', ], 'a\n\bb\n', '2\n')
     ],
 )
 def test_cli(args, in_stream, expected, runner):
@@ -537,7 +523,7 @@ def test_cli(args, in_stream, expected, runner):
         ("ab\\cd", "\\", ["ab", "cd"]),
         ("ab\\cd\\ef", "\\", ["ab", "cd", "ef"]),
         ('a"b\\c"d\\ef', "\\", ['a"b\\c"d', "ef"]),
-        ('str.upper ! ? + "z"', '!', ['str.upper', ' ? + "z"'])
+        ('str.upper ! ? + "z"', "!", ["str.upper", ' ? + "z"']),
     ],
 )
 def test_split_string_on_separator(string, separator, expected):
@@ -575,7 +561,6 @@ def test_cli_async(runner, reactor, server):
     assert sorted_starts == expected
     limit_seconds = 4.0
     assert t.elapsed < limit_seconds
-
 
 
 @pytest.mark.xfail(strict=True)

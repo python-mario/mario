@@ -610,5 +610,25 @@ def cli_map(mapper):
     return wrapped
 
 
+@cli.command("stack")
+@click.argument("applier")
+def cli_stack(applier):
+    def wrapped(**kwargs):
+        prefix = '"".join' + kwargs["separator"]
+        return main(applier=prefix + applier, **kwargs)
+
+    return wrapped
+
+
+@cli.command("list")
+@click.argument("applier")
+def cli_list(applier):
+    def wrapped(**kwargs):
+        prefix = "list" + kwargs["separator"]
+        return main(applier=prefix + applier, **kwargs)
+
+    return wrapped
+
+
 if __name__ == "__main__":
     cli()
