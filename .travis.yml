@@ -1,8 +1,16 @@
 language: python
-python:
-  "3.6"
+python: '3.6'
 install:
-  - pip install poetry
-  - poetry install
+- pip install poetry
+- poetry install
 script:
-  - pytest
+- pytest
+deploy:
+  provider: pypi
+  user: python-pype
+  password:
+    secure: JvfoAF7Tg12zVxteRslzAVvqPo+9OuO91y4DyG5+v1rS5l6zNa69iVVJgNjyXn54wCAOPqW1X9cGTu6T/ilpPdrcE7XRvqQpEDHZGtx8rPylJLrUlAQap6Ccgni2yQ9z4utH9Ct62a/oNPcty8Xy7+3ZtN9QsHOcjE1ur3OMiTY2dT/hfk85TH9A5NuZ6gpp4yk/wHG/z6pcrlR6bx1Dd4niHAKYyvkt4g3oqQvYhF03UEF+GJJfrJmxqY/NIRa/Kt5qQbNNXEo8P9IPeK/DpfB7SlE7czlp2U4XROHBNBkGh9SQ7VxGa3MI5+YMWOWYrtKIN2/PFf57BilJiNKfLB/J0N9OYmOktw09QrwYViQj5x2kPhVdEBOEPymLfk0FM++rDtmyfaQt1qLlKDHBrmcB9HcQ/K0/tfLu5U0CiXVI+ofvC8UXIdVYcogIKKocjUeqYKBwjW5apj3eCjQjSuqsoGI+WpcVIp22p1wHTvuzQ/iD4EPXE/J7rXBBbp/rSD3DIHRQnSgQL5ZOt8AzKxX/Maq2gd+/VR3JFcBxO6B6pkiftfLIDaKwCXwBIQS0v7NmFLji0Ar7RmbzcswLOFO2MI+mvxOEFLF3gD57XQDLm9OVjTRN6zZfSu8CHo3SUDBoQyI7Ie5inTxNVmvd1xvUFpSum6RT//C/t+6Kyo0=
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: python-pype/pype
