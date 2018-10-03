@@ -1,12 +1,9 @@
 language: python
 python: '3.6'
 install:
-- pip install poetry
-- poetry install
+  - pip install .
 script:
 - pytest
-before_deploy:
-- poetry build
 deploy:
   provider: pypi
   user: python-pype
