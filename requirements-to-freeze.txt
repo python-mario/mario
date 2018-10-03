@@ -1,6 +1,0 @@
-click
-toolz
-attrs
-click-default-group
-parso
-twisted
