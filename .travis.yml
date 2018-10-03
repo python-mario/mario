@@ -5,6 +5,8 @@ install:
 - poetry install
 script:
 - pytest
+before_deploy:
+- poetry build
 deploy:
   provider: pypi
   user: python-pype
