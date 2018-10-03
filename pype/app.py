@@ -541,7 +541,6 @@ def cli(
 ):
     """
     Pipe data through Python functions.
-
     """
 
 
