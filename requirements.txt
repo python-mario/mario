@@ -1,6 +1,15 @@
-click = "*"
-toolz = "*"
-attrs = "*"
-click-default-group = "*"
-parso = "*"
-twisted = "*"
+attrs==18.2.0
+Automat==0.7.0
+Click==7.0
+click-default-group==1.2
+constantly==15.1.0
+hyperlink==18.0.0
+idna==2.7
+incremental==17.5.0
+parso==0.3.1
+PyHamcrest==1.9.0
+python-pype==0.0.0
+six==1.11.0
+toolz==0.9.0
+Twisted==18.7.0
+zope.interface==4.5.0
