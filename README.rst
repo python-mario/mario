@@ -93,7 +93,7 @@ Making concurrent requests is much faster: ::
 Installation
 ============
 
-TBD
+``pip install python-pype``
 
 
 Caveats
@@ -110,7 +110,7 @@ Caveats
 Status
 ======
 
-* Check the issues page for open tickets
+* Check the `issues page <https://www.github.com/python-pype/pype/issues>`_ for open tickets
 * This package is experimental pre-alpha and is subject to change.
 
 
