@@ -112,3 +112,13 @@ Status
 
 * Check the issues page for open tickets
 * This package is experimental pre-alpha and is subject to change.
+
+
+Related work
+============
+
+* https://github.com/Russell91/pythonpy
+* http://gfxmonk.net/dist/doc/piep/
+* https://spy.readthedocs.io/en/latest/intro.html
+* https://github.com/ksamuel/Pyped
+* https://github.com/ircflagship2/pype
