@@ -4,7 +4,7 @@ install:
 - pip install poetry
 - poetry install
 script:
-- poetry run coverage run --source pype pytest
+- poetry run coverage run --source pype --module pytest
 before_deploy:
 - poetry build
 deploy:
