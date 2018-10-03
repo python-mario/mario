@@ -17,11 +17,12 @@ attrs = "*"
 click-default-group = "*"
 parso = "*"
 twisted = "*"
+bump2version = "^0.5.10"
 
 
 [tool.poetry.dev-dependencies]
 "flake8" = "*"
-bumpversion = "*"
+bump2version = "*"
 coverage = "*"
 hypothesis = "*"
 pylint = "*"
