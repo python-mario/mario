@@ -16,3 +16,6 @@ deploy:
     tags: false
     distributions: sdist bdist_wheel
     repo: python-pype/pype
+    branches:
+      only:
+        - master

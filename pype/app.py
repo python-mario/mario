@@ -3,8 +3,6 @@
 
 from __future__ import generator_stop
 
-from pprint import pprint
-
 import collections
 import importlib
 import io
