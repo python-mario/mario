@@ -563,7 +563,7 @@ def test_cli_async(runner, reactor, server):
     limit_seconds = 4.0
     assert t.elapsed < limit_seconds
 
-
+@pytest.mark.skip
 def test_cli_async_chain_map_apply(runner, reactor, server):
     base_url = "http://localhost:8080/{}"
     letters = string.ascii_lowercase
