@@ -485,9 +485,6 @@ def main(  # pylint: disable=too-many-arguments
 
 
 @click.group(
-    cls=click_default_group.DefaultGroup,
-    default="map",
-    default_if_no_args=True,
     chain=True,
     invoke_without_command=True,
     context_settings=CONTEXT_SETTINGS,
@@ -575,8 +572,8 @@ def process_pipeline(processors, **kwargs):
     if kwargs["do_async"]:
         options["reactor"] = twisted.internet.reactor
 
-    if kwargs["do_async"] and len(processors) > 1:
-        raise PypeException("Async multi-stage pipeline not implemented.")
+    # if kwargs["do_async"] and len(processors) > 1:
+    #     raise PypeException("Async multi-stage pipeline not implemented.")
 
     input_has_newlines, items = _has_newlines(in_stream)
     for processor in processors:

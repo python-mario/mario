@@ -476,13 +476,14 @@ def test_cli_autoimport_placeholder(string, runner):
         (
             [
                 "--newlines=no",
+                "map",
                 'str.replace(?, ".", "!") ! collections.Counter ! dict ! json.dumps ',
             ],
             "a.b.c",
             '{"a": 1, "!": 2, "b": 1, "c": 1}',
         ),
         (
-            ["--newlines=no", "? or collections.Counter(?)"],
+            ["--newlines=no", "map", "? or collections.Counter(?)"],
             "a\nbb\nccc\n",
             "a\nbb\nccc\n",
         ),
@@ -499,7 +500,7 @@ def test_cli_autoimport_placeholder(string, runner):
             "b, c\n",
         ),
         (["stack", "len"], "a\nbb\n", "5\n"),
-        (["list", 'len', ], 'a\n\bb\n', '2\n')
+        (["list", "len"], "a\n\bb\n", "2\n"),
     ],
 )
 def test_cli(args, in_stream, expected, runner):
@@ -562,9 +563,8 @@ def test_cli_async(runner, reactor, server):
     limit_seconds = 4.0
     assert t.elapsed < limit_seconds
 
-
-@pytest.mark.xfail(strict=True)
-def test_cli_async_chain_map_apply(runner, reactor):
+@pytest.mark.skip
+def test_cli_async_chain_map_apply(runner, reactor, server):
     base_url = "http://localhost:8080/{}"
     letters = string.ascii_lowercase
     in_stream = "\n".join(base_url.format(c) for c in letters)
