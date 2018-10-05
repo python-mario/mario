@@ -447,12 +447,6 @@ def main(  # pylint: disable=too-many-arguments
     **kwargs,
 ):
 
-    if mapper is not None:
-        mapper = _replace_short_placeholder(mapper, placeholder, separator)
-
-    if applier is not None:
-        applier = _replace_short_placeholder(applier, placeholder, separator)
-
     if do_async:
         _async_run(
             mapper=mapper,
