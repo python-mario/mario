@@ -501,8 +501,8 @@ def test_cli_autoimport_placeholder(string, runner):
         ),
         (["stack", "len"], "a\nbb\n", "5\n"),
         (["list", "len"], "a\n\bb\n", "2\n"),
-        (["eval", "3*4"], None, "12"),
-        (["e", "3*4"], None, "12"),
+        (["eval", "3*4"], None, "12\n"),
+        (["e", "3*4"], None, "12\n"),
     ],
 )
 def test_cli(args, in_stream, expected, runner):
