@@ -478,7 +478,25 @@ def main(  # pylint: disable=too-many-arguments
     return gen
 
 
-@click.group(chain=True, invoke_without_command=True, context_settings=CONTEXT_SETTINGS)
+class AliasedGroup(click.Group):
+    def get_command(self, ctx, cmd_name):
+        rv = click.Group.get_command(self, ctx, cmd_name)
+        if rv is not None:
+            return rv
+        matches = [x for x in self.list_commands(ctx) if x.startswith(cmd_name)]
+        if not matches:
+            return None
+        elif len(matches) == 1:
+            return click.Group.get_command(self, ctx, matches[0])
+        ctx.fail("Too many matches: %s" % ", ".join(sorted(matches)))
+
+
+@click.group(
+    chain=True,
+    invoke_without_command=True,
+    context_settings=CONTEXT_SETTINGS,
+    cls=AliasedGroup,
+)
 @click.option(
     "--newlines",
     "-n",
@@ -562,8 +580,8 @@ def process_pipeline(processors, **kwargs):
     if kwargs["do_async"]:
         options["reactor"] = twisted.internet.reactor
 
-    # if kwargs["do_async"] and len(processors) > 1:
-    #     raise PypeException("Async multi-stage pipeline not implemented.")
+    if kwargs["do_async"] and len(processors) > 1:
+        raise PypeException("Async multi-stage pipeline not implemented.")
 
     input_has_newlines, items = _has_newlines(in_stream)
     for processor in processors:
