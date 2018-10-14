@@ -618,6 +618,12 @@ def cli_list(applier):
 
     return wrapped
 
+@cli.command('eval')
+@click.argument('expression')
+def cli_list(expression):
+    def wrapped(do_eval, in_stream, **kwargs):
+        return main(mapper=expression, do_eval=True, in_stream='\n', **kwargs)
+    return wrapped
 
 if __name__ == "__main__":
     cli()
