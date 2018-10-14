@@ -478,11 +478,7 @@ def main(  # pylint: disable=too-many-arguments
     return gen
 
 
-@click.group(
-    chain=True,
-    invoke_without_command=True,
-    context_settings=CONTEXT_SETTINGS,
-)
+@click.group(chain=True, invoke_without_command=True, context_settings=CONTEXT_SETTINGS)
 @click.option(
     "--newlines",
     "-n",
@@ -618,12 +614,15 @@ def cli_list(applier):
 
     return wrapped
 
-@cli.command('eval')
-@click.argument('expression')
-def cli_list(expression):
+
+@cli.command("eval")
+@click.argument("expression")
+def cli_eval(expression):
     def wrapped(do_eval, in_stream, **kwargs):
-        return main(mapper=expression, do_eval=True, in_stream='\n', **kwargs)
+        return main(mapper=expression, do_eval=True, in_stream="\n", **kwargs)
+
     return wrapped
+
 
 if __name__ == "__main__":
     cli()
