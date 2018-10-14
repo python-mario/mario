@@ -501,6 +501,7 @@ def test_cli_autoimport_placeholder(string, runner):
         ),
         (["stack", "len"], "a\nbb\n", "5\n"),
         (["list", "len"], "a\n\bb\n", "2\n"),
+        (["eval", "3*4"], "", "12"),
     ],
 )
 def test_cli(args, in_stream, expected, runner):
@@ -562,6 +563,7 @@ def test_cli_async(runner, reactor, server):
     assert sorted_starts == expected
     limit_seconds = 4.0
     assert t.elapsed < limit_seconds
+
 
 @pytest.mark.skip
 def test_cli_async_chain_map_apply(runner, reactor, server):
