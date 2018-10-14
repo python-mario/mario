@@ -564,11 +564,18 @@ def str_to_bool(string, strict=False):
 @cli.resultcallback()
 def process_pipeline(processors, **kwargs):
 
+
     if kwargs["version"]:
         print(f"{pype.__name__} {pype._version.__version__}")
         return
 
-    if kwargs["do_eval"]:
+    # TODO Test that eval runs without stdin content.
+    try:
+        is_eval = processors[0].is_eval
+    except AttributeError:
+        is_eval = False
+
+    if kwargs["do_eval"] or is_eval:
         in_stream = "\n"
     else:
         in_stream = click.get_text_stream("stdin")
@@ -639,6 +646,7 @@ def cli_eval(expression):
     def wrapped(do_eval, in_stream, **kwargs):
         return main(mapper=expression, do_eval=True, in_stream="\n", **kwargs)
 
+    wrapped.is_eval = True
     return wrapped
 
 
