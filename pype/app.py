@@ -1,4 +1,4 @@
-# !/usr/bin/env python
+#!/usr/bin/env python
 """Command line pipes in python."""
 
 from __future__ import generator_stop

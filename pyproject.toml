@@ -37,6 +37,8 @@ twine = "*"
 vulture = "*"
 treq = "*"
 poetry = "*"
+vprof = "^0.37.6"
+vmprof = "^0.4.12"
 
 
 [tool.poetry.scripts]
