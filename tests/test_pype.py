@@ -388,6 +388,7 @@ def test_cli_autoimport_placeholder(string, runner):
         (["map", "?"], "abc", "abc"),
         (["map", 'str.replace(?, ".", "!")'], "a.b.c\n", "a!b!c\n"),
         (["--placeholder=$", "map", 'str.replace($, ".", "!")'], "a.b.c\n", "a!b!c\n"),
+        (["--placeholder=x", "map", 'str.replace(x, ".", "!")'], "a.b.c\n", "a!b!c\n"),
         (
             [
                 "-icollections",
