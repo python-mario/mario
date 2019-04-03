@@ -138,6 +138,7 @@ async def item_handler(function, item):
 
 
 def split_pipestring(command):
+    # TODO Use a real parser.
     return [s.strip() for s in command.split("!")]
 
 
