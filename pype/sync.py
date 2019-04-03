@@ -1,15 +1,11 @@
-from __future__ import generator_stop
+import itertools
 
 
 def run(program, items):
     for how, what in program:
 
-        items = list(items)
-
         if how == "map":
-
-            # items = map(what, items)
-            items = (what(item) for item in items)
+            items = map(what, items)
 
         elif how == "apply":
             items = what(items)
@@ -33,4 +29,12 @@ def main(program, items):
 
 if __name__ == "__main__":
 
-    main([("map", str.upper), ("map", len), ("apply", sum)], ["a", "bb", "ccc", "dddd"])
+    main(
+        program=[
+            ("map", str.upper),
+            ("map", len),
+            ("apply", lambda it: filter(lambda x: x % 2 == 0, it)),
+            ("map", lambda x: x + 1),
+        ],
+        items=["a", "bb", "ccc", "dddd"],
+    )
