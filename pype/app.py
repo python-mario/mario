@@ -128,15 +128,6 @@ def find_maybe_module_names(text):
     return re.findall(r"\b[^\d\W]\w*(?:\.[^\d\W]\w*)+\b", text)
 
 
-async def handle_item(function, item):
-    return await function(item)
-
-
-async def item_handler(function, item):
-    got = await handle_item(function, item.decode())
-    print(got)
-
-
 def split_pipestring(command):
     # TODO Use a real parser.
     return [s.strip() for s in command.split("!")]
@@ -180,28 +171,85 @@ def build_function(command):
     return function
 
 
-async def command_runner(function, receiver):
+async def handle_item(function, item):
+    return await function(item)
+
+
+async def item_handler(function, item):
+    yield (await handle_item(function, item.decode()))
+
+
+async def async_map(function, iterable):
+    results = []
+
+    async def _item_handler(function, item):
+        results.append(await function(item))
 
     async with trio.open_nursery() as nursery:
-        async for item in receiver:
-            nursery.start_soon(item_handler, function, item)
+        async for item in iterable:
+            nursery.start_soon(_item_handler, function, item)
+
+    return results
 
 
-async def async_main(command):
+async def async_filter(function, iterable):
+    return filter(function, await (await item async for item in iterable))
+
+
+async def async_apply(function, iterable):
+    return function((await item) for item in iterable)
+
+
+async def program_runner(pairs, items):
+    for how, what in pairs:
+        what = build_function(what)
+
+        if how == "map":
+            items = await async_map(what, items)
+
+        elif how == "apply":
+            applied = await async_apply(what, items)
+
+        elif how == "filter":
+            items = await async_filter(what, items)
+        else:
+            raise ValueError(how)
+
+
+async def async_main(pairs,):
     stream = trio._unix_pipes.PipeReceiveStream(os.dup(0))
     receiver = TerminatedFrameReceiver(stream, b"\n")
-
-    function = build_function(command)
-
-    async with trio.open_nursery() as nursery:
-        nursery.start_soon(command_runner, function, receiver)
+    decoded = (item.decode() async for item in receiver)
+    await program_runner(pairs, decoded)
 
 
-def main(command):
-    trio.run(async_main, command)
+def main(pairs):
+    trio.run(async_main, pairs)
 
 
-@click.command()
-@click.argument("command")
+@click.group(chain=True)
 def cli(**kwargs):
-    main(**kwargs)
+    pass
+
+
+@cli.command("map")
+@click.argument("command")
+def cli_map(command):
+    return ("map", command)
+
+
+@cli.command("apply")
+@click.argument("command")
+def cli_apply(command):
+    return ("apply", command)
+
+
+@cli.command("filter")
+@click.argument("command")
+def cli_filter(command):
+    return ("filter", command)
+
+
+@cli.resultcallback()
+def collect(pairs):
+    main(pairs)
