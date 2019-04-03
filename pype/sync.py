@@ -10,6 +10,9 @@ def run(program, items):
         elif how == "apply":
             items = what(items)
 
+        elif how == "filter":
+            items = filter(what, items)
+
         else:
             raise ValueError
 
@@ -33,8 +36,10 @@ if __name__ == "__main__":
         program=[
             ("map", str.upper),
             ("map", len),
-            ("apply", lambda it: filter(lambda x: x % 2 == 0, it)),
+            ("apply", lambda it: itertools.chain.from_iterable(itertools.tee(it))),
             ("map", lambda x: x + 1),
+            ("filter", lambda x: x > 4),
+            ("map", lambda x: x * 10),
         ],
-        items=["a", "bb", "ccc", "dddd"],
+        items=["a", "bb", "ccc", "dddd", "eeeee", "ffffff"],
     )
