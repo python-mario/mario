@@ -14,6 +14,15 @@ import token
 import tokenize
 import itertools
 import re
+import contextlib
+import typing
+
+from typing import Callable
+from typing import Awaitable
+from typing import AsyncIterable
+from typing import AsyncIterator
+from typing import Optional
+from typing import List
 
 import attr
 import parso
@@ -21,6 +30,10 @@ import click
 import click_default_group
 import toolz
 import trio
+import trio_typing
+
+T = typing.TypeVar("T")
+U = typing.TypeVar("U")
 
 
 BUFSIZE = 2 ** 14
@@ -179,25 +192,35 @@ async def item_handler(function, item):
     yield (await handle_item(function, item.decode()))
 
 
-async def async_map(function, iterable):
-    results = []
+async def aenumerate(aiterable, start=0):
+    counter = itertools.counter(start=start)
+    async for x in aiterable:
+        yield next(counter), x
 
-    async def _item_handler(function, item):
-        results.append(await function(item))
+
+async def async_map(
+    function: Callable[[T], Awaitable[U]], iterable: AsyncIterable[T]
+) -> List[U]:
+    output: List[Optional[U]] = []
+
+    async def wrapper(idx: int, item: T) -> None:
+        output[idx] = await function(item)
 
     async with trio.open_nursery() as nursery:
         async for item in iterable:
-            nursery.start_soon(_item_handler, function, item)
-
-    return results
+            nursery.start_soon(wrapper, len(output), item, name=function)
+            output.append(None)
+    return typing.cast(List[U], output)
 
 
 async def async_filter(function, iterable):
-    return filter(function, await (await item async for item in iterable))
+    async for item in iterable:
+        if function(item):
+            yield item
 
 
 async def async_apply(function, iterable):
-    return function((await item) for item in iterable)
+    return await function((await item) for item in iterable)
 
 
 async def program_runner(pairs, items):
@@ -208,20 +231,22 @@ async def program_runner(pairs, items):
             items = await async_map(what, items)
 
         elif how == "apply":
-            applied = await async_apply(what, items)
+            items = await async_apply(what, items)
 
         elif how == "filter":
-            items = await async_filter(what, items)
+            items = async_filter(what, items)
         else:
             raise ValueError(how)
+
+    return items
 
 
 async def async_main(pairs,):
     stream = trio._unix_pipes.PipeReceiveStream(os.dup(0))
     receiver = TerminatedFrameReceiver(stream, b"\n")
     decoded = (item.decode() async for item in receiver)
-    await program_runner(pairs, decoded)
-
+    result = (await program_runner(pairs, decoded))
+    print(list(result))
 
 def main(pairs):
     trio.run(async_main, pairs)

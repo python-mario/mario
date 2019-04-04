@@ -19,6 +19,7 @@ parso = "*"
 twisted = "*"
 bump2version = "^0.5.10"
 trio = "^0.11.0"
+trio-typing = "^0.2.0"
 
 
 [tool.poetry.dev-dependencies]
@@ -39,7 +40,8 @@ vulture = "*"
 treq = "*"
 poetry = "*"
 vprof = "^0.37.6"
-vmprof = "^0.4.12"
+mypy = "^0.700.0"
+
 
 
 [tool.poetry.scripts]
