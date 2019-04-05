@@ -1,0 +1,1 @@
+- Shouldn't collect items into list if not necessary. For example if it's just = map asks.get(x) ! x.text ! len(x) =, this could be printed out in streaming fashion, one item at a time, in the original order.
