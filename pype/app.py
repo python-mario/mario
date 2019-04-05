@@ -262,20 +262,10 @@ async def async_filter(
 
 async def program_runner(pairs, items):
 
-
-
-
     async with contextlib.AsyncExitStack() as stack:
 
-        import asks
-        result = await stack.enter_async_context(async_map(asks.get, items))
-        result2 = await stack.enter_async_context(async_map(lambda x: len(x.text), result))
-
-        async for x in result2:
-            print(x)
-
-
-
+        for how, function in pairs:
+            items = await stack.enter_async_context(async_map(function, items))
 
 
 async def async_main(pairs):
@@ -283,13 +273,10 @@ async def async_main(pairs):
     receiver = TerminatedFrameReceiver(stream, b"\n")
     result = (item.decode() async for item in receiver)
 
-    pairs += [('map', 'print(x)')]
+    pairs += [("map", "print(x)")]
     pairs = [(how, build_function(what)) for how, what in pairs]
 
     result = await program_runner(pairs, result)
-
-    async for item in result:
-        print(item)
 
 
 def main(pairs):
