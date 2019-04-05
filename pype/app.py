@@ -16,6 +16,7 @@ import itertools
 import re
 import contextlib
 import typing
+import types
 
 from typing import Callable
 from typing import Awaitable
@@ -205,7 +206,11 @@ async def async_map(
     send_result, receive_result = trio.open_memory_channel[U](0)
 
     async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
-        result = await function(item)
+        maybe_coroutine_result = function(item)
+        if isinstance(maybe_coroutine_result, types.CoroutineType):
+            result = await maybe_coroutine_result
+        else:
+            result = maybe_coroutine_result
         await prev_done.wait()
         await send_result.send(result)
         self_done.set()
@@ -259,7 +264,9 @@ async def program_runner(how, function, items):
 
     if how == "map":
         async with async_map(function, items) as result:
-            return [x async for x in result]
+            async with async_map(lambda x: x * 10, result) as result2:
+                async for x in result2:
+                    print(x)
 
     if how == "filter":
         async with async_filter(function, items) as result:
@@ -276,7 +283,7 @@ async def async_main(pairs):
 
     for how, what in pairs:
         function = build_function(what)
-        result = AsyncIterableWrapper(await program_runner(how, function, result))
+        result = await program_runner(how, function, result)
 
     async for item in result:
         print(item)
