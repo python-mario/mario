@@ -276,12 +276,7 @@ async def async_main(pairs):
     receiver = TerminatedFrameReceiver(stream, b"\n")
     result = (item.decode() async for item in receiver)
 
-    for how, what in pairs[:1]:
-        function = build_function(what)
-        result = await program_runner(how, function, result)
-
-    for how, what in pairs[1:]:
-
+    for how, what in pairs:
         function = build_function(what)
         result = await program_runner(how, function, result)
 
