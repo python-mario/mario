@@ -269,9 +269,9 @@ async def program_runner(pairs, items):
                     print(x)
 
         if how == "apply":
-            pass
+            print(await what([x async for x in items]))
 
-    return
+
 
 
 async def async_main(pairs):
@@ -279,8 +279,7 @@ async def async_main(pairs):
     receiver = TerminatedFrameReceiver(stream, b"\n")
     decoded = (item.decode() async for item in receiver)
     result = await program_runner(pairs, decoded)
-    async for x in result:
-        print(x)
+
 
 
 def main(pairs):
@@ -313,3 +312,17 @@ def cli_filter(command):
 @cli.resultcallback()
 def collect(pairs):
     main(pairs)
+
+
+# python3.7 -m poetry run python -m pype apply 'sum(1 for _ in x)'   <<EOF
+# http://httpbin.org/delay/3
+# http://httpbin.org/delay/1
+# http://httpbin.org/delay/1
+# http://httpbin.org/delay/1
+# http://httpbin.org/delay/1
+# http://httpbin.org/delay/1
+# http://httpbin.org/delay/1
+# http://httpbin.org/delay/1
+# http://httpbin.org/delay/1
+# EOF
+# 9
