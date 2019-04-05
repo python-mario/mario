@@ -238,7 +238,12 @@ async def async_filter(
     send_result, receive_result = trio.open_memory_channel[T](0)
 
     async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
-        result = await function(item)
+        maybe_coroutine_result = function(item)
+        if isinstance(maybe_coroutine_result, types.CoroutineType):
+            result = await maybe_coroutine_result
+        else:
+            result = maybe_coroutine_result
+
         await prev_done.wait()
         if result:
             await send_result.send(item)
@@ -265,8 +270,15 @@ async def program_runner(pairs, items):
     async with contextlib.AsyncExitStack() as stack:
 
         for how, function in pairs:
-            items = await stack.enter_async_context(async_map(function, items))
 
+            if how == "map":
+                items = await stack.enter_async_context(async_map(function, items))
+
+            elif how == "filter":
+                items = await stack.enter_async_context(async_filter(function, items))
+
+        async for x in items:
+            pass
 
 async def async_main(pairs):
     stream = trio._unix_pipes.PipeReceiveStream(os.dup(0))
