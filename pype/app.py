@@ -259,16 +259,14 @@ async def program_runner(how, function, items):
 
     if how == "map":
         async with async_map(function, items) as result:
-            items = AsyncIterableWrapper([x async for x in result])
+            return AsyncIterableWrapper([x async for x in result])
 
     if how == "filter":
         async with async_filter(function, items) as result:
-            items = AsyncIterableWrapper([x async for x in result])
+            return AsyncIterableWrapper([x async for x in result])
 
     if how == "apply":
-        items = AsyncIterableWrapper([await function([x async for x in items])])
-
-    return items
+        return AsyncIterableWrapper([await function([x async for x in items])])
 
 
 async def async_main(pairs):
