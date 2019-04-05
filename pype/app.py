@@ -259,14 +259,14 @@ async def program_runner(how, function, items):
 
     if how == "map":
         async with async_map(function, items) as result:
-            return AsyncIterableWrapper([x async for x in result])
+            return [x async for x in result]
 
     if how == "filter":
         async with async_filter(function, items) as result:
-            return AsyncIterableWrapper([x async for x in result])
+            return [x async for x in result]
 
     if how == "apply":
-        return AsyncIterableWrapper([await function([x async for x in items])])
+        return [await function([x async for x in items])]
 
 
 async def async_main(pairs):
@@ -276,7 +276,7 @@ async def async_main(pairs):
 
     for how, what in pairs:
         function = build_function(what)
-        result = await program_runner(how, function, result)
+        result = AsyncIterableWrapper(await program_runner(how, function, result))
 
     async for item in result:
         print(item)
@@ -327,7 +327,6 @@ def collect(pairs):
 # EOF
 # 8
 # python3.7 -m poetry run python -m pype map 'await asks.get(x) ! x.body ' map   0.45s user 0.05s system 13% cpu 3.641 total
-
 
 
 # time python3.7 -m poetry run python -m pype map 'await asks.get(x) ! x.body ' map 'len(x) ! str(x) ! x[-1] ! int(x) ! x - 2 ! x * 5 ! str(x)' map '"http://httpbin.org/delay/" + x ! await asks.get(x) ! x.json() '  <<EOF
