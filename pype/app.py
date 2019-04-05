@@ -273,14 +273,14 @@ async def program_runner(how, function, items):
 
     if how == "map":
         async with async_map(function, items) as result:
-            items = [x async for x in result]
+            items = AsyncIterableWrapper([x async for x in result])
 
     if how == "filter":
         async with async_filter(function, items) as result:
-            items = [x async for x in result]
+            items = AsyncIterableWrapper([x async for x in result])
 
     if how == "apply":
-        items = await function([x async for x in items])
+        items = AsyncIterableWrapper([await function([x async for x in items])])
 
     return items
 
@@ -294,9 +294,8 @@ async def async_main(pairs):
         function = build_function(what)
         result = await program_runner(how, function, result)
 
-    result = AsyncIterableWrapper(result)
-
     for how, what in pairs[1:]:
+
         function = build_function(what)
         result = await program_runner(how, function, result)
 
@@ -336,7 +335,7 @@ def collect(pairs):
     main(pairs)
 
 
-# python3.7 -m poetry run python -m pype apply 'sum(1 for _ in x)'   <<EOF
+# time python3.7 -m poetry run python -m pype map 'await asks.get(x) ! x.body ' map 'len(x)' filter 'x < 195' apply 'len(x)' <<EOF
 # http://httpbin.org/delay/3
 # http://httpbin.org/delay/1
 # http://httpbin.org/delay/1
@@ -347,4 +346,5 @@ def collect(pairs):
 # http://httpbin.org/delay/1
 # http://httpbin.org/delay/1
 # EOF
-# 9
+# 8
+# python3.7 -m poetry run python -m pype map 'await asks.get(x) ! x.body ' map   0.45s user 0.05s system 13% cpu 3.641 total
