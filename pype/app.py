@@ -198,20 +198,6 @@ def build_function(command):
     return function
 
 
-async def handle_item(function, item):
-    return await function(item)
-
-
-async def item_handler(function, item):
-    yield (await handle_item(function, item.decode()))
-
-
-async def aenumerate(aiterable, start=0):
-    counter = itertools.counter(start=start)
-    async for x in aiterable:
-        yield next(counter), x
-
-
 @contextlib.asynccontextmanager
 async def async_map(
     function: Callable[[T], Awaitable[U]], iterable: AsyncIterable[T]
