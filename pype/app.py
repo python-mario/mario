@@ -106,6 +106,20 @@ class TerminatedFrameReceiver:
             raise StopAsyncIteration
 
 
+class AsyncIterableWrapper:
+    def __init__(self, iterable):
+        self.iterable = iter(iterable)
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        try:
+            return next(self.iterable)
+        except StopIteration:
+            raise StopAsyncIteration
+
+
 def _get_named_module(name):
     builtins = sys.modules["builtins"]
     if hasattr(builtins, name):
@@ -275,11 +289,17 @@ async def async_main(pairs):
     stream = trio._unix_pipes.PipeReceiveStream(os.dup(0))
     receiver = TerminatedFrameReceiver(stream, b"\n")
     result = (item.decode() async for item in receiver)
-    for how, what in pairs:
+
+    for how, what in pairs[:1]:
         function = build_function(what)
         result = await program_runner(how, function, result)
 
-    print(result)
+    result = AsyncIterableWrapper(result)
+
+    for how, what in pairs[1:]:
+        function = build_function(what)
+        result = await program_runner(how, function, result)
+
     async for item in result:
         print(item)
 
