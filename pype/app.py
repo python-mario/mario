@@ -255,32 +255,34 @@ async def async_filter(
         nursery.cancel_scope.cancel()
 
 
-async def program_runner(pairs, items):
-    for how, what in pairs:
-        what = build_function(what)
-        if how == "map":
-            async with async_map(what, items) as result:
-                async for x in result:
-                    print(x)
-
-        if how == "filter":
-            async with async_filter(what, items) as result:
-                async for x in result:
-                    print(x)
-
-        if how == "apply":
-            print(await what([x async for x in items]))
+async def program_runner(how, what, items):
 
 
+    if how == "map":
+        async with async_map(what, items) as result:
+            items = [x async for x in result]
+
+    if how == "filter":
+        async with async_filter(what, items) as result:
+            items = [x async for x in result]
+
+    if how == "apply":
+        items = await what([x async for x in items])
+
+    return items
 
 
 async def async_main(pairs):
     stream = trio._unix_pipes.PipeReceiveStream(os.dup(0))
     receiver = TerminatedFrameReceiver(stream, b"\n")
-    decoded = (item.decode() async for item in receiver)
-    result = await program_runner(pairs, decoded)
+    result = (item.decode() async for item in receiver)
+    for how, what in pairs:
+        what = build_function(what)
+        result = await program_runner(how, what, result)
 
-
+    print(result)
+    async for item in result:
+        print(item)
 
 def main(pairs):
     trio.run(async_main, pairs)
