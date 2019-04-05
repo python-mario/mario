@@ -260,20 +260,22 @@ async def async_filter(
         nursery.cancel_scope.cancel()
 
 
-async def program_runner(how, function, items):
+async def program_runner(pairs, items):
 
-    if how == "map":
-        async with async_map(function, items) as result:
-            async with async_map(lambda x: x * 10, result) as result2:
-                async for x in result2:
-                    print(x)
 
-    if how == "filter":
-        async with async_filter(function, items) as result:
-            return [x async for x in result]
 
-    if how == "apply":
-        return [await function([x async for x in items])]
+
+    async with contextlib.AsyncExitStack() as stack:
+
+        import asks
+        result = await stack.enter_async_context(async_map(asks.get, items))
+        result2 = await stack.enter_async_context(async_map(lambda x: len(x.text), result))
+
+        async for x in result2:
+            print(x)
+
+
+
 
 
 async def async_main(pairs):
@@ -281,9 +283,10 @@ async def async_main(pairs):
     receiver = TerminatedFrameReceiver(stream, b"\n")
     result = (item.decode() async for item in receiver)
 
-    for how, what in pairs:
-        function = build_function(what)
-        result = await program_runner(how, function, result)
+    pairs += [('map', 'print(x)')]
+    pairs = [(how, build_function(what)) for how, what in pairs]
+
+    result = await program_runner(pairs, result)
 
     async for item in result:
         print(item)
