@@ -198,55 +198,90 @@ async def aenumerate(aiterable, start=0):
         yield next(counter), x
 
 
+@contextlib.asynccontextmanager
 async def async_map(
     function: Callable[[T], Awaitable[U]], iterable: AsyncIterable[T]
-) -> List[U]:
-    output: List[Optional[U]] = []
+) -> AsyncIterator[AsyncIterable[U]]:
+    send_result, receive_result = trio.open_memory_channel[U](0)
 
-    async def wrapper(idx: int, item: T) -> None:
-        output[idx] = await function(item)
+    async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
+        result = await function(item)
+        await prev_done.wait()
+        await send_result.send(result)
+        self_done.set()
+
+    async def consume_input(nursery: trio_typing.Nursery) -> None:
+        prev_done = trio.Event()
+        prev_done.set()
+        async for item in iterable:
+            self_done = trio.Event()
+            nursery.start_soon(wrapper, prev_done, self_done, item, name=function)
+            prev_done = self_done
+        await prev_done.wait()
+        await send_result.aclose()
 
     async with trio.open_nursery() as nursery:
+        nursery.start_soon(consume_input, nursery)
+        yield receive_result
+        nursery.cancel_scope.cancel()
+
+
+@contextlib.asynccontextmanager
+async def async_filter(
+    function: Callable[[T], Awaitable[T]], iterable: AsyncIterable[T]
+) -> AsyncIterator[AsyncIterable[T]]:
+    send_result, receive_result = trio.open_memory_channel[T](0)
+
+    async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
+        result = await function(item)
+        await prev_done.wait()
+        if result:
+            await send_result.send(item)
+        self_done.set()
+
+    async def consume_input(nursery: trio_typing.Nursery) -> None:
+        prev_done = trio.Event()
+        prev_done.set()
         async for item in iterable:
-            nursery.start_soon(wrapper, len(output), item, name=function)
-            output.append(None)
-    return typing.cast(List[U], output)
+            self_done = trio.Event()
+            nursery.start_soon(wrapper, prev_done, self_done, item, name=function)
+            prev_done = self_done
+        await prev_done.wait()
+        await send_result.aclose()
 
-
-async def async_filter(function, iterable):
-    async for item in iterable:
-        if function(item):
-            yield item
-
-
-async def async_apply(function, iterable):
-    return await function((await item) for item in iterable)
+    async with trio.open_nursery() as nursery:
+        nursery.start_soon(consume_input, nursery)
+        yield receive_result
+        nursery.cancel_scope.cancel()
 
 
 async def program_runner(pairs, items):
     for how, what in pairs:
         what = build_function(what)
-
         if how == "map":
-            items = await async_map(what, items)
+            async with async_map(what, items) as result:
+                async for x in result:
+                    print(x)
 
-        elif how == "apply":
-            items = await async_apply(what, items)
+        if how == "filter":
+            async with async_filter(what, items) as result:
+                async for x in result:
+                    print(x)
 
-        elif how == "filter":
-            items = async_filter(what, items)
-        else:
-            raise ValueError(how)
+        if how == "apply":
+            pass
 
-    return items
+    return
 
 
-async def async_main(pairs,):
+async def async_main(pairs):
     stream = trio._unix_pipes.PipeReceiveStream(os.dup(0))
     receiver = TerminatedFrameReceiver(stream, b"\n")
     decoded = (item.decode() async for item in receiver)
-    result = (await program_runner(pairs, decoded))
-    print(list(result))
+    result = await program_runner(pairs, decoded)
+    async for x in result:
+        print(x)
+
 
 def main(pairs):
     trio.run(async_main, pairs)
