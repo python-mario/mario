@@ -40,7 +40,7 @@ vulture = "*"
 treq = "*"
 poetry = "*"
 vprof = "^0.37.6"
-mypy = "^0.700.0"
+
 
 
 
