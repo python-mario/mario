@@ -40,7 +40,7 @@ vulture = "*"
 treq = "*"
 poetry = "*"
 twisted = "*"
-
+asks = "*"
 
 
 [tool.poetry.scripts]
