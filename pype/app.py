@@ -328,9 +328,8 @@ async def program_runner(pairs, items, max_concurrent):
             elif how == "eval":
                 items = AsyncIterableWrapper([await function(None)])
 
-        async for item in items:
-            print(item)
 
+        return stack.pop_all(), items
 
 
 async def async_main(pairs, max_concurrent=DEFAULTS["max_concurrent"]):
@@ -340,7 +339,13 @@ async def async_main(pairs, max_concurrent=DEFAULTS["max_concurrent"]):
 
     pairs = [(how, build_function(what)) for how, what in pairs]
 
-    result = await program_runner(pairs, result, max_concurrent)
+    stack, items = await program_runner(pairs, result, max_concurrent)
+
+    async with stack:
+        async for item in items:
+            print(item)
+
+
 
 
 def main(pairs, **kwargs):
