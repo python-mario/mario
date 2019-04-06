@@ -328,6 +328,13 @@ async def program_runner(pairs, items, max_concurrent):
             elif how == "eval":
                 items = AsyncIterableWrapper([await function(None)])
 
+            elif how == "stack":
+                items = AsyncIterableWrapper(
+                    [await function("".join([x + "\n" async for x in items]))]
+                )
+
+            else:
+                raise NotImplementedError(how)
 
         return stack.pop_all(), items
 
@@ -346,8 +353,6 @@ async def async_main(pairs, max_concurrent=DEFAULTS["max_concurrent"]):
             print(item)
 
 
-
-
 def main(pairs, **kwargs):
     trio.run(functools.partial(async_main, pairs, **kwargs))
 
@@ -364,10 +369,11 @@ def make_subcommand(name):
     @click.argument("command")
     def _subcommand(command):
         return (name, command)
+
     return _subcommand
 
 
-subcommand_names = ["map", "apply", "filter", "eval"]
+subcommand_names = ["map", "apply", "filter", "eval", "stack"]
 subcommands = [make_subcommand(name) for name in subcommand_names]
 for subcommand in subcommands:
     cli.add_command(subcommand)

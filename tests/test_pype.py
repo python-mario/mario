@@ -149,6 +149,14 @@ def test_eval(capsys):
     pype.app.main([("eval", "1+1")])
     assert capsys.readouterr().out == "2\n"
 
+
+def test_stack():
+    args = [sys.executable, '-m', 'pype', 'stack', 'len(x)']
+    stdin = '1\n2\n'.encode()
+    output = subprocess.check_output(args, input=stdin).decode()
+    assert output == '4\n'
+
+
 def test_cli_version(runner):
     args = ["--version"]
 
