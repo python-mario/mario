@@ -16,7 +16,6 @@ toolz = "*"
 attrs = "*"
 click-default-group = "*"
 parso = "*"
-twisted = "*"
 bump2version = "^0.5.10"
 trio = "^0.11.0"
 trio-typing = "^0.2.0"
@@ -40,7 +39,7 @@ vulture = "*"
 treq = "*"
 poetry = "*"
 vprof = "^0.37.6"
-
+twisted = "*"
 
 
 
