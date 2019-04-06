@@ -350,28 +350,18 @@ def cli(**kwargs):
     pass
 
 
-@cli.command("map")
-@click.argument("command")
-def cli_map(command):
-    return ("map", command)
+def make_subcommand(name):
+    @click.command(name)
+    @click.argument("command")
+    def _subcommand(command):
+        return (name, command)
+    return _subcommand
 
 
-@cli.command("apply")
-@click.argument("command")
-def cli_apply(command):
-    return ("apply", command)
-
-
-@cli.command("filter")
-@click.argument("command")
-def cli_filter(command):
-    return ("filter", command)
-
-
-@cli.command("eval")
-@click.argument("command")
-def cli_eval(command):
-    return ("eval", command)
+subcommand_names = ["map", "apply", "filter", "eval"]
+subcommands = [make_subcommand(name) for name in subcommand_names]
+for subcommand in subcommands:
+    cli.add_command(subcommand)
 
 
 @cli.resultcallback()
