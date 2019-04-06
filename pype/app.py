@@ -17,6 +17,7 @@ import re
 import contextlib
 import typing
 import types
+import functools
 
 from typing import Callable
 from typing import Awaitable
@@ -219,14 +220,16 @@ def build_function(command):
 
 @contextlib.asynccontextmanager
 async def async_map(
-    function: Callable[[T], Awaitable[U]], iterable: AsyncIterable[T]
+    function: Callable[[T], Awaitable[U]], iterable: AsyncIterable[T], concurrent_max
 ) -> AsyncIterator[AsyncIterable[U]]:
     send_result, receive_result = trio.open_memory_channel[U](0)
+    limiter = trio.CapacityLimiter(concurrent_max)
 
     async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
         maybe_coroutine_result = function(item)
         if isinstance(maybe_coroutine_result, types.CoroutineType):
-            result = await maybe_coroutine_result
+            async with limiter:
+                result = await maybe_coroutine_result
         else:
             result = maybe_coroutine_result
         await prev_done.wait()
@@ -251,14 +254,18 @@ async def async_map(
 
 @contextlib.asynccontextmanager
 async def async_filter(
-    function: Callable[[T], Awaitable[T]], iterable: AsyncIterable[T]
+    function: Callable[[T], Awaitable[T]], iterable: AsyncIterable[T], concurrent_max
 ) -> AsyncIterator[AsyncIterable[T]]:
     send_result, receive_result = trio.open_memory_channel[T](0)
 
+    limiter = trio.CapacityLimiter(concurrent_max)
+
     async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
+
         maybe_coroutine_result = function(item)
         if isinstance(maybe_coroutine_result, types.CoroutineType):
-            result = await maybe_coroutine_result
+            async with limiter:
+                result = await maybe_coroutine_result
         else:
             result = maybe_coroutine_result
 
@@ -283,17 +290,21 @@ async def async_filter(
         nursery.cancel_scope.cancel()
 
 
-async def program_runner(pairs, items):
+async def program_runner(pairs, items, concurrent_max):
 
     async with contextlib.AsyncExitStack() as stack:
 
         for how, function in pairs:
 
             if how == "map":
-                items = await stack.enter_async_context(async_map(function, items))
+                items = await stack.enter_async_context(
+                    async_map(function, items, concurrent_max)
+                )
 
             elif how == "filter":
-                items = await stack.enter_async_context(async_filter(function, items))
+                items = await stack.enter_async_context(
+                    async_filter(function, items, concurrent_max)
+                )
 
             elif how == "apply":
                 items = AsyncIterableWrapper([await function([x async for x in items])])
@@ -302,21 +313,22 @@ async def program_runner(pairs, items):
             print(item)
 
 
-async def async_main(pairs):
+async def async_main(pairs, max_concurrent):
     stream = trio._unix_pipes.PipeReceiveStream(os.dup(0))
     receiver = TerminatedFrameReceiver(stream, b"\n")
     result = (item.decode() async for item in receiver)
 
     pairs = [(how, build_function(what)) for how, what in pairs]
 
-    result = await program_runner(pairs, result)
+    result = await program_runner(pairs, result, max_concurrent)
 
 
-def main(pairs):
-    trio.run(async_main, pairs)
+def main(pairs, **kwargs):
+    trio.run(functools.partial(async_main, pairs, **kwargs))
 
 
 @click.group(chain=True)
+@click.option("--max-concurrent", type=int, default=5)
 def cli(**kwargs):
     pass
 
@@ -340,8 +352,8 @@ def cli_filter(command):
 
 
 @cli.resultcallback()
-def collect(pairs):
-    main(pairs)
+def collect(pairs, **kwargs):
+    main(pairs, **kwargs)
 
 
 # time python3.7 -m poetry run python -m pype map 'await asks.get(x) ! x.body ' map 'len(x)' filter 'x < 195' apply 'len(x)' <<EOF
