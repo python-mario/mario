@@ -19,6 +19,7 @@ parso = "*"
 bump2version = "*"
 trio = "*"
 async_generator = "*"
+async_exit_stack = "*"
 
 
 [tool.poetry.dev-dependencies]

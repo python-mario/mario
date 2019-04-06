@@ -33,6 +33,7 @@ import click_default_group
 import toolz
 import trio
 import async_generator
+import async_exit_stack
 
 
 from . import _version
@@ -296,7 +297,7 @@ async def async_filter(
 
 async def program_runner(pairs, items, concurrent_max):
 
-    async with contextlib.AsyncExitStack() as stack:
+    async with async_exit_stack.AsyncExitStack() as stack:
 
         for how, function in pairs:
 
