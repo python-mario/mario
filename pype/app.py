@@ -156,9 +156,27 @@ def find_maybe_module_names(text):
     return re.findall(r"\b[^\d\W]\w*(?:\.[^\d\W]\w*)+\b", text)
 
 
-def split_pipestring(command):
-    # TODO Use a real parser.
-    return [s.strip() for s in command.split("!")]
+def split_pipestring(s, sep="!"):
+    segments = []
+    tree = parso.parse(s)
+    current_nodes = []
+
+    for c in tree.children:
+        if isinstance(c, parso.python.tree.PythonErrorLeaf) and c.value == sep:
+            segments.append(current_nodes)
+            current_nodes = []
+        else:
+            current_nodes.append(c)
+
+    segments.append(current_nodes)
+
+    return ["".join(node.get_code() for node in seg) for seg in segments]
+
+
+def test_split_pipestring():
+    s = 'x ! y + f"{x!r}"'
+    sep = "!"
+    assert split_pipestring(s, sep) == ["x", ' y + f"{x!r}"']
 
 
 def build_source(components):
