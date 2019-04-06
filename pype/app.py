@@ -279,7 +279,7 @@ async def async_filter(
             await send_result.send(item)
         self_done.set()
 
-    async def consume_input(nursery: trio.Nursery) -> None:
+    async def consume_input(nursery) -> None:
         prev_done = trio.Event()
         prev_done.set()
         async for item in iterable:
