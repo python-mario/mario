@@ -32,6 +32,7 @@ import click
 import click_default_group
 import toolz
 import trio
+import async_generator
 
 
 from . import _version
