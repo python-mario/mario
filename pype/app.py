@@ -36,6 +36,15 @@ import async_generator
 import async_exit_stack
 
 
+try:
+    import asks
+except ImportError:
+    pass
+else:
+    asks.init('trio')
+
+
+
 from . import _version
 
 T = typing.TypeVar("T")
