@@ -318,7 +318,8 @@ async def program_runner(pairs, items):
             elif how == "filter":
                 items = await stack.enter_async_context(async_filter(function, items))
 
-        items = await stack.enter_async_context(async_cycle(items))
+            elif how == "apply":
+                items = AsyncIterableWrapper([await function([x async for x in items])])
 
         async for item in items:
             print(item)
