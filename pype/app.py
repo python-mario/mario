@@ -37,6 +37,7 @@ import trio_typing
 T = typing.TypeVar("T")
 U = typing.TypeVar("U")
 
+_PYPE_VALUE = '_PYPE_VALUE'
 
 BUFSIZE = 2 ** 14
 counter = itertools.count()
