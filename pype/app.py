@@ -309,6 +309,9 @@ async def program_runner(pairs, items, concurrent_max):
             elif how == "apply":
                 items = AsyncIterableWrapper([await function([x async for x in items])])
 
+            elif how == "eval":
+                items = AsyncIterableWrapper([await function(None)])
+
         async for item in items:
             print(item)
 
@@ -349,6 +352,12 @@ def cli_apply(command):
 @click.argument("command")
 def cli_filter(command):
     return ("filter", command)
+
+
+@cli.command("eval")
+@click.argument("command")
+def cli_eval(command):
+    return ("eval", command)
 
 
 @cli.resultcallback()
