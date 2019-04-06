@@ -18,7 +18,7 @@ click-default-group = "*"
 parso = "*"
 bump2version = "^0.5.10"
 trio = "^0.11.0"
-trio-typing = "^0.2.0"
+
 
 
 [tool.poetry.dev-dependencies]

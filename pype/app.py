@@ -32,7 +32,7 @@ import click
 import click_default_group
 import toolz
 import trio
-import trio_typing
+
 
 from . import _version
 
@@ -239,7 +239,7 @@ async def async_map(
         await send_result.send(result)
         self_done.set()
 
-    async def consume_input(nursery: trio_typing.Nursery) -> None:
+    async def consume_input(nursery: trio.Nursery) -> None:
         prev_done = trio.Event()
         prev_done.set()
         async for item in iterable:
@@ -277,7 +277,7 @@ async def async_filter(
             await send_result.send(item)
         self_done.set()
 
-    async def consume_input(nursery: trio_typing.Nursery) -> None:
+    async def consume_input(nursery: trio.Nursery) -> None:
         prev_done = trio.Event()
         prev_done.set()
         async for item in iterable:
