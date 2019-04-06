@@ -145,6 +145,10 @@ def test_cli_async_chain_map_apply(runner, reactor, server):
     assert t.elapsed < limit_seconds
 
 
+def test_eval(capsys):
+    pype.app.main([("eval", "1+1")])
+    assert capsys.readouterr().out == "2\n"
+
 def test_cli_version(runner):
     args = ["--version"]
 
