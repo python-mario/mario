@@ -283,47 +283,6 @@ async def async_filter(
         nursery.cancel_scope.cancel()
 
 
-@contextlib.asynccontextmanager
-async def async_cycle(iterable: AsyncIterable[T]) -> AsyncIterator[AsyncIterable[U]]:
-    send_result, receive_result = trio.open_memory_channel[U](0)
-
-    results = []
-
-    async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
-        maybe_coroutine_result = item
-
-        if isinstance(maybe_coroutine_result, types.CoroutineType):
-            result = await maybe_coroutine_result
-        else:
-            result = maybe_coroutine_result
-
-        await prev_done.wait()
-
-        await send_result.send(result)
-        results.append(result)
-        self_done.set()
-
-    async def consume_input(nursery: trio_typing.Nursery) -> None:
-        prev_done = trio.Event()
-        prev_done.set()
-        async for item in iterable:
-            self_done = trio.Event()
-            nursery.start_soon(wrapper, prev_done, self_done, item, name="cycle")
-            prev_done = self_done
-        await prev_done.wait()
-
-        # Cycle.
-        for result in itertools.cycle(results):
-            await send_result.send(result)
-
-        await send_result.aclose()
-
-    async with trio.open_nursery() as nursery:
-        nursery.start_soon(consume_input, nursery)
-        yield receive_result
-        nursery.cancel_scope.cancel()
-
-
 async def program_runner(pairs, items):
 
     async with contextlib.AsyncExitStack() as stack:
