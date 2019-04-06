@@ -56,6 +56,9 @@ counter = itertools.count()
 _RECEIVE_SIZE = 4096  # pretty arbitrary
 
 
+DEFAULTS = {"max_concurrent": 5}
+
+
 class TerminatedFrameReceiver:
     """Parse frames out of a Trio stream, where each frame is terminated by a
     fixed byte sequence.
@@ -233,10 +236,10 @@ def build_function(command):
 
 @async_generator.asynccontextmanager
 async def async_map(
-    function: Callable[[T], Awaitable[U]], iterable: AsyncIterable[T], concurrent_max
+    function: Callable[[T], Awaitable[U]], iterable: AsyncIterable[T], max_concurrent
 ) -> AsyncIterator[AsyncIterable[U]]:
     send_result, receive_result = trio.open_memory_channel[U](0)
-    limiter = trio.CapacityLimiter(concurrent_max)
+    limiter = trio.CapacityLimiter(max_concurrent)
 
     async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
         maybe_coroutine_result = function(item)
@@ -267,11 +270,11 @@ async def async_map(
 
 @async_generator.asynccontextmanager
 async def async_filter(
-    function: Callable[[T], Awaitable[T]], iterable: AsyncIterable[T], concurrent_max
+    function: Callable[[T], Awaitable[T]], iterable: AsyncIterable[T], max_concurrent
 ) -> AsyncIterator[AsyncIterable[T]]:
     send_result, receive_result = trio.open_memory_channel[T](0)
 
-    limiter = trio.CapacityLimiter(concurrent_max)
+    limiter = trio.CapacityLimiter(max_concurrent)
 
     async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
 
@@ -303,7 +306,7 @@ async def async_filter(
         nursery.cancel_scope.cancel()
 
 
-async def program_runner(pairs, items, concurrent_max):
+async def program_runner(pairs, items, max_concurrent):
 
     async with async_exit_stack.AsyncExitStack() as stack:
 
@@ -311,12 +314,12 @@ async def program_runner(pairs, items, concurrent_max):
 
             if how == "map":
                 items = await stack.enter_async_context(
-                    async_map(function, items, concurrent_max)
+                    async_map(function, items, max_concurrent)
                 )
 
             elif how == "filter":
                 items = await stack.enter_async_context(
-                    async_filter(function, items, concurrent_max)
+                    async_filter(function, items, max_concurrent)
                 )
 
             elif how == "apply":
@@ -329,7 +332,8 @@ async def program_runner(pairs, items, concurrent_max):
             print(item)
 
 
-async def async_main(pairs, max_concurrent):
+
+async def async_main(pairs, max_concurrent=DEFAULTS["max_concurrent"]):
     stream = trio._unix_pipes.PipeReceiveStream(os.dup(0))
     receiver = TerminatedFrameReceiver(stream, b"\n")
     result = (item.decode() async for item in receiver)
@@ -344,7 +348,7 @@ def main(pairs, **kwargs):
 
 
 @click.group(chain=True)
-@click.option("--max-concurrent", type=int, default=5)
+@click.option("--max-concurrent", type=int, default=DEFAULTS["max_concurrent"])
 @click.version_option(_version.__version__, prog_name="pype")
 def cli(**kwargs):
     pass
