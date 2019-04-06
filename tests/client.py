@@ -11,8 +11,9 @@ async def fetch(session, url):
 
 async def main():
     async with aiohttp.ClientSession() as session:
-        html = await fetch(session, 'http://localhost:8080/a')
+        html = await fetch(session, "http://localhost:8080/a")
         print(html)
+
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())

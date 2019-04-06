@@ -41,8 +41,7 @@ try:
 except ImportError:
     pass
 else:
-    asks.init('trio')
-
+    asks.init("trio")
 
 
 from . import _version
