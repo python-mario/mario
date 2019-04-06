@@ -34,10 +34,12 @@ import toolz
 import trio
 import trio_typing
 
+from . import _version
+
 T = typing.TypeVar("T")
 U = typing.TypeVar("U")
 
-_PYPE_VALUE = '_PYPE_VALUE'
+_PYPE_VALUE = "_PYPE_VALUE"
 
 BUFSIZE = 2 ** 14
 counter = itertools.count()
@@ -333,6 +335,7 @@ def main(pairs, **kwargs):
 
 @click.group(chain=True)
 @click.option("--max-concurrent", type=int, default=5)
+@click.version_option(_version.__version__, prog_name="pype")
 def cli(**kwargs):
     pass
 
