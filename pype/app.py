@@ -221,7 +221,7 @@ def build_function(command):
     return function
 
 
-@contextlib.asynccontextmanager
+@async_generator.asynccontextmanager
 async def async_map(
     function: Callable[[T], Awaitable[U]], iterable: AsyncIterable[T], concurrent_max
 ) -> AsyncIterator[AsyncIterable[U]]:
@@ -255,7 +255,7 @@ async def async_map(
         nursery.cancel_scope.cancel()
 
 
-@contextlib.asynccontextmanager
+@async_generator.asynccontextmanager
 async def async_filter(
     function: Callable[[T], Awaitable[T]], iterable: AsyncIterable[T], concurrent_max
 ) -> AsyncIterator[AsyncIterable[T]]:

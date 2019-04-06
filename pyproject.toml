@@ -18,7 +18,7 @@ click-default-group = "*"
 parso = "*"
 bump2version = "*"
 trio = "*"
-
+async_generator = "*"
 
 
 [tool.poetry.dev-dependencies]
