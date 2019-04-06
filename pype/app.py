@@ -241,7 +241,7 @@ async def async_map(
         await send_result.send(result)
         self_done.set()
 
-    async def consume_input(nursery: trio.Nursery) -> None:
+    async def consume_input(nursery) -> None:
         prev_done = trio.Event()
         prev_done.set()
         async for item in iterable:
