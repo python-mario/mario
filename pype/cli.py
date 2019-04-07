@@ -31,20 +31,31 @@ def cli(**kwargs):
     pass
 
 
-def make_subcommand(name):
-    @click.command(name)
-    @click.argument("command")
-    def _subcommand(command):
-        return (name, command)
+subcommands = [
+    click.Command("map", short_help="Call <command> on each line of input."),
+    click.Command("apply", short_help="Call <command> on input as a sequence."),
+    click.Command(
+        "filter",
+        short_help="Call <command> on each line of input and exclude false values.",
+    ),
+    click.Command("eval", short_help="Call <command> without any input."),
+    click.Command(
+        "stack", short_help="Call <command> on input as a single concatenated string."
+    ),
+]
 
-    return _subcommand
+
+def build_callback(sub_command):
+    def callback(command):
+        return sub_command.name, command
+
+    return callback
 
 
-subcommand_names = ["map", "apply", "filter", "eval", "stack"]
-subcommands = [make_subcommand(name) for name in subcommand_names]
 for subcommand in subcommands:
+    subcommand.params = [click.Argument(["command"])]
+    subcommand.callback = build_callback(subcommand)
     cli.add_command(subcommand)
-
 
 @cli.resultcallback()
 def cli_main(pairs, **kwargs):
