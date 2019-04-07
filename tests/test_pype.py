@@ -32,8 +32,6 @@ hypothesis.settings.register_profile(
 )
 hypothesis.settings.load_profile(os.getenv("HYPOTHESIS_PROFILE", "default"))
 
-SYMBOL = "x"
-
 
 def run(args, **kwargs):
     args = [sys.executable, "-m", "pype"] + args
@@ -62,20 +60,6 @@ def _server():
     proc.terminate()
 
 
-@pytest.mark.parametrize(
-    "name, expected",
-    [
-        ("str.upper", {}),
-        ("os.path.join", {"os.path": os}),
-        ("map", {}),
-        ("collections.Counter", {"collections": collections}),
-        ("urllib.parse.urlparse", {"urllib.parse": urllib}),
-    ],
-)
-def test_get_module(name, expected):
-    assert interpret.build_name_to_module(name) == expected
-
-
 def assert_exception_equal(e1, e2):
     assert type(e1) == type(e2)
     assert e1.args == e2.args
@@ -89,27 +73,6 @@ def test_raises_on_nonexistent_option(option, runner):
     result = runner.invoke(pype.cli.cli, args, input=in_stream)
 
     assert_exception_equal(result.exception, SystemExit(2))
-
-
-@pytest.mark.parametrize(
-    "string, separator, expected",
-    [
-        ("a", "!", ["a"]),
-        ("ab", "!", ["ab"]),
-        ("ab!cd", "!", ["ab", "cd"]),
-        ("ab!cd!ef", "!", ["ab", "cd", "ef"]),
-        ('a"b!c"d!ef', "!", ['a"b!c"d', "ef"]),
-        ("a", "\\", ["a"]),
-        ("ab", "\\", ["ab"]),
-        ("ab\\cd", "\\", ["ab", "cd"]),
-        ("ab\\cd\\ef", "\\", ["ab", "cd", "ef"]),
-        ('a"b\\c"d\\ef', "\\", ['a"b\\c"d', "ef"]),
-        (f'str.upper ! {SYMBOL} + "z"', "!", ["str.upper", f' {SYMBOL} + "z"']),
-    ],
-)
-def test_split_string_on_separator(string, separator, expected):
-    result = list(interpret.split_pipestring(string, separator))
-    assert result == expected
 
 
 class Timer:

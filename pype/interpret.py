@@ -94,12 +94,6 @@ def split_pipestring(s, sep="!"):
     return ["".join(node.get_code() for node in seg) for seg in segments]
 
 
-def test_split_pipestring():
-    s = 'x ! y + f"{x!r}"'
-    sep = "!"
-    assert split_pipestring(s, sep) == ["x", ' y + f"{x!r}"']
-
-
 def make_autocall(expression):
     if expression.endswith(")"):
         return expression
