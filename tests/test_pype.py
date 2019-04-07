@@ -36,7 +36,7 @@ SYMBOL = "x"
 
 def run(args, **kwargs):
     args = [sys.executable, "-m", "pype"] + args
-    return subprocess.check_output(args)
+    return subprocess.check_output(args, **kwargs)
 
 
 @pytest.fixture(name="runner")
@@ -192,7 +192,9 @@ def test_cli_version(runner):
 
 
 def test_config_file(tmp_path):
-    config_body = '''"from collections import Counter as C"'''
+    config_body = '''
+    exec_before = "from collections import Counter as C"
+    '''
 
     config_file_path = tmp_path / "config.toml"
 
@@ -200,6 +202,6 @@ def test_config_file(tmp_path):
 
     args = ["stack", "C(x)"]
     stdin = "1\n2\n".encode()
-    env = {f"{utils.NAME}_CONFIG_DIR": str(tmp_path)}
+    env = {f"{utils.NAME}_CONFIG_DIR".upper().encode(): str(tmp_path).encode()}
     output = run(args, input=stdin, env=env).decode()
     assert output.startswith("Counter")

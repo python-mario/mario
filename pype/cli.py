@@ -8,9 +8,12 @@ from . import _version
 from . import app
 
 
-config.DEFAULTS.update(config.load_config(os.environ.get(f"{utils.NAME}_CONFIG_DIR", None)))
+config.DEFAULTS.update(
+    config.load_config(
+        dir_path=os.environ.get(f"{utils.NAME}_CONFIG_DIR".upper(), None)
+    )
+)
 CONTEXT_SETTINGS = {"default_map": config.DEFAULTS}
-
 
 
 @click.group(chain=True, context_settings=CONTEXT_SETTINGS)
