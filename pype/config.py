@@ -5,7 +5,7 @@ import toml
 
 from . import utils
 
-DEFAULTS = {"max_concurrent": 5, "exec_before": None, "autocall": False}
+DEFAULTS = {"max_concurrent": 5, "exec_before": None, "autocall": True}
 
 
 def load_config(dir_path=None):

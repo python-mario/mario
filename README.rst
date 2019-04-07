@@ -172,17 +172,18 @@ Then you can directly use the imported objects without referencing the module. :
     {"w": 1, "o": 1, "r": 1, "l": 1, "d": 1}
 
 
-You can set any of the ``pype`` options in your config. For example, to make ``--autocall``, the default, add ::
+You can set any of the ``pype`` options in your config. For example, to make ``--no-autocall`` the default, add ::
 
   # ~/.config/pype/config.toml
 
-  autocall = true
+  autocall = false
 
 then just use ``pype`` as normal ::
 
-   $ printf 'hello\neverybody\n' | pype map 'len'
-   5
-   9
+   $ printf 'a\nbb\nccc\n' | pype map 'len'
+   <built-in function len>
+   <built-in function len>
+   <built-in function len>
 
 
 Installation
