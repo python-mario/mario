@@ -192,9 +192,9 @@ def test_cli_version(runner):
 
 
 def test_config_file(tmp_path):
-    config_body = '''
+    config_body = """
     exec_before = "from collections import Counter as C"
-    '''
+    """
 
     config_file_path = tmp_path / "config.toml"
 
@@ -202,6 +202,7 @@ def test_config_file(tmp_path):
 
     args = ["stack", "C(x)"]
     stdin = "1\n2\n".encode()
-    env = {f"{utils.NAME}_CONFIG_DIR".upper().encode(): str(tmp_path).encode()}
+    env = dict(os.environ)
+    env.update({f"{utils.NAME}_CONFIG_DIR".upper().encode(): str(tmp_path).encode()})
     output = run(args, input=stdin, env=env).decode()
     assert output.startswith("Counter")
