@@ -1,1 +1,1 @@
-NAME = 'pype'
+NAME = "pype"

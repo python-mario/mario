@@ -21,6 +21,7 @@ import pype.app
 import pype.cli
 import pype._version
 from pype import utils
+from pype import interpret
 from tests import config
 
 
@@ -72,7 +73,7 @@ def _server():
     ],
 )
 def test_get_module(name, expected):
-    assert pype.app.build_name_to_module(name) == expected
+    assert interpret.build_name_to_module(name) == expected
 
 
 def assert_exception_equal(e1, e2):
@@ -107,7 +108,7 @@ def test_raises_on_nonexistent_option(option, runner):
     ],
 )
 def test_split_string_on_separator(string, separator, expected):
-    result = list(pype.app.split_pipestring(string, separator))
+    result = list(interpret.split_pipestring(string, separator))
     assert result == expected
 
 
@@ -209,5 +210,5 @@ def test_config_file(tmp_path):
 
 
 def test_no_parens():
-    output = run(['--autocall', 'map', 'len'], input=b'a\nbb\n').decode()
-    assert output == '1\n2\n'
+    output = run(["--autocall", "map", "len"], input=b"a\nbb\n").decode()
+    assert output == "1\n2\n"
