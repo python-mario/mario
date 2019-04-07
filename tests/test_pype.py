@@ -206,3 +206,8 @@ def test_config_file(tmp_path):
     env.update({f"{utils.NAME}_CONFIG_DIR".upper().encode(): str(tmp_path).encode()})
     output = run(args, input=stdin, env=env).decode()
     assert output.startswith("Counter")
+
+
+def test_no_parens():
+    output = run(['--autocall', 'map', 'len'], input=b'a\nbb\n').decode()
+    assert output == '1\n2\n'

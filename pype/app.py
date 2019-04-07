@@ -196,8 +196,16 @@ def test_split_pipestring():
     assert split_pipestring(s, sep) == ["x", ' y + f"{x!r}"']
 
 
-def build_source(components):
+def make_autocall(expression):
+    if expression.endswith(")"):
+        return expression
+    return expression + "(x)"
+
+
+def build_source(components, autocall):
     components = [c.strip() for c in components]
+    if autocall:
+        components = [make_autocall(c) for c in components]
     indent = "        "
     lines = "".join([f"{indent}x = {c}\n" for c in components])
 
@@ -221,11 +229,11 @@ def build_name_to_module(command):
     return name_to_module
 
 
-def build_function(command, global_namespace):
+def build_function(command, global_namespace, autocall):
     name_to_module = build_name_to_module(command)
     global_namespace = {**name_to_module, **global_namespace}
 
-    source = build_source(split_pipestring(command))
+    source = build_source(split_pipestring(command), autocall)
 
     local_namespace = {}
 
@@ -351,13 +359,16 @@ async def async_main(
     pairs,
     max_concurrent=config.DEFAULTS["max_concurrent"],
     exec_before=config.DEFAULTS["exec_before"],
+    autocall=config.DEFAULTS["autocall"],
 ):
     stream = trio._unix_pipes.PipeReceiveStream(os.dup(0))
     receiver = TerminatedFrameReceiver(stream, b"\n")
     result = (item.decode() async for item in receiver)
 
     global_namespace = build_global_namespace(exec_before)
-    pairs = [(how, build_function(what, global_namespace)) for how, what in pairs]
+    pairs = [
+        (how, build_function(what, global_namespace, autocall)) for how, what in pairs
+    ]
 
     stack, items = await program_runner(pairs, result, max_concurrent)
 
