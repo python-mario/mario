@@ -68,6 +68,15 @@ _______
    aa
    bbbb
 
+``filter``
+__________
+
+
+Use ``filter`` to evaluate a condition on each line of input and exclude false values. ::
+
+   $ printf 'a\nbb\nccc\n' | pype filter 'len(x) > 1'
+   bb
+   ccc
 
 
 ``apply``
