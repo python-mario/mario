@@ -20,7 +20,8 @@ bump2version = "*"
 trio = "*"
 async_generator = "*"
 async_exit_stack = "*"
-
+appdirs = "*"
+toml = "*"
 
 [tool.poetry.dev-dependencies]
 "flake8" = "*"

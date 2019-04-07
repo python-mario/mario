@@ -19,7 +19,9 @@ import hypothesis.strategies as st
 import pype
 import pype.app
 import pype._version
+from pype import utils
 from tests import config
+
 
 hypothesis.settings.register_profile("ci", max_examples=1000)
 hypothesis.settings.register_profile("dev", max_examples=10)
@@ -29,6 +31,11 @@ hypothesis.settings.register_profile(
 hypothesis.settings.load_profile(os.getenv("HYPOTHESIS_PROFILE", "default"))
 
 SYMBOL = "x"
+
+
+def run(args, **kwargs):
+    args = [sys.executable, "-m", "pype"] + args
+    return subprocess.check_output(args)
 
 
 @pytest.fixture(name="runner")
@@ -181,3 +188,17 @@ def test_cli_version(runner):
     assert result.output.rstrip()[-1].isdigit()
     assert not result.exception
     assert result.exit_code == 0
+
+
+def test_config_file(tmp_path):
+    config_body = '''"from collections import Counter as C"'''
+
+    config_file_path = tmp_path / "config.toml"
+
+    config_file_path.write_text(config_body)
+
+    args = ["stack", "C(x)"]
+    stdin = "1\n2\n".encode()
+    env = {f"{utils.NAME}_CONFIG_DIR": str(tmp_path)}
+    output = run(args, input=stdin, env=env).decode()
+    assert output.startswith("Counter")

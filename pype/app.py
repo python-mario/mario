@@ -18,6 +18,7 @@ import contextlib
 import typing
 import types
 import functools
+import pathlib
 
 from typing import Callable
 from typing import Awaitable
@@ -45,6 +46,8 @@ else:
 
 
 from . import _version
+from . import config
+from . import utils
 
 T = typing.TypeVar("T")
 U = typing.TypeVar("U")
@@ -56,7 +59,9 @@ counter = itertools.count()
 _RECEIVE_SIZE = 4096  # pretty arbitrary
 
 
-DEFAULTS = {"max_concurrent": 5, 'exec_before': None}
+DEFAULTS = {"max_concurrent": 5, "exec_before": None}
+DEFAULTS.update(config.load_config(os.environ.get(f"{utils.NAME}_CONFIG_DIR", None)))
+CONTEXT_SETTINGS = {"default_map": DEFAULTS}
 
 
 class TerminatedFrameReceiver:
@@ -370,10 +375,12 @@ def main(pairs, **kwargs):
     trio.run(functools.partial(async_main, pairs, **kwargs))
 
 
-@click.group(chain=True)
+@click.group(chain=True, context_settings=CONTEXT_SETTINGS)
 @click.option("--max-concurrent", type=int, default=DEFAULTS["max_concurrent"])
 @click.option(
-    "--exec-before", help="Python source code to be executed before any stage.", default=DEFAULTS['exec_before']
+    "--exec-before",
+    help="Python source code to be executed before any stage.",
+    default=DEFAULTS["exec_before"],
 )
 @click.version_option(_version.__version__, prog_name="pype")
 def cli(**kwargs):
@@ -396,7 +403,7 @@ for subcommand in subcommands:
 
 
 @cli.resultcallback()
-def collect(pairs, **kwargs):
+def cli_main(pairs, **kwargs):
     main(pairs, **kwargs)
 
 
