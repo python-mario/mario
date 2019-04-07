@@ -9,24 +9,24 @@ Usage
 
 At the command prompt, use ``pype`` to act on each item in the file with python commands: ::
 
-  $ printf 'abc' | pype str.upper
+  $ printf 'abc' | pype map x.upper()
 
   ABC
 
 
 Chain python functions together with ``!``: ::
 
-  $ printf 'Hello'  | pype 'str.upper ! len'
+  $ printf 'Hello'  | pype map 'x.upper() ! len(x)'
 
   5
 
-Use ``?`` as a placeholder for the input at each stage: ::
+Use ``x`` as a placeholder for the input at each stage: ::
 
-  $ printf 'Hello World'  | pype 'str.split ! ?[0].upper() + "!"'
+  $ printf 'Hello World'  | pype map ' x.split() ! x[0].upper() + "!"'
 
   HELLO!
 
-  $ printf 'Hello World'  | pype 'str.split ! ?[0].upper() + "!" ! ?.replace("H", "J")'
+  $ printf 'Hello World'  | pype 'x.split() ! x[0].upper() + "!" ! x.replace("H", "J")'
 
   JELLO!
 
@@ -43,7 +43,7 @@ Given a server responding to ``http://localhost:8080/`` and a list of urls in ``
 
 Automatically import required modules and use their functions: ::
 
-   $ pype 'str.strip ! requests.get ! ?.text ' < urls.txt
+   $ pype 'x.strip() ! requests.get(x) ! x.text ' < urls.txt
 
    Hello, Requester_254. You are client number 7903 for this server.
    Hello, Requester_083. You are client number 7904 for this server.
@@ -54,14 +54,14 @@ Automatically import required modules and use their functions: ::
 
 Use ``map`` to act on each input item (``map`` is the default command). Use ``apply`` to act on the sequence of items. Finding the largest number returned from the server: ::
 
-    $ pype --newlines=no map 'str.strip ! requests.get ! ?.text ! ?.split()[6] ! int' apply 'max'  < urls.txt
+    $ pype --newlines=no map 'x.strip() ! requests.get(x) ! x.text ! x.split()[6] ! int' apply 'max(x)'  < urls.txt
 
     7933
 
 
-Making sequential requests is slow. Use ``--async`` to make I/O really fast (see caveats below). ::
+Making sequential requests is slow. These requests take 10 seconds to complete. ::
 
-  $ time pype 'str.strip ! requests.get ! ?.text'  < urls.txt
+  $ time pype 'str.strip ! requests.get ! x.text'  < urls.txt
 
   Hello, Requester_254. You are client number 8061 for this server.
   Hello, Requester_083. You are client number 8062 for this server.
@@ -76,7 +76,7 @@ Making sequential requests is slow. Use ``--async`` to make I/O really fast (see
 
 Making concurrent requests is much faster: ::
 
-   $ time pype --async 'str.strip ! treq.get ! treq.text_content'  < urls.txt
+   $ time pype 'x.strip() ! await asks.get(x) ! x.text'  < urls.txt
 
    Hello, Requester_254. You are client number 8025 for this server.
    Hello, Requester_083. You are client number 8025 for this server.
@@ -102,7 +102,7 @@ Caveats
 
 * ``pype`` assumes *trusted command arguments* and *untrusted input stream data*. It uses ``eval`` on your arguments, not on the input stream data. If you use ``exec``, ``eval``, ``subprocess``, or similar commands, you can execute arbitrary code from the input stream.
 
-* ``--async`` currently works only with ``map``, not ``apply`` and works only for a single ``map`` pipe-string, e.g. ``map 'str.upper ! len ! ? & 1'``, not for chains, e.g. ``map str.upper map len map '? & 1'``.
+
 
 
 
