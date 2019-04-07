@@ -61,7 +61,7 @@ Commands
 ``map``
 _______
 
-  Use ``map`` to act on each input item (``map`` is the default command). ::
+  Use ``map`` to act on each input item. ::
 
 
    $  printf 'a\nbb\n' | pype map 'x * 2'
