@@ -56,7 +56,7 @@ counter = itertools.count()
 _RECEIVE_SIZE = 4096  # pretty arbitrary
 
 
-DEFAULTS = {"max_concurrent": 5}
+DEFAULTS = {"max_concurrent": 5, 'exec_before': None}
 
 
 class TerminatedFrameReceiver:
@@ -221,17 +221,25 @@ def build_name_to_module(command):
     return name_to_module
 
 
-def build_function(command):
+def build_function(command, global_namespace):
     name_to_module = build_name_to_module(command)
+    global_namespace = {**name_to_module, **global_namespace}
 
     source = build_source(split_pipestring(command))
 
     local_namespace = {}
-    global_namespace = name_to_module.copy()
 
     exec(source, global_namespace, local_namespace)
     function = local_namespace["_pype_runner"]
     return function
+
+
+def build_global_namespace(source):
+    if source is None:
+        return {}
+    namespace = {}
+    exec(source, {}, namespace)
+    return namespace
 
 
 @async_generator.asynccontextmanager
@@ -339,12 +347,17 @@ async def program_runner(pairs, items, max_concurrent):
         return stack.pop_all(), items
 
 
-async def async_main(pairs, max_concurrent=DEFAULTS["max_concurrent"]):
+async def async_main(
+    pairs,
+    max_concurrent=DEFAULTS["max_concurrent"],
+    exec_before=DEFAULTS["exec_before"],
+):
     stream = trio._unix_pipes.PipeReceiveStream(os.dup(0))
     receiver = TerminatedFrameReceiver(stream, b"\n")
     result = (item.decode() async for item in receiver)
 
-    pairs = [(how, build_function(what)) for how, what in pairs]
+    global_namespace = build_global_namespace(exec_before)
+    pairs = [(how, build_function(what, global_namespace)) for how, what in pairs]
 
     stack, items = await program_runner(pairs, result, max_concurrent)
 
@@ -359,6 +372,9 @@ def main(pairs, **kwargs):
 
 @click.group(chain=True)
 @click.option("--max-concurrent", type=int, default=DEFAULTS["max_concurrent"])
+@click.option(
+    "--exec-before", help="Python source code to be executed before any stage.", default=DEFAULTS['exec_before']
+)
 @click.version_option(_version.__version__, prog_name="pype")
 def cli(**kwargs):
     pass

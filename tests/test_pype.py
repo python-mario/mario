@@ -151,10 +151,25 @@ def test_eval(capsys):
 
 
 def test_stack():
-    args = [sys.executable, '-m', 'pype', 'stack', 'len(x)']
-    stdin = '1\n2\n'.encode()
+    args = [sys.executable, "-m", "pype", "stack", "len(x)"]
+    stdin = "1\n2\n".encode()
     output = subprocess.check_output(args, input=stdin).decode()
-    assert output == '4\n'
+    assert output == "4\n"
+
+
+def test_exec_before():
+    args = [
+        sys.executable,
+        "-m",
+        "pype",
+        "--exec-before",
+        "from collections import Counter as c",
+        "stack",
+        "c(x)",
+    ]
+    stdin = "1\n2\n".encode()
+    output = subprocess.check_output(args, input=stdin).decode()
+    assert output.startswith("Counter")
 
 
 def test_cli_version(runner):
