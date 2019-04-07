@@ -32,6 +32,8 @@ Use ``x`` as a placeholder for the input at each stage: ::
 
 
 
+
+
 Given a server responding to ``http://localhost:8080/`` and a list of urls in ``urls.txt`` : ::
 
   http://localhost:8080/Requester_254
@@ -54,7 +56,7 @@ Automatically import required modules and use their functions: ::
 
 Use ``map`` to act on each input item (``map`` is the default command). Use ``apply`` to act on the sequence of items. Finding the largest number returned from the server: ::
 
-    $ pype --newlines=no map 'x.strip() ! requests.get(x) ! x.text ! x.split()[6] ! int' apply 'max(x)'  < urls.txt
+    $ pype map 'x.strip() ! requests.get(x) ! x.text ! x.split()[6] ! int' apply 'max(x)'  < urls.txt
 
     7933
 
