@@ -22,7 +22,10 @@ import pype.cli
 import pype._version
 from pype import utils
 from pype import interpret
+
+
 from tests import config
+from tests import tools
 
 
 hypothesis.settings.register_profile("ci", max_examples=1000)
@@ -31,11 +34,6 @@ hypothesis.settings.register_profile(
     "debug", max_examples=10, verbosity=hypothesis.Verbosity.verbose
 )
 hypothesis.settings.load_profile(os.getenv("HYPOTHESIS_PROFILE", "default"))
-
-
-def run(args, **kwargs):
-    args = [sys.executable, "-m", "pype"] + args
-    return subprocess.check_output(args, **kwargs)
 
 
 def assert_exception_equal(e1, e2):
@@ -104,10 +102,5 @@ def test_config_file(tmp_path):
     stdin = "1\n2\n".encode()
     env = dict(os.environ)
     env.update({f"{utils.NAME}_CONFIG_DIR".upper().encode(): str(tmp_path).encode()})
-    output = run(args, input=stdin, env=env).decode()
+    output = tools.run(args, input=stdin, env=env).decode()
     assert output.startswith("Counter")
-
-
-def test_no_parens():
-    output = run(["--autocall", "map", "len"], input=b"a\nbb\n").decode()
-    assert output == "1\n2\n"
