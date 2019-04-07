@@ -56,3 +56,14 @@ def test_split_string_on_separator(string, separator, expected):
 def test_autocall():
     output = tools.run(["--autocall", "map", "len"], input=b"a\nbb\n").decode()
     assert output == "1\n2\n"
+
+
+def test_autocall_in_eval():
+    tools.run(["--autocall", "eval", "datetime.datetime.now().isoformat()"]).decode()
+
+
+def test_autocall_requires_symbol():
+    output = tools.run(
+        ["--autocall", "map", "pathlib.Path(x).name"], input=b"a\nbb\n"
+    ).decode()
+    assert output == "a\nbb\n"

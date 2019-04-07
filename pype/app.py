@@ -98,8 +98,15 @@ async def async_main(
     result = (item.decode() async for item in receiver)
 
     global_namespace = interpret.build_global_namespace(exec_before)
+
+
     pairs = [
-        (how, interpret.build_function(what, global_namespace, autocall))
+        (
+            how,
+            interpret.build_function(
+                what, global_namespace, autocall=(False if how == "eval" else autocall)
+            ),
+        )
         for how, what in pairs
     ]
 
