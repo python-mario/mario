@@ -92,8 +92,9 @@ Making concurrent requests is much faster: ::
 
 Installation
 ============
+Get it with pip: ::
 
-``pip install python-pype``
+   pip install python-pype
 
 
 Caveats
