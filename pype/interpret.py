@@ -19,6 +19,7 @@ import typing
 import types
 import functools
 import pathlib
+import ast
 
 from typing import Callable
 from typing import Awaitable
@@ -40,6 +41,9 @@ import async_exit_stack
 from . import _version
 from . import config
 from . import utils
+
+
+SYMBOL = "x"
 
 
 def _get_named_module(name):
@@ -95,9 +99,11 @@ def split_pipestring(s, sep="!"):
 
 
 def make_autocall(expression):
-    if expression.endswith(")"):
-        return expression
-    return expression + "(x)"
+    tree = ast.parse(expression)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Name) and node.id == SYMBOL:
+            return expression
+    return expression + f"({SYMBOL})"
 
 
 def build_source(components, autocall):
@@ -105,13 +111,13 @@ def build_source(components, autocall):
     if autocall:
         components = [make_autocall(c) for c in components]
     indent = "        "
-    lines = "".join([f"{indent}x = {c}\n" for c in components])
+    lines = "".join([f"{indent}{SYMBOL} = {c}\n" for c in components])
 
     source = textwrap.dedent(
         f"""\
-    async def _pype_runner(x):
+    async def _pype_runner({SYMBOL}):
 {lines}
-        return x
+        return {SYMBOL}
     """
     )
     return source
