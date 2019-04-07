@@ -47,31 +47,3 @@ for subcommand in subcommands:
 @cli.resultcallback()
 def cli_main(pairs, **kwargs):
     app.main(pairs, **kwargs)
-
-
-# time python3.7 -m poetry run python -m pype map 'await asks.get(x) ! x.body ' map 'len(x)' filter 'x < 195' apply 'len(x)' <<EOF
-# http://httpbin.org/delay/3
-# http://httpbin.org/delay/1
-# http://httpbin.org/delay/1
-# http://httpbin.org/delay/1
-# http://httpbin.org/delay/1
-# http://httpbin.org/delay/1
-# http://httpbin.org/delay/1
-# http://httpbin.org/delay/1
-# http://httpbin.org/delay/1
-# EOF
-# 8
-# python3.7 -m poetry run python -m pype map 'await asks.get(x) ! x.body ' map   0.45s user 0.05s system 13% cpu 3.641 total
-
-
-# time python3.7 -m poetry run python -m pype map 'await asks.get(x) ! x.body ' map 'len(x) ! str(x) ! x[-1] ! int(x) ! x - 2 ! x * 5 ! str(x)' map '"http://httpbin.org/delay/" + x ! await asks.get(x) ! x.json() '  <<EOF
-# http://httpbin.org/delay/3
-# http://httpbin.org/delay/1
-# http://httpbin.org/delay/1
-# http://httpbin.org/delay/1
-# http://httpbin.org/delay/1
-# http://httpbin.org/delay/1
-# http://httpbin.org/delay/1
-# http://httpbin.org/delay/1
-# http://httpbin.org/delay/1
-# EOF
