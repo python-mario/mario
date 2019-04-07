@@ -18,6 +18,7 @@ import hypothesis.strategies as st
 
 import pype
 import pype.app
+import pype.cli
 import pype._version
 from pype import utils
 from tests import config
@@ -84,7 +85,7 @@ def test_raises_on_nonexistent_option(option, runner):
     args = [option, "print"]
     in_stream = "a.b.c\n"
 
-    result = runner.invoke(pype.app.cli, args, input=in_stream)
+    result = runner.invoke(pype.cli.cli, args, input=in_stream)
 
     assert_exception_equal(result.exception, SystemExit(2))
 
@@ -182,7 +183,7 @@ def test_exec_before():
 def test_cli_version(runner):
     args = ["--version"]
 
-    result = runner.invoke(pype.app.cli, args)
+    result = runner.invoke(pype.cli.cli, args)
 
     assert result.output == f"pype, version {pype._version.__version__}\n"
     assert result.output.rstrip()[-1].isdigit()

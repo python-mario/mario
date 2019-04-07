@@ -5,6 +5,8 @@ import toml
 
 from . import utils
 
+DEFAULTS = {"max_concurrent": 5, "exec_before": None}
+
 
 def load_config(dir_path=None):
     if dir_path is None:
@@ -13,8 +15,6 @@ def load_config(dir_path=None):
         config_dir = pathlib.Path(dir_path)
 
     config_path = config_dir / "config.toml"
-
-
 
     try:
         with open(config_path) as f:

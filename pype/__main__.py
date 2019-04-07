@@ -1,3 +1,3 @@
-from pype.app import cli
+from . import cli
 
-cli()
+cli.cli()
