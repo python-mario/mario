@@ -1,3 +1,4 @@
+import contextlib
 import json
 import asyncio
 import datetime
@@ -41,10 +42,10 @@ class Handler:
 
         return web.Response(text=response)
 
+with contextlib.redirect_stdout(new_target=sys.stderr):
+    app = web.Application()
+    handler = Handler()
+    handle = handler.handle
+    app.add_routes([web.get("/", handle), web.get("/delay/{delay}", handle)])
 
-app = web.Application()
-handler = Handler()
-handle = handler.handle
-app.add_routes([web.get("/", handle), web.get("/delay/{delay}", handle)])
-
-web.run_app(app)
+    web.run_app(app)

@@ -20,7 +20,7 @@ def _reactor():
 def _server():
     # TODO Replace subprocess with reactor
     command = ["python", config.TEST_DIR / "server.py"]
-    proc = subprocess.Popen(command)
+    proc = subprocess.Popen(command, stderr=subprocess.PIPE)
     time.sleep(1)
     yield
     proc.terminate()
