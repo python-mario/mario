@@ -24,7 +24,7 @@ appdirs = "*"
 toml = "*"
 
 [tool.poetry.dev-dependencies]
-"flake8" = "*"
+
 bump2version = "*"
 coverage = "*"
 hypothesis = "*"
@@ -47,3 +47,7 @@ asks = "*"
 [tool.poetry.scripts]
 
 pype = 'pype:cli.cli'
+
+
+[tool.poetry.plugins.pype_plugins]
+"basic" = "pype.plugins"

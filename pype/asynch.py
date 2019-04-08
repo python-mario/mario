@@ -209,3 +209,10 @@ async def async_filter(
         nursery.start_soon(consume_input, nursery)
         yield receive_result
         nursery.cancel_scope.cancel()
+
+
+def make_async(f):
+    @functools.wraps(f)
+    async def wrap(*args, **kwargs):
+        return f(*args, **kwargs)
+    return wrap

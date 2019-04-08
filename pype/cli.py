@@ -6,6 +6,7 @@ from . import config
 from . import utils
 from . import _version
 from . import app
+from . import plug
 
 
 config.DEFAULTS.update(
@@ -31,31 +32,25 @@ def cli(**kwargs):
     pass
 
 
-subcommands = [
-    click.Command("map", short_help="Call <command> on each line of input."),
-    click.Command("apply", short_help="Call <command> on input as a sequence."),
-    click.Command(
-        "filter",
-        short_help="Call <command> on each line of input and exclude false values.",
-    ),
-    click.Command("eval", short_help="Call <command> without any input."),
-    click.Command(
-        "stack", short_help="Call <command> on input as a single concatenated string."
-    ),
-]
+def synth_to_click(syn):
 
 
-def build_callback(sub_command):
-    def callback(command):
-        return sub_command.name, command
 
-    return callback
+    callback = lambda: {'command': syn.prepend[0].body, 'name': syn.prepend[0].traversal_name}
+    return click.Command(
+        syn.name,
+        callback=callback,
+        short_help=syn.short_help,
+    )
 
 
-for subcommand in subcommands:
-    subcommand.params = [click.Argument(["command"])]
-    subcommand.callback = build_callback(subcommand)
-    cli.add_command(subcommand)
+for subcommand_name, subcommand in plug.global_registry.cli_functions.items():
+    cli.add_command(subcommand, name=subcommand_name)
+
+
+for synth_name, synth in plug.global_registry.synthetic_commands.items():
+    cli.add_command(synth_to_click(synth), name=synth_name)
+
 
 @cli.resultcallback()
 def cli_main(pairs, **kwargs):

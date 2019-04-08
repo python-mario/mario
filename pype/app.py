@@ -26,6 +26,9 @@ from typing import AsyncIterable
 from typing import AsyncIterator
 from typing import Optional
 from typing import List
+from typing import Dict
+from typing import Any
+
 
 import attr
 import parso
@@ -50,66 +53,74 @@ from . import config
 from . import utils
 from . import asynch
 from . import interpret
+from . import plug
+from . import interfaces
 
 
-async def program_runner(pairs, items, max_concurrent):
+@attr.dataclass
+class Context:
+    global_options: Dict[str, Any] = attr.ib(factory=dict)
+
+    async def call_traversal(
+        self,
+        traversal: interfaces.Traversal,
+        items: AsyncIterable,
+        stack: async_exit_stack.AsyncExitStack,
+    ):
+        runtime_parameters = {"items": items, "stack": stack}
+
+        calculated_params = traversal.plugin_object.calculate_more_params(traversal)
+
+        available_params = collections.ChainMap(
+            calculated_params,
+            runtime_parameters,
+            traversal.specific_invocation_params,
+            traversal.global_invocation_options.global_options,
+        )
+
+        args = {
+            param: available_params[param]
+            for param in traversal.plugin_object.required_parameters
+        }
+
+        return await traversal.plugin_object.traversal_function(**args)
+
+
+async def program_runner(
+    traversals: List[interfaces.Traversal], items: AsyncIterable, context: Context
+):
 
     async with async_exit_stack.AsyncExitStack() as stack:
-
-        for how, function in pairs:
-
-            if how == "map":
-                items = await stack.enter_async_context(
-                    asynch.async_map(function, items, max_concurrent)
-                )
-
-            elif how == "filter":
-                items = await stack.enter_async_context(
-                    asynch.async_filter(function, items, max_concurrent)
-                )
-
-            elif how == "apply":
-                items = asynch.AsyncIterableWrapper(
-                    [await function([x async for x in items])]
-                )
-
-            elif how == "eval":
-                items = asynch.AsyncIterableWrapper([await function(None)])
-
-            elif how == "stack":
-                items = asynch.AsyncIterableWrapper(
-                    [await function("".join([x + "\n" async for x in items]))]
-                )
-
-            else:
-                raise NotImplementedError(how)
+        for traversal in traversals:
+            items = await context.call_traversal(traversal, items, stack)
 
         return stack.pop_all(), items
 
 
-async def async_main(
-    pairs,
-    max_concurrent=config.DEFAULTS["max_concurrent"],
-    exec_before=config.DEFAULTS["exec_before"],
-    autocall=config.DEFAULTS["autocall"],
-):
+async def async_main(basic_traversals, **kwargs):
     stream = trio._unix_pipes.PipeReceiveStream(os.dup(0))
     receiver = asynch.TerminatedFrameReceiver(stream, b"\n")
-    result = (item.decode() async for item in receiver)
+    items = (item.decode() async for item in receiver)
 
-    global_namespace = interpret.build_global_namespace(exec_before)
+    global_context = Context(plug.global_registry.global_options.copy())
+    global_context.global_options.update(config.DEFAULTS)
+    global_context.global_options.update(kwargs)
 
-    pairs = [
-        (
-            how,
-            interpret.build_function(
-                what, global_namespace, autocall=(False if how == "eval" else autocall)
-            ),
+    global_context.global_options[
+        "global_namespace"
+    ] = interpret.build_global_namespace(global_context.global_options["exec_before"])
+
+    traversals = []
+    for d in basic_traversals:
+
+        traversal = interfaces.Traversal(
+            global_invocation_options=global_context,
+            specific_invocation_params=d,
+            plugin_object=plug.global_registry.traversals[d["name"]],
         )
-        for how, what in pairs
-    ]
+        traversals.append(traversal)
 
-    stack, items = await program_runner(pairs, result, max_concurrent)
+    stack, items = await program_runner(traversals, items, global_context)
 
     async with stack:
         async for item in items:

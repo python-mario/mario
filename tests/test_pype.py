@@ -52,7 +52,7 @@ def test_raises_on_nonexistent_option(option, runner):
 
 
 def test_eval(capsys):
-    pype.app.main([("eval", "1+1")])
+    pype.app.main([{"name": "eval", "command": "1+1"}])
     assert capsys.readouterr().out == "2\n"
 
 

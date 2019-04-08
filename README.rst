@@ -186,6 +186,32 @@ then just use ``pype`` as normal ::
    <built-in function len>
 
 
+Synthetic commands
+~~~~~~~~~~~~~~~~~~
+
+Define new commands in your config file which provide shortcuts to other commands. For example, this config adds a ``jsonl`` command for reading jsonlines streams into Python objects, by calling calling out to the ``map`` traversal. ::
+
+
+
+   [[commands]]
+
+   name = "jsonl"
+   short_help = "Load jsonlines into Python objects"
+
+   [[commands.prepend]]
+
+   traversal = "map"
+   body = "json.loads ! attr.make_class('X', list(x.keys()))(**x)"
+
+
+Now we can use it like a regular command: ::
+
+    $ pype jsonl  <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
+    X(a=1, b=2)
+    X(a=5, b=9)
+
+
+
 Installation
 ============
 

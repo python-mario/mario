@@ -8,9 +8,13 @@ from . import utils
 DEFAULTS = {"max_concurrent": 5, "exec_before": None, "autocall": True}
 
 
+def get_config_dir():
+    return pathlib.Path(appdirs.user_config_dir(utils.NAME))
+
+
 def load_config(dir_path=None):
     if dir_path is None:
-        config_dir = pathlib.Path(appdirs.user_config_dir(utils.NAME))
+        config_dir = get_config_dir()
     else:
         config_dir = pathlib.Path(dir_path)
 

@@ -1,0 +1,202 @@
+import pathlib
+import inspect
+import types
+import importlib
+import importlib.util
+
+
+from typing import List
+from typing import Dict
+from typing import Iterable
+from typing import Any
+
+import attr
+import pkg_resources
+
+from pype import asynch
+from pype import interpret
+from pype import utils
+from pype import config
+
+
+@attr.dataclass
+class PluginObject:
+    name: str
+    traversal_function: types.FunctionType
+    required_parameters: List[str]
+    calculate_more_params: types.FunctionType = attr.ib(default=lambda x: {})
+
+
+@attr.dataclass
+class SyntheticComponent:
+    traversal_name: str
+
+    body: str
+
+
+@attr.dataclass
+class SyntheticCommand:
+    name: str
+    prepend: List[SyntheticComponent]
+    short_help: str
+
+
+NO_DEFAULT = attr.make_class("NO_DEFAULT", [])()
+
+
+@attr.dataclass
+class GlobalOption:
+    name: str
+    type: type
+    default: type(NO_DEFAULT)
+
+
+class Registry:
+    def __init__(
+        self,
+        traversals=None,
+        global_options=None,
+        cli_functions=None,
+        synthetic_commands=None,
+    ):
+        self.traversals: Dict[str, PluginObject] = traversals or {}
+        self.global_options: Dict[str, GlobalOption] = global_options or {}
+        self.cli_functions: Dict[str, Any] = cli_functions or {}
+        self.synthetic_commands: Dict[str, SyntheticCommand] = synthetic_commands or {}
+
+    def register(self, name=None, params=None):
+        def wrap(function):
+            if name is None:
+                registered_name = function.__name__
+            else:
+                registered_name = name
+
+            self.traversals[registered_name] = PluginObject(
+                registered_name, function, params
+            )
+            return function
+
+        return wrap
+
+    def add_traversal(self, name=None, calculate_more_params=lambda x: {}):
+        def wrap(function):
+
+            if name is None:
+                registered_name = function.__name__
+            else:
+                registered_name = name
+
+            params = [param for param in inspect.signature(function).parameters.keys()]
+            self.traversals[registered_name] = PluginObject(
+                registered_name, function, params, calculate_more_params
+            )
+            return function
+
+        return wrap
+
+    def add_cli(self, name=None):
+        def wrap(function):
+            if name is None:
+                registered_name = function.__name__
+            else:
+                registered_name = name
+
+            self.cli_functions[registered_name] = function
+
+            return function
+
+        return wrap
+
+
+# Currently, pype reserves `function`, `command`, `stack`, `items`, `global_namespace`.
+# These could all be provided in a namespace object.
+
+
+def plugin_module_paths() -> List[str]:
+    return [
+        entry_point.module_name + "." + entry_point.name
+        for entry_point in pkg_resources.iter_entry_points(f"{utils.NAME}_plugins")
+    ]
+
+
+def collect_modules(import_paths: Iterable[str]) -> List[types.ModuleType]:
+    modules = []
+    for path in import_paths:
+        modules.append(importlib.import_module(path))
+    return modules
+
+
+def combine_registries(registries):
+    global_options = {}
+    traversals = {}
+    cli_functions = {}
+    synthetic_commands = {}
+    for registry in registries:
+        traversals.update(registry.traversals)
+        global_options.update(registry.global_options)
+        cli_functions.update(registry.cli_functions)
+        synthetic_commands.update(registry.synthetic_commands)
+    return Registry(traversals, global_options, cli_functions, synthetic_commands)
+
+
+def make_plugin_registry():
+    plugin_modules = collect_modules(plugin_module_paths())
+    plugin_registries = [module.registry for module in plugin_modules]
+
+    return combine_registries(plugin_registries)
+
+
+def make_config_registry():
+    modules = import_config_dir_modules()
+    return combine_registries(module.registry for module in modules)
+
+
+def load_module(path):
+    module_name = "user_config." + path.with_suffix("").name
+    spec = importlib.util.spec_from_file_location(module_name, str(path))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def import_config_dir_modules(user_config_dir=None):
+    if user_config_dir is None:
+        user_config_dir = config.get_config_dir()
+
+    modules = []
+    for path in (pathlib.Path(user_config_dir) / "modules").rglob("*.py"):
+        module = load_module(path)
+        modules.append(module)
+
+    return modules
+
+
+def make_global_registry():
+    return combine_registries(
+        [
+            make_plugin_registry(),
+            make_config_registry(),
+            make_config_synthetic_commands_registry(),
+        ]
+    )
+
+
+def make_synthetic_command(cmd,):
+    components = [SyntheticComponent(d["traversal"], d["body"]) for d in cmd['prepend']]
+    return SyntheticCommand(cmd["name"], components, cmd["short_help"], )
+
+
+def make_synthetic_commands(conf):
+    synth_commands = []
+    for cmd in conf["commands"]:
+        synth_commands.append(make_synthetic_command(cmd))
+    return synth_commands
+
+
+def make_config_synthetic_commands_registry():
+    conf = config.load_config()
+    commands = make_synthetic_commands(conf)
+    return Registry(synthetic_commands={c.name: c for c in commands})
+
+
+global_registry = make_global_registry()
