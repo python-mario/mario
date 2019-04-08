@@ -51,9 +51,13 @@ def test_raises_on_nonexistent_option(option, runner):
     assert_exception_equal(result.exception, SystemExit(2))
 
 
-def test_eval(capsys):
+def test_eval_main(capsys):
     pype.app.main([[{"name": "eval", "command": "1+1"}]])
     assert capsys.readouterr().out == "2\n"
+
+
+def test_eval_cli():
+    assert tools.run(["eval", "1+1"]).decode() == "2\n"
 
 
 def test_stack():
