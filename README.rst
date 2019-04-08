@@ -10,24 +10,24 @@ Basics
 
 At the command prompt, use ``pype`` to act on each item in the file with python commands: ::
 
-  $ printf 'abc' | pype map x.upper()
+  $ pype map x.upper() <<<'abc'
 
   ABC
 
 
 Chain python functions together with ``!``: ::
 
-  $ printf 'Hello'  | pype map 'x.upper() ! len(x)'
+  $ pype map 'x.upper() ! len(x)' <<<hello
 
   5
 
 Use ``x`` as a placeholder for the input at each stage: ::
 
-  $ printf 'Hello World'  | pype map ' x.split() ! x[0].upper() + "!"'
+  $ pype map ' x.split() ! x[0].upper() + "!"' <<<'Hello world'
 
   HELLO!
 
-  $ printf 'Hello World'  | pype map 'x.split() ! x[0].upper() + "!" ! x.replace("H", "J")'
+  $ pype map 'x.split() ! x[0].upper() + "!" ! x.replace("H", "J")' <<<'Hello world'
 
   JELLO!
 
@@ -64,7 +64,7 @@ _______
   Use ``map`` to act on each input item. ::
 
 
-   $  printf 'a\nbb\n' | pype map 'x * 2'
+    $ pype map 'x * 2' <<<'a\nbb\n'
    aa
    bbbb
 
@@ -74,7 +74,7 @@ __________
 
 Use ``filter`` to evaluate a condition on each line of input and exclude false values. ::
 
-   $ printf 'a\nbb\nccc\n' | pype filter 'len(x) > 1'
+   $  pype filter 'len(x) > 1' <<<'a\nbb\nccc\n'
    bb
    ccc
 
@@ -84,7 +84,7 @@ _________
 
 Use ``apply`` to act on the sequence of items. ::
 
-    $ printf 'a\nbb\n' | pype apply 'len(x)'
+    $   pype apply 'len(x)' <<<'a\nbb\n'
     2
 
 
@@ -93,7 +93,7 @@ _________
 
 Use ``stack`` to treat the input as a single string, including newlines. ::
 
-    $ printf 'a\nbb\n' | pype stack 'len(x)'
+    $  pype stack 'len(x)' <<<'a\nbb\n'
     5
 
 Use ``eval`` to evaluate a python expression without any input. ::
@@ -101,50 +101,56 @@ Use ``eval`` to evaluate a python expression without any input. ::
    $ pype eval 1+1
    2
 
-Options
-~~~~~~~
 
-``--autocall``
-______________
+Autocall
+~~~~~~~~
 
-If you're tired of writing all those ``f(x)``, use ``--autocall``, and just write ``f`` without the ``(x)``. ::
+You don't need to explicitly call the function with ``f(x)``; just use ``f``. For example, instead of ::
 
-    $ printf 'hello\neverybody\n' | pype --autocall map 'len'
-    5
-    9
+  $ pype map 'len(x)' <<<'a\nbb'
+  5
+
+try ::
+
+  $ pype map len <<<'a\nbb'
+  5
+
 
 
 Async
 ~~~~~
 
-Making sequential requests is slow. These requests take 10 seconds to complete. ::
+Making sequential requests is slow. These requests take 18 seconds to complete. ::
 
-  $ time pype map 'str.strip ! requests.get ! x.text'  < urls.txt
+   $ time pype map 'requests.get ! x.text ! len' apply max <<EOF
+   http://httpbin.org/delay/5
+   http://httpbin.org/delay/1
+   http://httpbin.org/delay/4
+   http://httpbin.org/delay/3
+   http://httpbin.org/delay/4
+   EOF
 
-  Hello, Requester_254. You are client number 8061 for this server.
-  Hello, Requester_083. You are client number 8062 for this server.
-  Hello, Requester_128. You are client number 8063 for this server.
-  Hello, Requester_064. You are client number 8064 for this server.
-  Hello, Requester_276. You are client number 8065 for this server.
+   302
 
-  real	0m10.640s
-  user	0m0.548s
-  sys	0m0.022s
+   0.61s user
+   0.06s system
+   19.612 total
 
+  Concurrent requests can go much faster. The same requests now take only 5 seconds. Just use ``await async_function`` to get concurrency out of the box. ::
 
-Making concurrent requests is much faster: ::
+   $ time python3.7 -m poetry run python -m pype map 'await asks.get ! x.text ! len' apply max <<EOF
+   http://httpbin.org/delay/5
+   http://httpbin.org/delay/1
+   http://httpbin.org/delay/4
+   http://httpbin.org/delay/3
+   http://httpbin.org/delay/4
+   EOF
 
-   $ time pype map 'x.strip() ! await asks.get(x) ! x.text'  < urls.txt
+   297
 
-   Hello, Requester_254. You are client number 8025 for this server.
-   Hello, Requester_083. You are client number 8025 for this server.
-   Hello, Requester_128. You are client number 8025 for this server.
-   Hello, Requester_064. You are client number 8025 for this server.
-   Hello, Requester_276. You are client number 8025 for this server.
-
-   real	0m2.626s
-   user	0m0.574s
-   sys	0m0.044s
+   0.57s user
+   0.08s system
+   5.897 total
 
 
 Configuration
