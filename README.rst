@@ -156,27 +156,26 @@ Making sequential requests is slow. These requests take 18 seconds to complete. 
 Streaming
 ~~~~~~~~~
 
-``map`` and ``filter`` values are handled in streaming fashion. For example, making concurrent requests, the responses are printed out one at a time, immediately when each arrives. ::
+``map`` and ``filter`` values are handled in streaming fashion, while retaining order.
 
+Making concurrent requests, each response is printed one at a time, as soon as (1) it is ready and (2) all of the preceding requests have already been handled.
+
+For example, the ``3 seconds`` item is ready before the preceding ``4 seconds`` item, but it is held until the ``4 seconds`` is ready because ``4 seconds`` was started first, so the ordering is maintained.
+
+::
 
     $ time pype --exec-before 'import datetime; now=datetime.datetime.utcnow; START_TIME=now(); print("Elapsed time | Response size")' map 'await asks.get !  f"{(now() - START_TIME).seconds} seconds    | {len(x.content)} bytes"'  <<EOF
-   http://httpbin.org/delay/1
-   http://httpbin.org/delay/2
-   http://httpbin.org/delay/4
-   http://httpbin.org/delay/3
-   http://httpbin.org/delay/4
-   EOF
+    http://httpbin.org/delay/1
+    http://httpbin.org/delay/2
+    http://httpbin.org/delay/4
+    http://httpbin.org/delay/3
+    EOF
+    Elapsed time | Response size
+    1 seconds    | 297 bytes
+    2 seconds    | 297 bytes
+    4 seconds    | 297 bytes
+    3 seconds    | 297 bytes
 
-   Elapsed time | Response size
-   1 seconds    | 297 bytes       # Printed as soon as this response arrives
-   2 seconds    | 297 bytes
-   4 seconds    | 297 bytes
-   3 seconds    | 297 bytes
-   4 seconds    | 297 bytes
-
-   0.58s user
-   0.07s system
-   4.836 total
 
 
 Configuration
