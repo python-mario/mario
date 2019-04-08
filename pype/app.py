@@ -56,6 +56,7 @@ from . import interpret
 from . import plug
 from . import interfaces
 
+
 async def call_traversal(
     self,
     traversal: interfaces.Traversal,
@@ -82,7 +83,9 @@ async def call_traversal(
 
 
 async def program_runner(
-    traversals: List[interfaces.Traversal], items: AsyncIterable, context: interfaces.Context
+    traversals: List[interfaces.Traversal],
+    items: AsyncIterable,
+    context: interfaces.Context,
 ):
 
     async with async_exit_stack.AsyncExitStack() as stack:

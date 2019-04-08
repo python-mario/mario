@@ -29,7 +29,8 @@ class Handler:
         print(
             json.dumps(
                 dict(message="receive", id=ID.get(), elapsed=elapsed, delay=delay)
-            ), file=sys.stderr
+            ),
+            file=sys.stderr,
         )
         await asyncio.sleep(int(delay))
         elapsed = (datetime.datetime.utcnow() - START_TIME).seconds

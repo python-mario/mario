@@ -8,7 +8,6 @@ import attr
 from . import plug
 
 
-
 @attr.dataclass(init=False)
 class Context:
     global_options: Dict[str, Any] = attr.ib(factory=dict)
@@ -18,7 +17,6 @@ class Context:
             self.global_options = {}
         else:
             self.global_options = global_options
-
 
 
 @attr.dataclass
