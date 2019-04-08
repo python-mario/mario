@@ -56,43 +56,38 @@ from . import interpret
 from . import plug
 from . import interfaces
 
+async def call_traversal(
+    self,
+    traversal: interfaces.Traversal,
+    items: AsyncIterable,
+    stack: async_exit_stack.AsyncExitStack,
+):
+    runtime_parameters = {"items": items, "stack": stack}
 
-@attr.dataclass
-class Context:
-    global_options: Dict[str, Any] = attr.ib(factory=dict)
+    calculated_params = traversal.plugin_object.calculate_more_params(traversal)
 
-    async def call_traversal(
-        self,
-        traversal: interfaces.Traversal,
-        items: AsyncIterable,
-        stack: async_exit_stack.AsyncExitStack,
-    ):
-        runtime_parameters = {"items": items, "stack": stack}
+    available_params = collections.ChainMap(
+        calculated_params,
+        runtime_parameters,
+        traversal.specific_invocation_params,
+        traversal.global_invocation_options.global_options,
+    )
 
-        calculated_params = traversal.plugin_object.calculate_more_params(traversal)
+    args = {
+        param: available_params[param]
+        for param in traversal.plugin_object.required_parameters
+    }
 
-        available_params = collections.ChainMap(
-            calculated_params,
-            runtime_parameters,
-            traversal.specific_invocation_params,
-            traversal.global_invocation_options.global_options,
-        )
-
-        args = {
-            param: available_params[param]
-            for param in traversal.plugin_object.required_parameters
-        }
-
-        return await traversal.plugin_object.traversal_function(**args)
+    return await traversal.plugin_object.traversal_function(**args)
 
 
 async def program_runner(
-    traversals: List[interfaces.Traversal], items: AsyncIterable, context: Context
+    traversals: List[interfaces.Traversal], items: AsyncIterable, context: interfaces.Context
 ):
 
     async with async_exit_stack.AsyncExitStack() as stack:
         for traversal in traversals:
-            items = await context.call_traversal(traversal, items, stack)
+            items = await call_traversal(context, traversal, items, stack)
 
         return stack.pop_all(), items
 
@@ -102,7 +97,7 @@ async def async_main(basic_traversals, **kwargs):
     receiver = asynch.TerminatedFrameReceiver(stream, b"\n")
     items = (item.decode() async for item in receiver)
 
-    global_context = Context(plug.global_registry.global_options.copy())
+    global_context = interfaces.Context(plug.global_registry.global_options.copy())
     global_context.global_options.update(config.DEFAULTS)
     global_context.global_options.update(kwargs)
 
