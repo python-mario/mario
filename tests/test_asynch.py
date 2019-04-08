@@ -37,9 +37,9 @@ class Timer:
 
 
 def test_cli_async_chain_map_apply(runner, reactor, server):
-    base_url = "http://localhost:8080/{}\n"
-    letters = string.ascii_uppercase
-    in_stream = "".join(base_url.format(c) for c in letters)
+    base_url = "http://localhost:8080/?delay={}\n"
+
+    in_stream = "".join(base_url.format(i) for i in [1, 2, 3, 4, 5] * 9)
 
     args = [
         "-m",
@@ -47,16 +47,16 @@ def test_cli_async_chain_map_apply(runner, reactor, server):
         "--max-concurrent",
         "100",
         "map",
-        "await asks.get(x) ! x.text",
+        "await asks.get(x) ! x.json()",
         "filter",
-        "'Q' in x or 'T' in x",
+        'x["id"] % 6 == 0',
+        "map",
+        "x['id']",
         "apply",
         "max(x)",
-        "map",
-        "x.upper()",
     ]
 
-    expected = "HELLO, T. YOU ARE CLIENT NUMBER 0 FOR THIS SERVER.\n"
+    expected = "42\n"
 
     with Timer() as t:
         output = subprocess.check_output(
@@ -64,5 +64,5 @@ def test_cli_async_chain_map_apply(runner, reactor, server):
         ).decode()
 
     assert output == expected
-    limit_seconds = 4.0
+    limit_seconds = 6.0
     assert t.elapsed < limit_seconds

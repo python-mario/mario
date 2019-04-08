@@ -3,6 +3,8 @@ import asyncio
 import datetime
 import contextvars
 import itertools
+import sys
+
 
 from aiohttp import web
 import attr
@@ -27,14 +29,14 @@ class Handler:
         print(
             json.dumps(
                 dict(message="receive", id=ID.get(), elapsed=elapsed, delay=delay)
-            )
+            ), file=sys.stderr
         )
         await asyncio.sleep(int(delay))
         elapsed = (datetime.datetime.utcnow() - START_TIME).seconds
         response = json.dumps(
             dict(message="respond", id=ID.get(), elapsed=elapsed, delay=delay)
         )
-        print(response)
+        print(response, file=sys.stderr)
 
         return web.Response(text=response)
 
