@@ -138,7 +138,7 @@ Making sequential requests is slow. These requests take 18 seconds to complete. 
 
   Concurrent requests can go much faster. The same requests now take only 5 seconds. Just use ``await async_function`` to get concurrency out of the box. ::
 
-   $ time python3.7 -m poetry run python -m pype map 'await asks.get ! x.text ! len' apply max <<EOF
+   $ time pype map 'await asks.get ! x.text ! len' apply max <<EOF
    http://httpbin.org/delay/5
    http://httpbin.org/delay/1
    http://httpbin.org/delay/4
@@ -151,6 +151,32 @@ Making sequential requests is slow. These requests take 18 seconds to complete. 
    0.57s user
    0.08s system
    5.897 total
+
+
+Streaming
+~~~~~~~~~
+
+``map`` and ``filter`` values are handled in streaming fashion. For example, making concurrent requests, the responses are printed out one at a time, immediately when each arrives. ::
+
+
+    $ time pype --exec-before 'import datetime; now=datetime.datetime.utcnow; START_TIME=now(); print("Elapsed time | Response size")' map 'await asks.get !  f"{(now() - START_TIME).seconds} seconds    | {len(x.content)} bytes"'  <<EOF
+   http://httpbin.org/delay/1
+   http://httpbin.org/delay/2
+   http://httpbin.org/delay/4
+   http://httpbin.org/delay/3
+   http://httpbin.org/delay/4
+   EOF
+
+   Elapsed time | Response size
+   1 seconds    | 297 bytes       # Printed as soon as this response arrives
+   2 seconds    | 297 bytes
+   4 seconds    | 297 bytes
+   3 seconds    | 297 bytes
+   4 seconds    | 297 bytes
+
+   0.58s user
+   0.07s system
+   4.836 total
 
 
 Configuration
@@ -248,5 +274,5 @@ Related work
 * https://github.com/Russell91/pythonpy
 * http://gfxmonk.net/dist/doc/piep/
 * https://spy.readthedocs.io/en/latest/intro.html
-* https://github.com/ksamuel/Pyped
+pp* https://github.com/ksamuel/Pyped
 * https://github.com/ircflagship2/pype
