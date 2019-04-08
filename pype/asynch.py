@@ -254,9 +254,70 @@ async def async_filter(
         nursery.cancel_scope.cancel()
 
 
+SENTINEL = object()
+
+
+@async_generator.asynccontextmanager
+async def async_reduce(
+    function: Callable[[T], Awaitable[U]],
+    iterable: AsyncIterable[T],
+    max_concurrent,
+    initializer=SENTINEL,
+) -> AsyncIterator[AsyncIterable[U]]:
+    send_result, receive_result = trio.open_memory_channel[U](0)
+    limiter = trio.CapacityLimiter(max_concurrent)
+
+    collected_result = initializer
+
+    async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
+        nonlocal collected_result
+
+        input_item = await wait_for(item)
+
+        if collected_result is SENTINEL:
+            # We are working on the first item, and initializer was not set.
+            collected_result = input_item
+
+        else:
+
+            maybe_coroutine_result = function((collected_result, input_item))
+            if isinstance(maybe_coroutine_result, types.CoroutineType):
+                async with limiter:
+                    result = await maybe_coroutine_result
+            else:
+                result = maybe_coroutine_result
+
+            collected_result = result
+
+        await prev_done.wait()
+        self_done.set()
+
+    async def consume_input(nursery) -> None:
+        prev_done = trio.Event()
+        prev_done.set()
+        async for item in iterable:
+            self_done = trio.Event()
+            nursery.start_soon(wrapper, prev_done, self_done, item, name=function)
+            prev_done = self_done
+        await prev_done.wait()
+        await send_result.send(collected_result)
+        await send_result.aclose()
+
+    async with trio.open_nursery() as nursery:
+        nursery.start_soon(consume_input, nursery)
+        yield receive_result
+        nursery.cancel_scope.cancel()
+
+
 def make_async(f):
     @functools.wraps(f)
     async def wrap(*args, **kwargs):
         return f(*args, **kwargs)
 
     return wrap
+
+
+async def wait_for(x):
+    if isinstance(x, types.CoroutineType):
+        return await x
+    return x

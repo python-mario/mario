@@ -1,3 +1,4 @@
+import json
 import subprocess
 import sys
 import time
@@ -108,4 +109,30 @@ def test_cli_async_map_unordered(runner, reactor, server, capsys):
 
     assert output == expected
     limit_seconds = 6.0
+    assert t.elapsed < limit_seconds
+
+
+def test_cli_async_reduce(runner, reactor, server, capsys):
+    base_url = "http://localhost:8080/?delay={}\n"
+
+    in_stream = "".join(base_url.format(i) for i in [6, 2, 1])
+
+
+
+    args = [
+        "map",
+        'await asks.get !  f"{types.SimpleNamespace(**x.json()).delay}"',
+        "map",
+        "json.loads",
+        "reduce",
+        "toolz.curry(operator.truediv)(*x)",
+    ]
+
+    expected = "3.0\n"
+
+    with Timer() as t:
+        output = tools.run(args, input=in_stream.encode()).decode()
+
+    assert output == expected
+    limit_seconds = 7.0
     assert t.elapsed < limit_seconds

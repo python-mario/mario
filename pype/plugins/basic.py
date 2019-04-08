@@ -59,6 +59,12 @@ async def stack(function, items):
         [await function("".join([x + "\n" async for x in items]))]
     )
 
+@registry.add_traversal("reduce", calculate_more_params=calculate_function)
+async def reduce(function, items, stack, max_concurrent):
+    return await stack.enter_async_context(
+        asynch.async_reduce(function, items, max_concurrent)
+    )
+
 
 subcommands = [
     click.Command("map", short_help="Call <command> on each line of input."),
@@ -75,6 +81,7 @@ subcommands = [
         "map-unordered",
         short_help="Call <command> on each line of input, ignoring order of input items.",
     ),
+    click.Command('reduce', short_help='Reduce a sequence with a <command>')
 ]
 
 
