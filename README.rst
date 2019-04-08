@@ -226,7 +226,7 @@ Define new commands in your config file which provide aliases to other commands.
    [[alias]]
 
    name = "jsonl"
-   short_help = "Load jsonlines into python objects"
+   short_help = "Load jsonlines into python objects."
 
    [[alias.stage]]
 
@@ -242,6 +242,12 @@ Now we can use it like a regular command: ::
     $ pype jsonl  <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
     X(a=1, b=2)
     X(a=5, b=9)
+
+
+The new command ``jsonl`` can be used in pipelines as well. To get the maximum value in a sequence of jsonlines objects. ::
+
+   $ pype jsonl map 'x.a' apply max <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
+   5
 
 
 
