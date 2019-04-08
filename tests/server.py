@@ -42,6 +42,7 @@ class Handler:
 
         return web.Response(text=response)
 
+
 with contextlib.redirect_stdout(new_target=sys.stderr):
     app = web.Application()
     handler = Handler()

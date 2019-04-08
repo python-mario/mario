@@ -81,7 +81,27 @@ def test_cli_async_map(runner, reactor, server, capsys):
         'await asks.get !  f"{types.SimpleNamespace(**x.json()).delay}"',
     ]
 
-    expected = '1\n1\n5\n1\n'
+    expected = "1\n1\n5\n1\n"
+
+    with Timer() as t:
+        output = tools.run(args, input=in_stream.encode()).decode()
+
+    assert output == expected
+    limit_seconds = 6.0
+    assert t.elapsed < limit_seconds
+
+
+def test_cli_async_map_unordered(runner, reactor, server, capsys):
+    base_url = "http://localhost:8080/?delay={}\n"
+
+    in_stream = "".join(base_url.format(i) for i in [5, 2, 3, 1, 4])
+
+    args = [
+        "map-unordered",
+        'await asks.get !  f"{types.SimpleNamespace(**x.json()).delay}"',
+    ]
+
+    expected = "1\n2\n3\n4\n5\n"
 
     with Timer() as t:
         output = tools.run(args, input=in_stream.encode()).decode()

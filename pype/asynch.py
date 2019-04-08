@@ -60,6 +60,13 @@ counter = itertools.count()
 _RECEIVE_SIZE = 4096  # pretty arbitrary
 
 
+async def aenumerate(items, start=0):
+    i = start
+    async for x in items:
+        yield i, x
+        i += 1
+
+
 class TerminatedFrameReceiver:
     """Parse frames out of a Trio stream, where each frame is terminated by a
     fixed byte sequence.
@@ -165,6 +172,42 @@ async def async_map(
             nursery.start_soon(wrapper, prev_done, self_done, item, name=function)
             prev_done = self_done
         await prev_done.wait()
+        await send_result.aclose()
+
+    async with trio.open_nursery() as nursery:
+        nursery.start_soon(consume_input, nursery)
+        yield receive_result
+        nursery.cancel_scope.cancel()
+
+
+@async_generator.asynccontextmanager
+async def async_map_unordered(
+    function: Callable[[T], Awaitable[U]], iterable: AsyncIterable[T], max_concurrent
+) -> AsyncIterator[AsyncIterable[U]]:
+    send_result, receive_result = trio.open_memory_channel[U](0)
+    limiter = trio.CapacityLimiter(max_concurrent)
+    remaining_tasks = set()
+
+    async def wrapper(task_id: int, item: T) -> None:
+        maybe_coroutine_result = function(item)
+        if isinstance(maybe_coroutine_result, types.CoroutineType):
+            async with limiter:
+                result = await maybe_coroutine_result
+        else:
+            result = maybe_coroutine_result
+
+        await send_result.send(result)
+        remaining_tasks.remove(task_id)
+
+    async def consume_input(nursery) -> None:
+
+        async for task_id, item in aenumerate(iterable):
+            remaining_tasks.add(task_id)
+            nursery.start_soon(wrapper, task_id, item, name=function)
+
+        while remaining_tasks:
+            await trio.sleep(0)
+
         await send_result.aclose()
 
     async with trio.open_nursery() as nursery:

@@ -27,6 +27,13 @@ async def map(function, items, stack, max_concurrent):
     )
 
 
+@registry.add_traversal("map_unordered", calculate_more_params=calculate_function)
+async def map_unordered(function, items, stack, max_concurrent):
+    return await stack.enter_async_context(
+        asynch.async_map_unordered(function, items, max_concurrent)
+    )
+
+
 @registry.add_traversal("filter", calculate_more_params=calculate_function)
 async def filter(function, items, stack, max_concurrent):
     return await stack.enter_async_context(
@@ -64,12 +71,16 @@ subcommands = [
     click.Command(
         "stack", short_help="Call <command> on input as a single concatenated string."
     ),
+    click.Command(
+        "map-unordered",
+        short_help="Call <command> on each line of input, ignoring order of input items.",
+    ),
 ]
 
 
 def build_callback(sub_command):
     def callback(command):
-        return [{"name": sub_command.name, "command": command}]
+        return [{"name": sub_command.name.replace("-", "_"), "command": command}]
 
     return callback
 
