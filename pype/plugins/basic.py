@@ -81,7 +81,7 @@ subcommands = [
         "map-unordered",
         short_help="Call <command> on each line of input, ignoring order of input items.",
     ),
-    click.Command('reduce', short_help='Reduce a sequence with a <command>')
+    click.Command('reduce', short_help='[UNSTABLE] Reduce a sequence with a <command>.')
 ]
 
 
