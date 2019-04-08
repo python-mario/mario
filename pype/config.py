@@ -5,7 +5,12 @@ import toml
 
 from . import utils
 
-DEFAULTS = {"max_concurrent": 5, "exec_before": None, "autocall": True}
+DEFAULTS = {
+    "max_concurrent": 5,
+    "exec_before": None,
+    "autocall": True,
+    "base_exec_before": None,
+}
 
 
 def get_config_dir():

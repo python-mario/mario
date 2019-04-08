@@ -25,6 +25,11 @@ CONTEXT_SETTINGS = {"default_map": config.DEFAULTS}
     default=config.DEFAULTS["exec_before"],
 )
 @click.option(
+    "--base-exec-before",
+    help="Python source code to be executed before any stage; typically set in the user config file. Combined with --exec-before value. ",
+    default=config.DEFAULTS["base_exec_before"],
+)
+@click.option(
     "--autocall/--no-autocall", is_flag=True, default=config.DEFAULTS["autocall"]
 )
 @click.version_option(_version.__version__, prog_name="pype")

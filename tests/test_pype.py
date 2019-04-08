@@ -108,3 +108,19 @@ def test_config_file(tmp_path):
     env.update({f"{utils.NAME}_CONFIG_DIR".upper().encode(): str(tmp_path).encode()})
     output = tools.run(args, input=stdin, env=env).decode()
     assert output.startswith("Counter")
+
+
+def test_base_exec_before(tmp_path):
+    config_body = """
+    base_exec_before = 's = "value "'
+    """
+    config_file_path = tmp_path / "config.toml"
+
+    config_file_path.write_text(config_body)
+
+    args = ["--exec-before", "t = 'is '", "map", "s+t+x"]
+    stdin = "ab\ncd\n".encode()
+    env = dict(os.environ)
+    env.update({f"{utils.NAME}_CONFIG_DIR".upper().encode(): str(tmp_path).encode()})
+    output = tools.run(args, input=stdin, env=env).decode()
+    assert output == """value is ab\nvalue is cd\n"""

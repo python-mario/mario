@@ -103,7 +103,13 @@ async def async_main(basic_traversals, **kwargs):
 
     global_context.global_options[
         "global_namespace"
-    ] = interpret.build_global_namespace(global_context.global_options["exec_before"])
+    ] = interpret.build_global_namespace(
+        global_context.global_options["base_exec_before"]
+    )
+
+    global_context.global_options["global_namespace"].update(
+        interpret.build_global_namespace(global_context.global_options["exec_before"])
+    )
 
     traversals = []
     for bt in basic_traversals:
