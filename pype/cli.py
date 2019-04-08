@@ -32,24 +32,21 @@ def cli(**kwargs):
     pass
 
 
-def synth_to_click(syn):
+def alias_to_click(alias):
 
-
-
-    callback = lambda: {'command': syn.prepend[0].body, 'name': syn.prepend[0].traversal_name}
-    return click.Command(
-        syn.name,
-        callback=callback,
-        short_help=syn.short_help,
-    )
+    callback = lambda: [
+        {"name": component.name, "command": component.arguments[0]}
+        for component in alias.components
+    ]
+    return click.Command(alias.name, callback=callback, short_help=alias.short_help)
 
 
 for subcommand_name, subcommand in plug.global_registry.cli_functions.items():
     cli.add_command(subcommand, name=subcommand_name)
 
 
-for synth_name, synth in plug.global_registry.synthetic_commands.items():
-    cli.add_command(synth_to_click(synth), name=synth_name)
+for alias_name, alias in plug.global_registry.aliases.items():
+    cli.add_command(alias_to_click(alias), name=alias_name)
 
 
 @cli.resultcallback()

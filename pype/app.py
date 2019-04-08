@@ -111,14 +111,14 @@ async def async_main(basic_traversals, **kwargs):
     ] = interpret.build_global_namespace(global_context.global_options["exec_before"])
 
     traversals = []
-    for d in basic_traversals:
-
-        traversal = interfaces.Traversal(
-            global_invocation_options=global_context,
-            specific_invocation_params=d,
-            plugin_object=plug.global_registry.traversals[d["name"]],
-        )
-        traversals.append(traversal)
+    for bt in basic_traversals:
+        for d in bt:
+            traversal = interfaces.Traversal(
+                global_invocation_options=global_context,
+                specific_invocation_params=d,
+                plugin_object=plug.global_registry.traversals[d["name"]],
+            )
+            traversals.append(traversal)
 
     stack, items = await program_runner(traversals, items, global_context)
 

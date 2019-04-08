@@ -28,16 +28,16 @@ class PluginObject:
 
 
 @attr.dataclass
-class SyntheticComponent:
-    traversal_name: str
-
-    body: str
+class AliasStage:
+    name: str
+    options: List[str]
+    arguments: List[str]
 
 
 @attr.dataclass
-class SyntheticCommand:
+class AliasCommand:
     name: str
-    prepend: List[SyntheticComponent]
+    components: List[AliasStage]
     short_help: str
 
 
@@ -53,16 +53,12 @@ class GlobalOption:
 
 class Registry:
     def __init__(
-        self,
-        traversals=None,
-        global_options=None,
-        cli_functions=None,
-        synthetic_commands=None,
+        self, traversals=None, global_options=None, cli_functions=None, aliases=None
     ):
         self.traversals: Dict[str, PluginObject] = traversals or {}
         self.global_options: Dict[str, GlobalOption] = global_options or {}
         self.cli_functions: Dict[str, Any] = cli_functions or {}
-        self.synthetic_commands: Dict[str, SyntheticCommand] = synthetic_commands or {}
+        self.aliases: Dict[str, AliasCommand] = aliases or {}
 
     def register(self, name=None, params=None):
         def wrap(function):
@@ -130,13 +126,13 @@ def combine_registries(registries):
     global_options = {}
     traversals = {}
     cli_functions = {}
-    synthetic_commands = {}
+    aliases = {}
     for registry in registries:
         traversals.update(registry.traversals)
         global_options.update(registry.global_options)
         cli_functions.update(registry.cli_functions)
-        synthetic_commands.update(registry.synthetic_commands)
-    return Registry(traversals, global_options, cli_functions, synthetic_commands)
+        aliases.update(registry.aliases)
+    return Registry(traversals, global_options, cli_functions, aliases)
 
 
 def make_plugin_registry():
@@ -173,30 +169,28 @@ def import_config_dir_modules(user_config_dir=None):
 
 def make_global_registry():
     return combine_registries(
-        [
-            make_plugin_registry(),
-            make_config_registry(),
-            make_config_synthetic_commands_registry(),
-        ]
+        [make_plugin_registry(), make_config_registry(), make_config_aliases_registry()]
     )
 
 
 def make_synthetic_command(cmd,):
-    components = [SyntheticComponent(d["traversal"], d["body"]) for d in cmd['prepend']]
-    return SyntheticCommand(cmd["name"], components, cmd["short_help"], )
+    components = [
+        AliasStage(d["name"], d["options"], d["arguments"]) for d in cmd["stage"]
+    ]
+    return AliasCommand(cmd["name"], components, cmd["short_help"])
 
 
-def make_synthetic_commands(conf):
+def make_aliases(conf):
     synth_commands = []
-    for cmd in conf["commands"]:
+    for cmd in conf["alias"]:
         synth_commands.append(make_synthetic_command(cmd))
     return synth_commands
 
 
-def make_config_synthetic_commands_registry():
+def make_config_aliases_registry():
     conf = config.load_config()
-    commands = make_synthetic_commands(conf)
-    return Registry(synthetic_commands={c.name: c for c in commands})
+    commands = make_aliases(conf)
+    return Registry(aliases={c.name: c for c in commands})
 
 
 global_registry = make_global_registry()

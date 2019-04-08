@@ -53,8 +53,6 @@ async def stack(function, items):
     )
 
 
-
-
 subcommands = [
     click.Command("map", short_help="Call <command> on each line of input."),
     click.Command("apply", short_help="Call <command> on input as a sequence."),
@@ -71,7 +69,7 @@ subcommands = [
 
 def build_callback(sub_command):
     def callback(command):
-        return {"name": sub_command.name, "command": command}
+        return [{"name": sub_command.name, "command": command}]
 
     return callback
 
