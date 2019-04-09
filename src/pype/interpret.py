@@ -172,16 +172,15 @@ def build_function(command, global_namespace, autocall):
 
     source = build_source(split_pipestring(command), autocall)
 
-    local_namespace = {}
-
-    exec(source, global_namespace, local_namespace)
-    function = local_namespace["_pype_runner"]
+    exec(source, global_namespace)
+    function = global_namespace["_pype_runner"]
     return Function(function, global_namespace, source)
 
 
 def build_global_namespace(source):
     if source is None:
         return {}
-    namespace = {}
-    exec(source, {}, namespace)
-    return namespace
+    global_namespace = {}
+    exec(source, global_namespace)
+
+    return global_namespace

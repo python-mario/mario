@@ -2,6 +2,7 @@
 
 from __future__ import generator_stop
 
+import textwrap
 import collections
 import os
 import string
@@ -124,3 +125,20 @@ def test_base_exec_before(tmp_path):
     env.update({f"{utils.NAME}_CONFIG_DIR".upper().encode(): str(tmp_path).encode()})
     output = tools.run(args, input=stdin, env=env).decode()
     assert output == """value is ab\nvalue is cd\n"""
+
+
+def test_exec_before():
+    exec_before = textwrap.dedent(
+        """\
+    import csv
+    def func(line):
+        return next(csv.reader([line]))
+    """
+    )
+
+    assert (
+        tools.run(
+            ["--exec-before", exec_before, "map", "func"], input=b"a,b\n"
+        ).decode()
+        == "['a', 'b']\n"
+    )
