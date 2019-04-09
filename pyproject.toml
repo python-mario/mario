@@ -44,6 +44,7 @@ twisted = "*"
 asks = "*"
 cuvner = "*"
 pytest-cov = "^2.6"
+tox = "*"
 
 [tool.poetry.scripts]
 
