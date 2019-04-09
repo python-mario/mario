@@ -82,6 +82,20 @@ Use ``eval`` to evaluate a python expression without any input. ::
    $ pype eval 1+1
    2
 
+``reduce``
+
+Use ``reduce`` to evaluate a function of two arguments successively over a sequence, like ```functools.reduce`` <https://docs.python.org/3/library/functools.html#functools.reduce>`_ ::
+
+
+   $ pype map int reduce operator.mul <<EOF
+   1
+   2
+   3
+   4
+   EOF
+
+   24
+
 
 Autocall
 ~~~~~~~~
