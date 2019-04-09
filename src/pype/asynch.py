@@ -155,12 +155,9 @@ async def async_map(
 
     async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
 
-        maybe_coroutine_result = function(item)
-        if isinstance(maybe_coroutine_result, types.CoroutineType):
-            async with limiter:
-                result = await maybe_coroutine_result
-        else:
-            result = maybe_coroutine_result
+        async with limiter:
+            result = await function(item)
+
         await prev_done.wait()
         await send_result.send(result)
         self_done.set()
@@ -190,12 +187,8 @@ async def async_map_unordered(
     remaining_tasks = set()
 
     async def wrapper(task_id: int, item: T) -> None:
-        maybe_coroutine_result = function(item)
-        if isinstance(maybe_coroutine_result, types.CoroutineType):
-            async with limiter:
-                result = await maybe_coroutine_result
-        else:
-            result = maybe_coroutine_result
+        async with limiter:
+            result = await function(item)
 
         await send_result.send(result)
         remaining_tasks.remove(task_id)
@@ -227,12 +220,8 @@ async def async_filter(
 
     async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
 
-        maybe_coroutine_result = function(item)
-        if isinstance(maybe_coroutine_result, types.CoroutineType):
-            async with limiter:
-                result = await maybe_coroutine_result
-        else:
-            result = maybe_coroutine_result
+        async with limiter:
+            result = await function(item)
 
         await prev_done.wait()
         if result:
@@ -281,14 +270,8 @@ async def async_reduce(
 
         else:
 
-            maybe_coroutine_result = function(collected_result, input_item)
-            if isinstance(maybe_coroutine_result, types.CoroutineType):
-                async with limiter:
-                    result = await maybe_coroutine_result
-            else:
-                result = maybe_coroutine_result
-
-            collected_result = result
+            async with limiter:
+                collected_result = await function(collected_result, input_item)
 
         await prev_done.wait()
         self_done.set()
