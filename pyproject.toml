@@ -42,7 +42,7 @@ treq = "*"
 poetry = "*"
 twisted = "*"
 asks = "*"
-
+cuvner = "*"
 
 [tool.poetry.scripts]
 
