@@ -32,22 +32,22 @@ def calculate_reduce(traversal):
 
 
 @registry.add_traversal("map", calculate_more_params=calculate_function)
-async def map(function, items, stack, max_concurrent):
-    return await stack.enter_async_context(
+async def map(function, items, exit_stack, max_concurrent):
+    return await exit_stack.enter_async_context(
         asynch.async_map(function, items, max_concurrent)
     )
 
 
 @registry.add_traversal("map_unordered", calculate_more_params=calculate_function)
-async def map_unordered(function, items, stack, max_concurrent):
-    return await stack.enter_async_context(
+async def map_unordered(function, items, exit_stack, max_concurrent):
+    return await exit_stack.enter_async_context(
         asynch.async_map_unordered(function, items, max_concurrent)
     )
 
 
 @registry.add_traversal("filter", calculate_more_params=calculate_function)
-async def filter(function, items, stack, max_concurrent):
-    return await stack.enter_async_context(
+async def filter(function, items, exit_stack, max_concurrent):
+    return await exit_stack.enter_async_context(
         asynch.async_filter(function, items, max_concurrent)
     )
 
@@ -75,8 +75,8 @@ async def stack(function, items):
 
 
 @registry.add_traversal("reduce", calculate_more_params=calculate_reduce)
-async def reduce(function, items, stack, max_concurrent):
-    return await stack.enter_async_context(
+async def reduce(function, items, exit_stack, max_concurrent):
+    return await exit_stack.enter_async_context(
         asynch.async_reduce(function, items, max_concurrent)
     )
 

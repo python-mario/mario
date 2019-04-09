@@ -53,9 +53,9 @@ async def call_traversal(
     self,
     traversal: interfaces.Traversal,
     items: AsyncIterable,
-    stack: async_exit_stack.AsyncExitStack,
+    exit_stack: async_exit_stack.AsyncExitStack,
 ):
-    runtime_parameters = {"items": items, "stack": stack}
+    runtime_parameters = {"items": items, "exit_stack": exit_stack}
 
     calculated_params = traversal.plugin_object.calculate_more_params(traversal)
 
