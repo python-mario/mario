@@ -5,7 +5,7 @@ description = "Command-line pipes in Python"
 authors = ["author <author@example.com>"]
 readme = "README.rst"
 packages = [
-         {include = "pype"}
+         {include = "pype", from = "src"}
 ]
 
 [tool.poetry.dependencies]
