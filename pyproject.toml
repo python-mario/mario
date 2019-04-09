@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "python-pype"
-version = "0.0.73"
+version = "0.0.74"
 description = "Command-line pipes in Python"
 authors = ["author <author@example.com>"]
 readme = "README.rst"
