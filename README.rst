@@ -230,8 +230,6 @@ Define new commands in your config file which provide aliases to other commands.
    arguments = [ "json.loads ! attr.make_class('X', list(x.keys()))(**x)"]
 
 
-
-
 Now we can use it like a regular command: ::
 
     $ pype jsonl  <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
@@ -243,7 +241,6 @@ The new command ``jsonl`` can be used in pipelines as well. To get the maximum v
 
    $ pype jsonl map 'x.a' apply max <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
    5
-
 
 
 Installation
