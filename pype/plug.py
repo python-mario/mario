@@ -182,6 +182,9 @@ def make_synthetic_command(cmd,):
 
 def make_aliases(conf):
     synth_commands = []
+    if 'alias' not in conf:
+        return []
+
     for cmd in conf["alias"]:
         synth_commands.append(make_synthetic_command(cmd))
     return synth_commands
