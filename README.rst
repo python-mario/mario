@@ -43,10 +43,9 @@ Commands
 ``map``
 _______
 
-  Use ``map`` to act on each input item. ::
+Use ``map`` to act on each input item. ::
 
-
-    $ pype map 'x * 2' <<<'a\nbb\n'
+   $ pype map 'x * 2' <<<'a\nbb\n'
    aa
    bbbb
 
