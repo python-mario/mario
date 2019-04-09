@@ -7,7 +7,7 @@ install:
 - poetry lock
 - poetry install
 script:
-- poetry run coverage run --source pype --module pytest
+- tox
 before_deploy:
 - poetry build
 - poetry run twine check dist/*
