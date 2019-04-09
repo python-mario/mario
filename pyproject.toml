@@ -43,6 +43,7 @@ poetry = "*"
 twisted = "*"
 asks = "*"
 cuvner = "*"
+pytest-cov = "^2.6"
 
 [tool.poetry.scripts]
 
