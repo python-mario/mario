@@ -7,7 +7,7 @@ install:
 - poetry lock
 - poetry install
 script:
-- tox
+- tox -e coverage
 deploy:
   provider: script
   script: poetry publish --build --username $PYPI_USERNAME --password $PYPI_PASSWORD
