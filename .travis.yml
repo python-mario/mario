@@ -10,6 +10,7 @@ script:
 - poetry run coverage run --source pype --module pytest
 before_deploy:
 - poetry build
+- poetry run twine check dist/*
 deploy:
   provider: script
   script: poetry publish --build --username $PYPI_USERNAME --password $PYPI_PASSWORD
