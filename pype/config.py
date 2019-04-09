@@ -4,11 +4,12 @@ import appdirs
 import toml
 
 from . import utils
+from . import interpret
 
 DEFAULTS = {
     "max_concurrent": 5,
     "exec_before": None,
-    "autocall": True,
+    "autocall": interpret.HowCall.SINGLE,
     "base_exec_before": None,
 }
 

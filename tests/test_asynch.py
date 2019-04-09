@@ -112,12 +112,22 @@ def test_cli_async_map_unordered(runner, reactor, server, capsys):
     assert t.elapsed < limit_seconds
 
 
-def test_cli_async_reduce(runner, reactor, server, capsys):
+def test_cli_async_reduce_fails(runner, reactor, server, capsys):
+    """``reduce`` takes the name of a function as its argument, and fails otherwise."""
     base_url = "http://localhost:8080/?delay={}\n"
 
     in_stream = "".join(base_url.format(i) for i in [6, 2, 1])
 
+    args = ["map", "json.loads", "reduce", "toolz.curry(operator.truediv)(*x)"]
 
+    with pytest.raises(subprocess.CalledProcessError):
+        tools.run(args, input=in_stream.encode()).decode()
+
+
+def test_cli_async_reduce_without_curry(runner, reactor, server, capsys):
+    base_url = "http://localhost:8080/?delay={}\n"
+
+    in_stream = "".join(base_url.format(i) for i in [6, 2, 1])
 
     args = [
         "map",
@@ -125,7 +135,7 @@ def test_cli_async_reduce(runner, reactor, server, capsys):
         "map",
         "json.loads",
         "reduce",
-        "toolz.curry(operator.truediv)(*x)",
+        "operator.truediv",
     ]
 
     expected = "3.0\n"

@@ -20,6 +20,7 @@ import types
 import functools
 import pathlib
 import ast
+import enum
 
 from typing import Callable
 from typing import Awaitable
@@ -44,6 +45,33 @@ from . import utils
 
 
 SYMBOL = "x"
+
+
+class HowCall(enum.Enum):
+    NONE = ""
+    SINGLE = f"({SYMBOL})"
+    VARARGS = f"(*{SYMBOL})"
+    VARKWARGS = f"(**{SYMBOL})"
+
+
+class HowSig(enum.Enum):
+    NONE = f"{SYMBOL}"
+    SINGLE = f"{SYMBOL}"
+    VARARGS = f"*{SYMBOL}"
+    VARKWARGS = f"**{SYMBOL}"
+
+
+howcall_to_howsig = {v: HowSig.__members__[k] for k, v in HowCall.__members__.items()}
+
+
+@attr.dataclass
+class Function:
+    wrapped: types.FunctionType
+    global_namespace: dict
+    source: str
+
+    def __call__(self, *x):
+        return self.wrapped(*x)
 
 
 def _get_named_module(name):
@@ -98,28 +126,33 @@ def split_pipestring(s, sep="!"):
     return ["".join(node.get_code() for node in seg) for seg in segments]
 
 
-def make_autocall(expression):
+def make_autocall(expression, howcall):
+
+    # Don't autocall if SYMBOL appears in the expression.
     tree = ast.parse(expression)
     for node in ast.walk(tree):
         if isinstance(node, ast.Name) and node.id == SYMBOL:
             return expression
-    return expression + f"({SYMBOL})"
+
+    return expression + howcall.value
+    raise ValueError(howcall)
 
 
-def build_source(components, autocall):
+def build_source(components, howcall):
     components = [c.strip() for c in components]
-    if autocall:
-        components = [make_autocall(c) for c in components]
+    components = [make_autocall(c, howcall) for c in components]
     indent = "        "
     lines = "".join([f"{indent}{SYMBOL} = {c}\n" for c in components])
 
+    howsig = howcall_to_howsig[howcall]
     source = textwrap.dedent(
         f"""\
-    async def _pype_runner({SYMBOL}):
+    async def _pype_runner({howsig.value}):
 {lines}
         return {SYMBOL}
     """
     )
+
     return source
 
 
@@ -143,7 +176,7 @@ def build_function(command, global_namespace, autocall):
 
     exec(source, global_namespace, local_namespace)
     function = local_namespace["_pype_runner"]
-    return function
+    return Function(function, global_namespace, source)
 
 
 def build_global_namespace(source):

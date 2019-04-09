@@ -20,6 +20,17 @@ def calculate_function(traversal, autocall=None):
     }
 
 
+def calculate_reduce(traversal):
+
+    function = interpret.build_function(
+        traversal.specific_invocation_params["command"],
+        traversal.global_invocation_options.global_options["global_namespace"],
+        autocall=interpret.HowCall.VARARGS,
+    )
+
+    return {"function": function}
+
+
 @registry.add_traversal("map", calculate_more_params=calculate_function)
 async def map(function, items, stack, max_concurrent):
     return await stack.enter_async_context(
@@ -47,7 +58,10 @@ async def apply(function, items):
 
 
 @registry.add_traversal(
-    "eval", calculate_more_params=lambda x: calculate_function(x, autocall=False)
+    "eval",
+    calculate_more_params=lambda x: calculate_function(
+        x, autocall=interpret.HowCall.NONE
+    ),
 )
 async def eval(function):
     return asynch.AsyncIterableWrapper([await function(None)])
@@ -59,7 +73,8 @@ async def stack(function, items):
         [await function("".join([x + "\n" async for x in items]))]
     )
 
-@registry.add_traversal("reduce", calculate_more_params=calculate_function)
+
+@registry.add_traversal("reduce", calculate_more_params=calculate_reduce)
 async def reduce(function, items, stack, max_concurrent):
     return await stack.enter_async_context(
         asynch.async_reduce(function, items, max_concurrent)
@@ -81,7 +96,6 @@ subcommands = [
         "map-unordered",
         short_help="Call <command> on each line of input, ignoring order of input items.",
     ),
-    click.Command('reduce', short_help='[UNSTABLE] Reduce a sequence with a <command>.')
 ]
 
 
@@ -97,3 +111,12 @@ for subcommand in subcommands:
     subcommand.callback = build_callback(subcommand)
     # TODO: add_cli and add_traversal should be the non-decorator form
     registry.add_cli(name=subcommand.name)(subcommand)
+
+
+@registry.add_cli(name="reduce")
+@click.command(
+    "reduce", short_help="Reduce a sequence with a <function>. e.g. `operator.mul`."
+)
+@click.argument("function_name")
+def _reduce(function_name):
+    return [{"command": f"toolz.curry({function_name})", "name": "reduce"}]

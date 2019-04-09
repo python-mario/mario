@@ -154,6 +154,7 @@ async def async_map(
     limiter = trio.CapacityLimiter(max_concurrent)
 
     async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
+
         maybe_coroutine_result = function(item)
         if isinstance(maybe_coroutine_result, types.CoroutineType):
             async with limiter:
@@ -280,7 +281,7 @@ async def async_reduce(
 
         else:
 
-            maybe_coroutine_result = function((collected_result, input_item))
+            maybe_coroutine_result = function(collected_result, input_item)
             if isinstance(maybe_coroutine_result, types.CoroutineType):
                 async with limiter:
                     result = await maybe_coroutine_result
