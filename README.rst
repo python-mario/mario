@@ -11,48 +11,30 @@ Basics
 At the command prompt, use ``pype`` to act on each item in the file with python commands: ::
 
   $ pype map x.upper() <<<'abc'
-
   ABC
 
 
 Chain python functions together with ``!``: ::
 
   $ pype map 'x.upper() ! len(x)' <<<hello
-
   5
 
 Use ``x`` as a placeholder for the input at each stage: ::
 
   $ pype map ' x.split() ! x[0].upper() + "!"' <<<'Hello world'
-
   HELLO!
 
   $ pype map 'x.split() ! x[0].upper() + "!" ! x.replace("H", "J")' <<<'Hello world'
-
   JELLO!
 
 
 
+Automatically import modules you need: ::
 
+   $ pype stack 'itertools.repeat(x, 2) ! "".join' <<<hello,world!
+   hello,world!
+   hello,world!
 
-Given a server responding to ``http://localhost:8080/`` and a list of urls in ``urls.txt`` : ::
-
-  http://localhost:8080/Requester_254
-  http://localhost:8080/Requester_083
-  http://localhost:8080/Requester_128
-  http://localhost:8080/Requester_064
-  http://localhost:8080/Requester_276
-
-
-Automatically import required modules and use their functions: ::
-
-   $ pype map 'x.strip() ! requests.get(x) ! x.text ' < urls.txt
-
-   Hello, Requester_254. You are client number 7903 for this server.
-   Hello, Requester_083. You are client number 7904 for this server.
-   Hello, Requester_128. You are client number 7905 for this server.
-   Hello, Requester_064. You are client number 7906 for this server.
-   Hello, Requester_276. You are client number 7907 for this server.
 
 
 Commands
