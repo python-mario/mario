@@ -93,3 +93,22 @@ def test_py_read():
             input=text.encode(),
         ).decode()
         assert output == expected
+
+
+def test_apply_csv_dictreader_read_csv():
+
+    for _ in range(10):
+        output = subprocess.check_output(
+            [
+                sys.executable,
+                "-m",
+                "pype",
+                "apply",
+                "csv.DictReader ! [dict(y) for y in x]",
+            ],
+            input=text.encode(),
+        ).decode()
+
+        expected = "[{'name': 'alice', 'age': '21'}, {'name': 'bob', 'age': '22'}]\n"
+
+        assert output == expected
