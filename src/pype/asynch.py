@@ -28,6 +28,7 @@ from typing import Optional
 from typing import List
 from typing import Iterable
 from typing import Any
+from typing import Set
 
 import attr
 import parso
@@ -262,7 +263,7 @@ async def async_map_unordered(
 ) -> AsyncIterator[AsyncIterable[U]]:
     send_result, receive_result = trio.open_memory_channel[U](0)
     limiter = trio.CapacityLimiter(max_concurrent)
-    remaining_tasks = set()
+    remaining_tasks: Set[int] = set()
 
     async def wrapper(task_id: int, item: T) -> None:
         async with limiter:
