@@ -26,6 +26,8 @@ from typing import AsyncIterable
 from typing import AsyncIterator
 from typing import Optional
 from typing import List
+from typing import Iterable
+from typing import Any
 
 import attr
 import parso
@@ -144,6 +146,38 @@ class AsyncIterableWrapper:
             return next(self.iterable)
         except StopIteration:
             raise StopAsyncIteration
+
+
+class AsyncIterableToIterable:
+    def __init__(self, aiterable):
+        self.aiterable = aiterable
+
+    def __iter__(self):
+        return self
+
+    async def __next__(self):
+        return await self.aiterable.__anext__()
+
+
+class IterableToAsyncIterable:
+    def __init__(self, iterable):
+        self.iterable = iter(iterable)
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        try:
+            return next(self.iterable)
+        except StopIteration:
+            raise StopAsyncIteration
+
+
+async def async_apply(
+    function: Callable[[Iterable[T]], Any], aiterable: AsyncIterable[T]
+):
+    async for item in IterableToAsyncIterable([function(AsyncIterableToIterable(aiterable))]):
+        yield item
 
 
 @async_generator.asynccontextmanager

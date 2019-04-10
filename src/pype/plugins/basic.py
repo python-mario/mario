@@ -57,6 +57,11 @@ async def apply(function, items):
     return asynch.AsyncIterableWrapper([await function([x async for x in items])])
 
 
+@registry.add_traversal("aapply", calculate_more_params=calculate_function)
+async def aapply(function, items):
+    return asynch.async_apply(function, items)
+
+
 @registry.add_traversal(
     "eval",
     calculate_more_params=lambda x: calculate_function(
@@ -84,6 +89,7 @@ async def reduce(function, items, exit_stack, max_concurrent):
 subcommands = [
     click.Command("map", short_help="Call <command> on each line of input."),
     click.Command("apply", short_help="Call <command> on input as a sequence."),
+    click.Command("aapply", short_help="Call <command> asynchronously on input as a sequence."),
     click.Command(
         "filter",
         short_help="Call <command> on each line of input and exclude false values.",

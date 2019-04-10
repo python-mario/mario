@@ -9,6 +9,7 @@ from typing import Dict
 
 import pytest
 
+
 def make_reader():
     field_names = None
 
