@@ -44,13 +44,6 @@ def test_read_line():
     assert rows == [None, {"name": "alice", "age": "21"}, {"name": "bob", "age": "22"}]
 
 
-expected = """\
-{'bob': 'name', '22': 'age'}
-{'bob': 'alice', '22': '21'}
-None
-"""
-
-
 exec_before = """\
 
 def make_reader():
@@ -76,6 +69,7 @@ read_csv_row = make_reader()
 
 """
 
+
 @pytest.mark.xfail(strict=True)
 def test_py_read():
 
@@ -92,6 +86,8 @@ def test_py_read():
             ],
             input=text.encode(),
         ).decode()
+
+        expected = "[{'name': 'alice', 'age': '21'}, {'name': 'bob', 'age': '22'}]\n"
         assert output == expected
 
 
