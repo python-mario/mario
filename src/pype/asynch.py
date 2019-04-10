@@ -231,12 +231,11 @@ async def sync_map(
         task_status=trio.TASK_STATUS_IGNORED,
     ) -> None:
 
+        await prev_done.wait()
         async with limiter:
-            # XXX Is this relying on a Trio implementation detail to retain the order?
-            task_status.started()
             result = await function(item)
 
-        await prev_done.wait()
+
         await send_result.send(result)
         self_done.set()
 
@@ -246,7 +245,7 @@ async def sync_map(
         prev_done.set()
         async for item in iterable:
             self_done = trio.Event()
-            await nursery.start(wrapper, prev_done, self_done, item, name=function)
+            nursery.start_soon(wrapper, prev_done, self_done, item, name=function)
             prev_done = self_done
         await prev_done.wait()
         await send_result.aclose()
