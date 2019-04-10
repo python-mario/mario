@@ -48,7 +48,7 @@ def test_cli_async_chain_map_apply(runner, reactor, server):
         "pype",
         "--max-concurrent",
         "100",
-        "map",
+        "amap",
         "await asks.get(x) ! x.json()",
         "filter",
         'x["id"] % 6 == 0',
@@ -59,14 +59,13 @@ def test_cli_async_chain_map_apply(runner, reactor, server):
     ]
 
     expected = "42\n"
-
+    limit_seconds = 6.0
     with Timer() as t:
         output = subprocess.check_output(
-            [sys.executable, *args], input=in_stream.encode()
+            [sys.executable, *args], input=in_stream.encode(), timeout=limit_seconds
         ).decode()
 
     assert output == expected
-    limit_seconds = 6.0
     assert t.elapsed < limit_seconds
 
 
@@ -78,7 +77,7 @@ def test_cli_async_map(runner, reactor, server, capsys):
     args = [
         "--exec-before",
         "import datetime; now=datetime.datetime.now; START_TIME=now()",
-        "map",
+        "amap",
         'await asks.get !  f"{types.SimpleNamespace(**x.json()).delay}"',
     ]
 
@@ -98,7 +97,7 @@ def test_cli_async_map_unordered(runner, reactor, server, capsys):
     in_stream = "".join(base_url.format(i) for i in [5, 2, 3, 1, 4])
 
     args = [
-        "map-unordered",
+        "amap-unordered",
         'await asks.get !  f"{types.SimpleNamespace(**x.json()).delay}"',
     ]
 
@@ -130,7 +129,7 @@ def test_cli_async_reduce_without_curry(runner, reactor, server, capsys):
     in_stream = "".join(base_url.format(i) for i in [6, 2, 1])
 
     args = [
-        "map",
+        "amap",
         'await asks.get !  f"{types.SimpleNamespace(**x.json()).delay}"',
         "map",
         "json.loads",

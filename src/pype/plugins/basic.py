@@ -38,7 +38,14 @@ async def map(function, items, exit_stack, max_concurrent):
     )
 
 
-@registry.add_traversal("map_unordered", calculate_more_params=calculate_function)
+@registry.add_traversal("amap", calculate_more_params=calculate_function)
+async def amap(function, items, exit_stack, max_concurrent):
+    return await exit_stack.enter_async_context(
+        asynch.async_map(function, items, max_concurrent)
+    )
+
+
+@registry.add_traversal("amap_unordered", calculate_more_params=calculate_function)
 async def map_unordered(function, items, exit_stack, max_concurrent):
     return await exit_stack.enter_async_context(
         asynch.async_map_unordered(function, items, max_concurrent)
@@ -88,6 +95,7 @@ async def reduce(function, items, exit_stack, max_concurrent):
 
 subcommands = [
     click.Command("map", short_help="Call <command> on each line of input."),
+    click.Command("amap", short_help="Call <command> on each line of input."),
     click.Command("apply", short_help="Call <command> on input as a sequence."),
     click.Command(
         "aapply", short_help="Call <command> asynchronously on input as a sequence."
@@ -101,7 +109,7 @@ subcommands = [
         "stack", short_help="Call <command> on input as a single concatenated string."
     ),
     click.Command(
-        "map-unordered",
+        "amap-unordered",
         short_help="Call <command> on each line of input, ignoring order of input items.",
     ),
 ]
