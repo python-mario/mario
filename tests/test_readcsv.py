@@ -71,7 +71,7 @@ read_csv_row = make_reader()
 """
 
 
-@pytest.mark.xfail(strict=True)
+
 def test_py_read():
 
     for _ in range(10):
@@ -88,7 +88,7 @@ def test_py_read():
             input=text.encode(),
         ).decode()
 
-        expected = "[{'name': 'alice', 'age': '21'}, {'name': 'bob', 'age': '22'}]\n"
+        expected = "None\n{'name': 'alice', 'age': '21'}\n{'name': 'bob', 'age': '22'}\n"
         assert output == expected
 
 

@@ -34,7 +34,7 @@ def calculate_reduce(traversal):
 @registry.add_traversal("map", calculate_more_params=calculate_function)
 async def map(function, items, exit_stack, max_concurrent):
     return await exit_stack.enter_async_context(
-        asynch.async_map(function, items, max_concurrent)
+        asynch.sync_map(function, items, max_concurrent)
     )
 
 
@@ -89,7 +89,9 @@ async def reduce(function, items, exit_stack, max_concurrent):
 subcommands = [
     click.Command("map", short_help="Call <command> on each line of input."),
     click.Command("apply", short_help="Call <command> on input as a sequence."),
-    click.Command("aapply", short_help="Call <command> asynchronously on input as a sequence."),
+    click.Command(
+        "aapply", short_help="Call <command> asynchronously on input as a sequence."
+    ),
     click.Command(
         "filter",
         short_help="Call <command> on each line of input and exclude false values.",
