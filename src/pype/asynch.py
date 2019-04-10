@@ -176,8 +176,12 @@ class IterableToAsyncIterable:
 async def async_apply(
     function: Callable[[Iterable[T]], Any], aiterable: AsyncIterable[T]
 ):
-    async for item in IterableToAsyncIterable([function(AsyncIterableToIterable(aiterable))]):
-        yield item
+    async for item in IterableToAsyncIterable(
+        [function((await x) for x in AsyncIterableToIterable(aiterable))]
+    ):
+        if isinstance(item, types.CoroutineType):
+            return await item
+        return item
 
 
 @async_generator.asynccontextmanager

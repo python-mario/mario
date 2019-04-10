@@ -59,7 +59,7 @@ async def apply(function, items):
 
 @registry.add_traversal("aapply", calculate_more_params=calculate_function)
 async def aapply(function, items):
-    return asynch.async_apply(function, items)
+    return await asynch.async_apply(function, items)
 
 
 @registry.add_traversal(
