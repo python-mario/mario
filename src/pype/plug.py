@@ -175,7 +175,7 @@ def make_global_registry():
 
 def make_synthetic_command(cmd,):
     components = [
-        AliasStage(d["name"], d.get("options", []), d.get("arguments", []))
+        AliasStage(d["command"], d.get("options", []), d.get("arguments", []))
         for d in cmd["stage"]
     ]
     return AliasCommand(cmd["name"], components, cmd["short_help"])
