@@ -231,6 +231,7 @@ async def sync_map(
     ) -> None:
 
         async with limiter:
+            # XXX Is this relying on a Trio implementation detail to retain the order?
             task_status.started()
             result = await function(item)
 
