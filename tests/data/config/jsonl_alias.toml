@@ -1,0 +1,10 @@
+[[alias]]
+
+name = "jsonl"
+short_help = "Load jsonlines into python objects"
+
+[[alias.stage]]
+
+command = "map"
+options = []
+arguments = [ "json.loads ! attr.make_class('X', list(x.keys()))(**x)"]
