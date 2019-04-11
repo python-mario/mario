@@ -85,7 +85,7 @@ Use ``eval`` to evaluate a python expression without any input. ::
 ``reduce``
 __________
 
-Use ``reduce`` to evaluate a function of two arguments successively over a sequence, like `functools.reduce <https://docs.python.org/3/library/functools.html#functools.reduce>`_ ::
+Use ``reduce`` to evaluate a function of two arguments successively over a sequence, like `functools.reduce <https://docs.python.org/3/library/functools.html#functools.reduce>`_. ::
 
 
    $ pype map int reduce operator.mul <<EOF
@@ -132,9 +132,9 @@ Making sequential requests is slow. These requests take 18 seconds to complete. 
    0.06s system
    19.612 total
 
-Concurrent requests can go much faster. The same requests now take only 5 seconds. Just use ``await async_function`` to get concurrency out of the box. ::
+Concurrent requests can go much faster. The same requests now take only 5 seconds. Use ``amap``, ``afilter``, or ``areduce`` with ``await my_async_function`` to get concurrency out of the box. ::
 
-   $ time pype map 'await asks.get ! x.text ! len' apply max <<EOF
+   $ time pype amap 'await asks.get ! x.text ! len' apply max <<EOF
    http://httpbin.org/delay/5
    http://httpbin.org/delay/1
    http://httpbin.org/delay/4
@@ -152,7 +152,7 @@ Concurrent requests can go much faster. The same requests now take only 5 second
 Streaming
 ~~~~~~~~~
 
-``map`` and ``filter`` values are handled in streaming fashion, while retaining order.
+``amap`` and ``afilter`` values are handled in streaming fashion, while retaining order.
 
 Making concurrent requests, each response is printed one at a time, as soon as (1) it is ready and (2) all of the preceding requests have already been handled.
 
@@ -226,7 +226,7 @@ Define new commands in your config file which provide aliases to other commands.
 
    [[alias.stage]]
 
-   name= "map"
+   command = "map"
    options = []
    arguments = [ "json.loads ! attr.make_class('X', list(x.keys()))(**x)"]
 
@@ -242,6 +242,12 @@ The new command ``jsonl`` can be used in pipelines as well. To get the maximum v
 
    $ pype jsonl map 'x.a' apply max <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
    5
+
+
+Plugins
+~~~~~~~
+
+Add new commands like ``map`` and ``reduce`` by installing pype plugins. You can try them out without installing by adding them to any ``.py`` file in your ``~/.config/pype/modules/``.
 
 
 Installation
@@ -263,7 +269,7 @@ Status
 ======
 
 * Check the `issues page <https://www.github.com/python-pype/pype/issues>`_ for open tickets.
-* This package is experimental pre-alpha and is subject to change.
+* This package is experimental and is subject to change without notice.
 
 
 Related work
