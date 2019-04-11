@@ -40,7 +40,7 @@ def cli(**kwargs):
 def alias_to_click(alias):
 
     callback = lambda: [
-        {"name": component.name, "command": component.arguments[0]}
+        {"name": component.name, "pipeline": component.arguments[0]}
         for component in alias.components
     ]
     return click.Command(alias.name, callback=callback, short_help=alias.short_help)

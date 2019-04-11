@@ -156,9 +156,9 @@ def build_source(components, howcall):
     return source
 
 
-def build_name_to_module(command):
+def build_name_to_module(pipeline):
     name_to_module = {}
-    components = split_pipestring(command)
+    components = split_pipestring(pipeline)
     module_names = {name for c in components for name in find_maybe_module_names(c)}
     for name in module_names:
         name_to_module.update(_get_autoimport_module(name))
@@ -166,11 +166,11 @@ def build_name_to_module(command):
     return name_to_module
 
 
-def build_function(command, global_namespace, autocall):
-    name_to_module = build_name_to_module(command)
+def build_function(pipeline, global_namespace, autocall):
+    name_to_module = build_name_to_module(pipeline)
     global_namespace = {**name_to_module, **global_namespace}
 
-    source = build_source(split_pipestring(command), autocall)
+    source = build_source(split_pipestring(pipeline), autocall)
 
     exec(source, global_namespace)
     function = global_namespace["_pype_runner"]
