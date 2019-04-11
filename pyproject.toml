@@ -46,6 +46,7 @@ cuvner = "*"
 pytest-cov = "^2.6"
 tox = "*"
 pytest-clarity = {version = "^0.1.0-alpha.1",allows-prereleases = true}
+black = "*"
 
 [tool.poetry.scripts]
 
