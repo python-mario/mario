@@ -55,6 +55,13 @@ async def map_unordered(function, items, exit_stack, max_concurrent):
 @registry.add_traversal("filter", calculate_more_params=calculate_function)
 async def filter(function, items, exit_stack, max_concurrent):
     return await exit_stack.enter_async_context(
+        asynch.sync_filter(function, items, max_concurrent)
+    )
+
+
+@registry.add_traversal("afilter", calculate_more_params=calculate_function)
+async def afilter(function, items, exit_stack, max_concurrent):
+    return await exit_stack.enter_async_context(
         asynch.async_filter(function, items, max_concurrent)
     )
 
@@ -103,6 +110,10 @@ subcommands = [
     click.Command(
         "filter",
         short_help="Call <command> on each line of input and exclude false values.",
+    ),
+    click.Command(
+        "afilter",
+        short_help="Async call <command> on each line of input and exclude false values.",
     ),
     click.Command("eval", short_help="Call <command> without any input."),
     click.Command(

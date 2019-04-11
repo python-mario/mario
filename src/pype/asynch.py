@@ -319,6 +319,41 @@ async def async_filter(
         yield receive_result
         nursery.cancel_scope.cancel()
 
+@async_generator.asynccontextmanager
+async def sync_filter(
+    function: Callable[[T], Awaitable[T]], iterable: AsyncIterable[T], max_concurrent
+) -> AsyncIterator[AsyncIterable[T]]:
+    send_result, receive_result = trio.open_memory_channel[T](0)
+
+    limiter = trio.CapacityLimiter(max_concurrent)
+
+    async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
+
+        await prev_done.wait()
+
+        async with limiter:
+            result = await function(item)
+
+
+        if result:
+            await send_result.send(item)
+        self_done.set()
+
+    async def consume_input(nursery) -> None:
+        prev_done = trio.Event()
+        prev_done.set()
+        async for item in iterable:
+            self_done = trio.Event()
+            nursery.start_soon(wrapper, prev_done, self_done, item, name=function)
+            prev_done = self_done
+        await prev_done.wait()
+        await send_result.aclose()
+
+    async with trio.open_nursery() as nursery:
+        nursery.start_soon(consume_input, nursery)
+        yield receive_result
+        nursery.cancel_scope.cancel()
+
 
 SENTINEL = object()
 
