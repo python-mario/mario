@@ -3,7 +3,6 @@ import os
 import click
 
 
-
 from . import config
 from . import utils
 from . import _version
@@ -16,7 +15,6 @@ config.DEFAULTS.update(
         dir_path=os.environ.get(f"{utils.NAME}_CONFIG_DIR".upper(), None)
     )
 )
-
 
 
 CONTEXT_SETTINGS = {"default_map": config.DEFAULTS}

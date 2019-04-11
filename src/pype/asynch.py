@@ -235,10 +235,8 @@ async def sync_map(
         async with limiter:
             result = await function(item)
 
-
         await send_result.send(result)
         self_done.set()
-
 
     async def consume_input(nursery) -> None:
         prev_done = trio.Event()
