@@ -3,6 +3,7 @@ import click
 from pype import plug
 from pype import asynch
 from pype import interpret
+from pype import traversals
 
 registry = plug.Registry()
 
@@ -34,46 +35,46 @@ def calculate_reduce(traversal):
 @registry.add_traversal("map", calculate_more_params=calculate_function)
 async def map(function, items, exit_stack, max_concurrent):
     return await exit_stack.enter_async_context(
-        asynch.sync_map(function, items, max_concurrent)
+        traversals.sync_map(function, items, max_concurrent)
     )
 
 
 @registry.add_traversal("amap", calculate_more_params=calculate_function)
 async def amap(function, items, exit_stack, max_concurrent):
     return await exit_stack.enter_async_context(
-        asynch.async_map(function, items, max_concurrent)
+        traversals.async_map(function, items, max_concurrent)
     )
 
 
 @registry.add_traversal("amap_unordered", calculate_more_params=calculate_function)
 async def map_unordered(function, items, exit_stack, max_concurrent):
     return await exit_stack.enter_async_context(
-        asynch.async_map_unordered(function, items, max_concurrent)
+        traversals.async_map_unordered(function, items, max_concurrent)
     )
 
 
 @registry.add_traversal("filter", calculate_more_params=calculate_function)
 async def filter(function, items, exit_stack, max_concurrent):
     return await exit_stack.enter_async_context(
-        asynch.sync_filter(function, items, max_concurrent)
+        traversals.sync_filter(function, items, max_concurrent)
     )
 
 
 @registry.add_traversal("afilter", calculate_more_params=calculate_function)
 async def afilter(function, items, exit_stack, max_concurrent):
     return await exit_stack.enter_async_context(
-        asynch.async_filter(function, items, max_concurrent)
+        traversals.async_filter(function, items, max_concurrent)
     )
 
 
 @registry.add_traversal("apply", calculate_more_params=calculate_function)
 async def apply(function, items):
-    return asynch.AsyncIterableWrapper([await function([x async for x in items])])
+    return traversals.AsyncIterableWrapper([await function([x async for x in items])])
 
 
 @registry.add_traversal("aapply", calculate_more_params=calculate_function)
 async def aapply(function, items):
-    return await asynch.async_apply(function, items)
+    return await traversals.async_apply(function, items)
 
 
 @registry.add_traversal(
@@ -83,12 +84,12 @@ async def aapply(function, items):
     ),
 )
 async def eval(function):
-    return asynch.AsyncIterableWrapper([await function(None)])
+    return traversals.AsyncIterableWrapper([await function(None)])
 
 
 @registry.add_traversal("stack", calculate_more_params=calculate_function)
 async def stack(function, items):
-    return asynch.AsyncIterableWrapper(
+    return traversals.AsyncIterableWrapper(
         [await function("".join([x + "\n" async for x in items]))]
     )
 
@@ -96,7 +97,7 @@ async def stack(function, items):
 @registry.add_traversal("reduce", calculate_more_params=calculate_reduce)
 async def reduce(function, items, exit_stack, max_concurrent):
     return await exit_stack.enter_async_context(
-        asynch.async_reduce(function, items, max_concurrent)
+        traversals.async_reduce(function, items, max_concurrent)
     )
 
 
