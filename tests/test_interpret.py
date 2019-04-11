@@ -8,7 +8,7 @@ import pytest
 
 from pype import interpret
 
-from tests import tools
+from tests import helpers
 
 SYMBOL = "x"
 
@@ -55,14 +55,14 @@ def test_split_string_on_separator(string, separator, expected):
 
 
 def test_autocall():
-    output = tools.run(["map", "len"], input=b"a\nbb\n").decode()
+    output = helpers.run(["map", "len"], input=b"a\nbb\n").decode()
     assert output == "1\n2\n"
 
 
 def test_autocall_in_eval():
-    tools.run(["eval", "datetime.datetime.now().isoformat()"]).decode()
+    helpers.run(["eval", "datetime.datetime.now().isoformat()"]).decode()
 
 
 def test_autocall_requires_symbol():
-    output = tools.run(["map", "pathlib.Path(x).name"], input=b"a\nbb\n").decode()
+    output = helpers.run(["map", "pathlib.Path(x).name"], input=b"a\nbb\n").decode()
     assert output == "a\nbb\n"

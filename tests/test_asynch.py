@@ -8,7 +8,7 @@ import string
 import pytest
 
 from . import config
-from . import tools
+from . import helpers
 
 
 @pytest.fixture(name="reactor")
@@ -84,7 +84,7 @@ def test_cli_async_map(runner, reactor, server, capsys):
     expected = "1\n1\n5\n1\n"
 
     with Timer() as t:
-        output = tools.run(args, input=in_stream.encode()).decode()
+        output = helpers.run(args, input=in_stream.encode()).decode()
 
     assert output == expected
     limit_seconds = 6.0
@@ -104,7 +104,7 @@ def test_cli_async_map_unordered(runner, reactor, server, capsys):
     expected = "1\n2\n3\n4\n5\n"
 
     with Timer() as t:
-        output = tools.run(args, input=in_stream.encode()).decode()
+        output = helpers.run(args, input=in_stream.encode()).decode()
 
     assert output == expected
     limit_seconds = 6.0
@@ -120,7 +120,7 @@ def test_cli_async_reduce_fails(runner, reactor, server, capsys):
     args = ["map", "json.loads", "reduce", "toolz.curry(operator.truediv)(*x)"]
 
     with pytest.raises(subprocess.CalledProcessError):
-        tools.run(args, input=in_stream.encode()).decode()
+        helpers.run(args, input=in_stream.encode()).decode()
 
 
 def test_cli_async_reduce_without_curry(runner, reactor, server, capsys):
@@ -140,7 +140,7 @@ def test_cli_async_reduce_without_curry(runner, reactor, server, capsys):
     expected = "3.0\n"
 
     with Timer() as t:
-        output = tools.run(args, input=in_stream.encode()).decode()
+        output = helpers.run(args, input=in_stream.encode()).decode()
 
     assert output == expected
     limit_seconds = 7.0

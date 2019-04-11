@@ -26,7 +26,7 @@ from pype import interpret
 
 
 from tests import config
-from tests import tools
+from tests import helpers
 
 
 hypothesis.settings.register_profile("ci", max_examples=1000)
@@ -58,7 +58,7 @@ def test_eval_main(capsys):
 
 
 def test_eval_cli():
-    assert tools.run(["eval", "1+1"]).decode() == "2\n"
+    assert helpers.run(["eval", "1+1"]).decode() == "2\n"
 
 
 def test_stack():
@@ -107,7 +107,7 @@ def test_config_file(tmp_path):
     stdin = "1\n2\n".encode()
     env = dict(os.environ)
     env.update({f"{utils.NAME}_CONFIG_DIR".upper().encode(): str(tmp_path).encode()})
-    output = tools.run(args, input=stdin, env=env).decode()
+    output = helpers.run(args, input=stdin, env=env).decode()
     assert output.startswith("Counter")
 
 
@@ -121,7 +121,7 @@ def test_exec_before():
     )
 
     assert (
-        tools.run(
+        helpers.run(
             ["--exec-before", exec_before, "map", "func"], input=b"a,b\n"
         ).decode()
         == "['a', 'b']\n"

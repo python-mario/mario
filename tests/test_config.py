@@ -5,7 +5,7 @@ import toml
 
 from pype import utils
 
-from . import tools
+from . import helpers
 
 
 def test_base_exec_before(tmp_path):
@@ -20,13 +20,13 @@ def test_base_exec_before(tmp_path):
     stdin = "ab\ncd\n".encode()
     env = dict(os.environ)
     env.update({f"{utils.NAME}_CONFIG_DIR".upper().encode(): str(tmp_path).encode()})
-    output = tools.run(args, input=stdin, env=env).decode()
+    output = helpers.run(args, input=stdin, env=env).decode()
     assert output == """value is ab\nvalue is cd\n"""
 
 
 def test_config_jsonl_alias(tmp_path):
 
-    config_body = (tools.TESTS_DIR / "data/config/jsonl_alias.toml").read_text()
+    config_body = (helpers.TESTS_DIR / "data/config/jsonl_alias.toml").read_text()
     config_file_path = tmp_path / "config.toml"
 
     config_file_path.write_text(config_body)
@@ -40,7 +40,7 @@ def test_config_jsonl_alias(tmp_path):
     ).encode()
     env = dict(os.environ)
     env.update({f"{utils.NAME}_CONFIG_DIR".upper().encode(): str(tmp_path).encode()})
-    output = tools.run(args, input=stdin, env=env).decode()
+    output = helpers.run(args, input=stdin, env=env).decode()
     assert output == textwrap.dedent(
         """\
     X(a=1, b=2)
