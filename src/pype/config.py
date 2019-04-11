@@ -1,4 +1,5 @@
 import pathlib
+import os
 
 import appdirs
 import toml
@@ -6,16 +7,20 @@ import toml
 from . import utils
 from . import interpret
 
+
+
 DEFAULTS = {
     "max_concurrent": 5,
     "exec_before": None,
     "autocall": interpret.HowCall.SINGLE,
     "base_exec_before": None,
+    'dir_path': os.environ.get(f'{utils.NAME}_CONFIG_DIR'.upper(), None)
 }
 
 
 def get_config_dir():
-    return pathlib.Path(appdirs.user_config_dir(utils.NAME))
+    str_path = DEFAULTS['dir_path'] or appdirs.user_config_dir(utils.NAME)
+    return pathlib.Path(str_path)
 
 
 def load_config(dir_path=None):
@@ -29,5 +34,6 @@ def load_config(dir_path=None):
     try:
         with open(config_path) as f:
             return toml.load(f)
-    except OSError:
+    except OSError as e:
+
         return {}

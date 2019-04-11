@@ -184,15 +184,18 @@ def make_synthetic_command(cmd,):
 def make_aliases(conf):
     synth_commands = []
     if "alias" not in conf:
+
         return []
 
     for cmd in conf["alias"]:
+
         synth_commands.append(make_synthetic_command(cmd))
     return synth_commands
 
 
 def make_config_aliases_registry():
     conf = config.load_config()
+
     commands = make_aliases(conf)
     return Registry(aliases={c.name: c for c in commands})
 
