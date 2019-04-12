@@ -53,6 +53,10 @@ def test_split_string_on_separator(string, separator, expected):
     result = list(interpret.split_pipestring(string, separator))
     assert result == expected
 
+def test_no_autocall():
+    output = helpers.run(["map", '--no-autocall', "1"], input=b"a\nbb\n").decode()
+    assert output == "1\n1\n"
+
 
 def test_autocall():
     output = helpers.run(["map", "len"], input=b"a\nbb\n").decode()

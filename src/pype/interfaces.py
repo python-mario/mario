@@ -24,7 +24,7 @@ class Traversal:
     """Traversal"""
 
     # ...
-    "pype --no-autocall"
+    "pype --max-concurrent"
     global_invocation_options: Context
     "pype map --special reversed"
     specific_invocation_params: Dict[str, Any]

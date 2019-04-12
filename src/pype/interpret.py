@@ -166,11 +166,11 @@ def build_name_to_module(pipeline):
     return name_to_module
 
 
-def build_function(pipeline, global_namespace, autocall):
+def build_function(pipeline, global_namespace, howcall):
     name_to_module = build_name_to_module(pipeline)
     global_namespace = {**name_to_module, **global_namespace}
 
-    source = build_source(split_pipestring(pipeline), autocall)
+    source = build_source(split_pipestring(pipeline), howcall)
 
     exec(source, global_namespace)
     function = global_namespace["_pype_runner"]

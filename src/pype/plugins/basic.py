@@ -8,15 +8,18 @@ from pype import traversals
 registry = plug.Registry()
 
 
-def calculate_function(traversal, autocall=None):
-    if autocall is None:
-        autocall = traversal.global_invocation_options.global_options["autocall"]
-
+def calculate_function(traversal, howcall=None):
+    if howcall is None:
+        howcall = traversal.specific_invocation_params.get("howcall")
+    if howcall is None:
+        howcall = interpret.HowCall.SINGLE
     return {
         "function": interpret.build_function(
             traversal.specific_invocation_params["pipeline"],
-            traversal.global_invocation_options.global_options["global_namespace"],
-            autocall,
+            global_namespace=traversal.global_invocation_options.global_options[
+                "global_namespace"
+            ],
+            howcall=howcall,
         )
     }
 
@@ -26,7 +29,7 @@ def calculate_reduce(traversal):
     function = interpret.build_function(
         traversal.specific_invocation_params["pipeline"],
         traversal.global_invocation_options.global_options["global_namespace"],
-        autocall=interpret.HowCall.VARARGS,
+        howcall=interpret.HowCall.VARARGS,
     )
 
     return {"function": function}
@@ -80,7 +83,7 @@ async def aapply(function, items):
 @registry.add_traversal(
     "eval",
     calculate_more_params=lambda x: calculate_function(
-        x, autocall=interpret.HowCall.NONE
+        x, howcall=interpret.HowCall.NONE
     ),
 )
 async def eval(function):
@@ -127,14 +130,30 @@ subcommands = [
 
 
 def build_callback(sub_command):
-    def callback(pipeline):
-        return [{"name": sub_command.name.replace("-", "_"), "pipeline": pipeline}]
+    def callback(pipeline, autocall, **kwargs):
+        if autocall:
+            howcall = interpret.HowCall.SINGLE
+        else:
+            howcall = interpret.HowCall.NONE
+
+        return [
+            {
+                "name": sub_command.name.replace("-", "_"),
+                "howcall": howcall,
+                "pipeline": pipeline,
+                **kwargs,
+            }
+        ]
 
     return callback
 
 
 for subcommand in subcommands:
-    subcommand.params = [click.Argument(["pipeline"])]
+
+    subcommand.params = [
+        click.Option(["--autocall/--no-autocall"], is_flag=True, default=True),
+        click.Argument(["pipeline"]),
+    ]
     subcommand.callback = build_callback(subcommand)
     # TODO: add_cli and add_traversal should be the non-decorator form
     registry.add_cli(name=subcommand.name)(subcommand)
