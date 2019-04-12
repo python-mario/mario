@@ -19,7 +19,7 @@ Chain python functions together with ``!``: ::
   $ pype map 'x.upper() ! len(x)' <<<hello
   5
 
-or by adding another command pipeline like  ``map <pipeline>`` ::
+or by adding another command like  ``map <pipeline>`` ::
 
    $ pype map 'x.upper()' map 'len(x)' <<<hello
    5
