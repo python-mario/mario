@@ -12,10 +12,10 @@ setuptools.setup(
     description="An example package. Generated with cookiecutter-pylibrary.",
     long_description=open("README.rst").read(),
     author="pype contributors",
-    author_email='pype@example.com',
+    author_email="pype@example.com",
     packages=setuptools.find_packages("src"),
     package_dir={"": "src"},
-    url='http://example.com',
+    url="http://example.com",
     include_package_data=True,
     zip_safe=False,
     classifiers=[
