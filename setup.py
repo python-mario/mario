@@ -34,5 +34,8 @@ setuptools.setup(
     ],
     python_requires=">=3.7",
     install_requires=INSTALL_REQUIRES,
-    entry_points={"console_scripts": ["pype = pype.cli:cli"]},
+    entry_points={
+        "console_scripts": ["pype = pype.cli:cli"],
+        "pype_plugins": ["basic = pype.plugins"],
+    },
 )
