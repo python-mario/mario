@@ -138,7 +138,7 @@ Making sequential requests is slow. These requests take 18 seconds to complete. 
    0.06s system
    19.612 total
 
-Concurrent requests can go much faster. The same requests now take only 5 seconds. Use ``amap``, or ``afilter``, or ``reduce`` with ``await some_async_function`` to get concurrency out of the box. ::
+Concurrent requests can go much faster. The same requests now take only 6 seconds. Use ``amap``, or ``afilter``, or ``reduce`` with ``await some_async_function`` to get concurrency out of the box. ::
 
    $ time pype amap 'await asks.get ! x.text ! len' apply max <<EOF
    http://httpbin.org/delay/5
