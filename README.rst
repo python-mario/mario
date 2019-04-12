@@ -27,10 +27,10 @@ or by adding another command pipeline like  ``map <pipeline>`` ::
 
 Use ``x`` as a placeholder for the input at each stage: ::
 
-  $ pype map ' x.split() ! x[0].upper() + "!"' <<<'Hello world'
+  $ pype map ' x.split()[0] ! x.upper() + "!"' <<<'Hello world'
   HELLO!
 
-  $ pype map 'x.split() ! x[0].upper() + "!" ! x.replace("H", "J")' <<<'Hello world'
+  $ pype map 'x.split()[0] ! x.upper() + "!" ! x.replace("H", "J")' <<<'Hello world'
   JELLO!
 
 
