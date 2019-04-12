@@ -2,14 +2,15 @@ import re
 
 import setuptools
 
-with open('requirements.in') as f:
+with open("requirements.in") as f:
     INSTALL_REQUIRES = f.read().splitlines()
+
 
 setuptools.setup(
     name="pype",
     version="0.0.82",
     description="An example package. Generated with cookiecutter-pylibrary.",
-    long_description=open('README.rst').read(),
+    long_description=open("README.rst").read(),
     author="pype contributors",
     packages=setuptools.find_packages("src"),
     package_dir={"": "src"},
@@ -33,6 +34,5 @@ setuptools.setup(
     ],
     python_requires=">=3.7",
     install_requires=INSTALL_REQUIRES,
-
     entry_points={"console_scripts": ["pype = pype.cli:cli"]},
 )
