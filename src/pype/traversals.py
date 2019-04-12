@@ -138,7 +138,7 @@ async def async_map(
         prev_done.set()
         async for item in iterable:
             self_done = trio.Event()
-            nursery.start_soon(wrapper, prev_done, self_done, item, name=function)
+            nursery.start_soon(wrapper, prev_done, self_done, item)
             prev_done = self_done
         await prev_done.wait()
         await send_result.aclose()
@@ -175,7 +175,7 @@ async def sync_map(
         prev_done.set()
         async for item in iterable:
             self_done = trio.Event()
-            nursery.start_soon(wrapper, prev_done, self_done, item, name=function)
+            nursery.start_soon(wrapper, prev_done, self_done, item)
             prev_done = self_done
         await prev_done.wait()
         await send_result.aclose()
@@ -205,7 +205,7 @@ async def async_map_unordered(
 
         async for task_id, item in aenumerate(iterable):
             remaining_tasks.add(task_id)
-            nursery.start_soon(wrapper, task_id, item, name=function)
+            nursery.start_soon(wrapper, task_id, item)
 
         while remaining_tasks:
             await trio.sleep(0)
@@ -241,7 +241,7 @@ async def async_filter(
         prev_done.set()
         async for item in iterable:
             self_done = trio.Event()
-            nursery.start_soon(wrapper, prev_done, self_done, item, name=function)
+            nursery.start_soon(wrapper, prev_done, self_done, item)
             prev_done = self_done
         await prev_done.wait()
         await send_result.aclose()
@@ -276,7 +276,7 @@ async def sync_filter(
         prev_done.set()
         async for item in iterable:
             self_done = trio.Event()
-            nursery.start_soon(wrapper, prev_done, self_done, item, name=function)
+            nursery.start_soon(wrapper, prev_done, self_done, item)
             prev_done = self_done
         await prev_done.wait()
         await send_result.aclose()
@@ -324,7 +324,7 @@ async def async_reduce(
         prev_done.set()
         async for item in iterable:
             self_done = trio.Event()
-            nursery.start_soon(wrapper, prev_done, self_done, item, name=function)
+            nursery.start_soon(wrapper, prev_done, self_done, item)
             prev_done = self_done
         await prev_done.wait()
         await send_result.send(collected_result)
