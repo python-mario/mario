@@ -3,14 +3,14 @@ language: python
 python: '3.7'
 env: LC_ALL=C.UTF-8 LANG=C.UTF-8
 install:
-- pip install poetry
-- poetry lock
-- poetry install
+- pycli init
+- pycli lock
+- pycli init
 script:
 - tox -e coverage
 deploy:
   provider: script
-  script: poetry publish --build --username $PYPI_USERNAME --password $PYPI_PASSWORD
+  script: pycli upload
   on:
     tags: true
     branches:
