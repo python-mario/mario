@@ -199,7 +199,7 @@ For example: ::
 Then you can directly use the imported objects without referencing the module. ::
 
 
-    $ pype --autocall map 'Counter ! json.dumps' <<<'hello\nworld\n'
+    $ pype map 'Counter ! json.dumps' <<<'hello\nworld\n'
     {"h": 1, "e": 1, "l": 2, "o": 1}
     {"w": 1, "o": 1, "r": 1, "l": 1, "d": 1}
 
