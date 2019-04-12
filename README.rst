@@ -19,6 +19,12 @@ Chain python functions together with ``!``: ::
   $ pype map 'x.upper() ! len(x)' <<<hello
   5
 
+or by adding another command pipeline like  ``map <pipeline>`` ::
+
+   $ pype map 'x.upper()' map 'len(x)' <<<hello
+   5
+
+
 Use ``x`` as a placeholder for the input at each stage: ::
 
   $ pype map ' x.split() ! x[0].upper() + "!"' <<<'Hello world'
