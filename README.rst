@@ -126,7 +126,7 @@ try ::
 Async
 ~~~~~
 
-Making sequential requests is slow. These requests take 18 seconds to complete. ::
+Making sequential requests is slow. These requests take 20 seconds to complete. ::
 
    $ time pype map 'requests.get ! x.text ! len' apply max <<EOF
    http://httpbin.org/delay/5
