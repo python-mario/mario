@@ -204,18 +204,14 @@ Then you can directly use the imported objects without referencing the module. :
     {"w": 1, "o": 1, "r": 1, "l": 1, "d": 1}
 
 
-You can set any of the ``pype`` options in your config. For example, to make ``--no-autocall`` the default, add ::
+You can set any of the ``pype`` options in your config. For example, to set a different default value for the concurrency maximum, add ::
 
   # ~/.config/pype/config.toml
 
-  autocall = false
+  max_concurrent = 10
 
-then just use ``pype`` as normal ::
+then just use ``pype`` as normal.
 
-   $ pype map 'len' <<<'a\nbb\nccc\n'
-   <built-in function len>
-   <built-in function len>
-   <built-in function len>
 
 
 Aliases
