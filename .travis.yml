@@ -7,7 +7,7 @@ install:
 - ./pycli lock
 - ./pycli init
 script:
-- tox -e coverage
+- venv/bin/tox -e coverage
 deploy:
   provider: script
   script: ./pycli upload
