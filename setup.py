@@ -15,6 +15,7 @@ setuptools.setup(
     author_email='pype@example.com',
     packages=setuptools.find_packages("src"),
     package_dir={"": "src"},
+    url='http://example.com',
     include_package_data=True,
     zip_safe=False,
     classifiers=[
