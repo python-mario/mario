@@ -233,7 +233,7 @@ Define new commands in your config file which provide aliases to other commands.
 
    command = "map"
    options = []
-   arguments = [ "json.loads ! attr.make_class('X', list(x.keys()))(**x)"]
+   arguments = [ "json.loads ! types.SimpleNameSpace(**x)" ]
 
 
 Now we can use it like a regular command: ::
