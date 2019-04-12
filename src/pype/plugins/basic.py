@@ -116,7 +116,6 @@ subcommands = [
         "afilter",
         short_help="Async call <pipeline> on each line of input and exclude false values.",
     ),
-    click.Command("eval", short_help="Call <pipeline> without any input."),
     click.Command(
         "stack", short_help="Call <pipeline> on input as a single concatenated string."
     ),
@@ -148,3 +147,10 @@ for subcommand in subcommands:
 @click.argument("function_name")
 def _reduce(function_name):
     return [{"pipeline": f"toolz.curry({function_name})", "name": "reduce"}]
+
+
+@registry.add_cli(name="eval")
+@click.command("eval", short_help="Call <pipeline> without any input.")
+@click.argument("expression")
+def _eval(expression):
+    return [{"pipeline": expression, "name": "eval"}]
