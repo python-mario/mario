@@ -204,7 +204,7 @@ Then you can directly use the imported objects without referencing the module. :
     {"w": 1, "o": 1, "r": 1, "l": 1, "d": 1}
 
 
-You can set any of the ``pype`` options in your config. For example, to set a different default value for the concurrency maximum, add ::
+You can set any of the ``pype`` options in your config. For example, to set a different default value for the concurrency maximum ``pype --max-concurrent``, add ``max_concurrent`` to your config file (note the underscore): ::
 
   # ~/.config/pype/config.toml
 
