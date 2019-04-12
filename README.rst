@@ -199,8 +199,7 @@ For example: ::
 Then you can directly use the imported objects without referencing the module. ::
 
 
-    $ printf 'hello\nworld\n' | pype --autocall map 'Counter ! json.dumps'
-
+    $ pype --autocall map 'Counter ! json.dumps' <<<'hello\nworld\n'
     {"h": 1, "e": 1, "l": 2, "o": 1}
     {"w": 1, "o": 1, "r": 1, "l": 1, "d": 1}
 
@@ -213,7 +212,7 @@ You can set any of the ``pype`` options in your config. For example, to make ``-
 
 then just use ``pype`` as normal ::
 
-   $ printf 'a\nbb\nccc\n' | pype map 'len'
+   $ pype map 'len' <<<'a\nbb\nccc\n'
    <built-in function len>
    <built-in function len>
    <built-in function len>
