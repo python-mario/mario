@@ -103,7 +103,8 @@ def lock(cfg):
 def build(cfg):
     """Build source and binary distributions."""
     subprocess.run(
-        [cfg.venv_path / "bin/python", "setup.py", "sdist", "bdist_wheel"], check=True
+        [str(cfg.venv_path / "bin/python"), "setup.py", "sdist", "bdist_wheel"],
+        check=True,
     )
 
 
@@ -111,7 +112,7 @@ def build(cfg):
 def upload(cfg):
     """Upload the distributions to PyPI."""
     subprocess.run(
-        [cfg.venv_path / "bin/python", "-m", "pip", "install", "twine"], check=True
+        [str(cfg.venv_path / "bin/python"), "-m", "pip", "install", "twine"], check=True
     )
     subprocess.run([cfg.venv_path / "bin/twine", "check", "dist/*"], check=True)
     dists = [str(path) for path in pathlib.Path("dist").iterdir()]
