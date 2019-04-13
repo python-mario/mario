@@ -32,13 +32,10 @@ _register = _Registry()
 @_register
 def clean(cfg):
     """Remove extraneous files."""
-    paths = (
-        [str(cfg.venv_path), ".coverage"]
-        + list(pathlib.Path().glob(".coverage.*"))
-        + ["dist"]
-    )
+    paths = [cfg.venv_path, ".coverage", "dist"]
 
     for path in paths:
+        path = pathlib.Path(path)
         try:
             shutil.rmtree(path)
         except NotADirectoryError:
