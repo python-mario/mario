@@ -10,7 +10,7 @@ script:
 - venv/bin/tox
 deploy:
   provider: script
-  script: ./pycli init && ./pycli build &&./pycli upload
+  script: ./pycli clean && ./pycli init && ./pycli build &&./pycli upload
   on:
     tags: true
     branches:
