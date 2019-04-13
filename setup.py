@@ -8,7 +8,7 @@ with open("requirements.in") as f:
 
 setuptools.setup(
     name="python-pype",
-    version="0.0.87",
+    version="0.0.88",
     description="An example package. Generated with cookiecutter-pylibrary.",
     long_description=open("README.rst").read(),
     long_description_content_type='text/x-rst',
