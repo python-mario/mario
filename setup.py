@@ -11,6 +11,7 @@ setuptools.setup(
     version="0.0.84",
     description="An example package. Generated with cookiecutter-pylibrary.",
     long_description=open("README.rst").read(),
+    long_description_content_type='text/x-rst',
     author="pype contributors",
     author_email="pype@example.com",
     packages=setuptools.find_packages("src"),
