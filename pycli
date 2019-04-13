@@ -43,6 +43,8 @@ def clean(cfg):
             shutil.rmtree(path)
         except NotADirectoryError:
             path.unlink()
+        except FileNotFoundError:
+            pass
 
 
 @_register
