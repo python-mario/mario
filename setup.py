@@ -11,7 +11,7 @@ setuptools.setup(
     version="0.0.88",
     description="An example package. Generated with cookiecutter-pylibrary.",
     long_description=open("README.rst").read(),
-    long_description_content_type='text/x-rst',
+    long_description_content_type="text/x-rst",
     author="mario contributors",
     author_email="mario@example.com",
     packages=setuptools.find_packages("src"),
@@ -38,7 +38,7 @@ setuptools.setup(
     python_requires=">=3.7",
     install_requires=INSTALL_REQUIRES,
     entry_points={
-        "console_scripts": ["mario = mario.cli:cli"],
+        "console_scripts": ["mario = mario.cli:cli", "mr = mario.cli:cli"],
         "mario_plugins": ["basic = mario.plugins"],
     },
 )
