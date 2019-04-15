@@ -24,9 +24,9 @@ class Traversal:
     """Traversal"""
 
     # ...
-    "pype --max-concurrent"
+    "mario --max-concurrent"
     global_invocation_options: Context
-    "pype map --special reversed"
+    "mario map --special reversed"
     specific_invocation_params: Dict[str, Any]
     "stack, items"
     runtime_parameters: Dict[str, Any] = attr.ib(default=None)

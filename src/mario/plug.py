@@ -13,10 +13,10 @@ from typing import Any
 import attr
 import pkg_resources
 
-from pype import asynch
-from pype import interpret
-from pype import utils
-from pype import config
+from mario import asynch
+from mario import interpret
+from mario import utils
+from mario import config
 
 
 @attr.dataclass
@@ -104,7 +104,7 @@ class Registry:
         return wrap
 
 
-# Currently, pype reserves `function`, `command`, `stack`, `items`, `global_namespace`.
+# Currently, mario reserves `function`, `command`, `stack`, `items`, `global_namespace`.
 # These could all be provided in a namespace object.
 
 

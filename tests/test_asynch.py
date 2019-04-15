@@ -45,7 +45,7 @@ def test_cli_async_chain_map_apply(runner, reactor, server):
 
     args = [
         "-m",
-        "pype",
+        "mario",
         "--max-concurrent",
         "100",
         "amap",

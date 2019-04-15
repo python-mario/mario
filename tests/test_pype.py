@@ -17,12 +17,12 @@ import hypothesis
 import hypothesis.strategies as st
 
 
-import pype
-import pype.app
-import pype.cli
-import pype._version
-from pype import utils
-from pype import interpret
+import mario
+import mario.app
+import mario.cli
+import mario._version
+from mario import utils
+from mario import interpret
 
 
 from tests import config
@@ -47,13 +47,13 @@ def test_raises_on_nonexistent_option(option, runner):
     args = [option, "print"]
     in_stream = "a.b.c\n"
 
-    result = runner.invoke(pype.cli.cli, args, input=in_stream)
+    result = runner.invoke(mario.cli.cli, args, input=in_stream)
 
     assert_exception_equal(result.exception, SystemExit(2))
 
 
 def test_eval_main(capsys):
-    pype.app.main([[{"name": "eval", "pipeline": "1+1"}]])
+    mario.app.main([[{"name": "eval", "pipeline": "1+1"}]])
     assert capsys.readouterr().out == "2\n"
 
 
@@ -62,7 +62,7 @@ def test_eval_cli():
 
 
 def test_stack():
-    args = [sys.executable, "-m", "pype", "stack", "len(x)"]
+    args = [sys.executable, "-m", "mario", "stack", "len(x)"]
     stdin = "1\n2\n".encode()
     output = subprocess.check_output(args, input=stdin).decode()
     assert output == "4\n"
@@ -72,7 +72,7 @@ def test_exec_before():
     args = [
         sys.executable,
         "-m",
-        "pype",
+        "mario",
         "--exec-before",
         "from collections import Counter as c",
         "stack",
@@ -86,9 +86,9 @@ def test_exec_before():
 def test_cli_version(runner):
     args = ["--version"]
 
-    result = runner.invoke(pype.cli.cli, args)
+    result = runner.invoke(mario.cli.cli, args)
 
-    assert result.output == f"pype, version {pype._version.__version__}\n"
+    assert result.output == f"mario, version {mario._version.__version__}\n"
     assert result.output.rstrip()[-1].isdigit()
     assert not result.exception
     assert result.exit_code == 0

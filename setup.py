@@ -7,13 +7,13 @@ with open("requirements.in") as f:
 
 
 setuptools.setup(
-    name="python-pype",
+    name="mario",
     version="0.0.88",
     description="An example package. Generated with cookiecutter-pylibrary.",
     long_description=open("README.rst").read(),
     long_description_content_type='text/x-rst',
-    author="pype contributors",
-    author_email="pype@example.com",
+    author="mario contributors",
+    author_email="mario@example.com",
     packages=setuptools.find_packages("src"),
     package_dir={"": "src"},
     url="http://example.com",
@@ -38,7 +38,7 @@ setuptools.setup(
     python_requires=">=3.7",
     install_requires=INSTALL_REQUIRES,
     entry_points={
-        "console_scripts": ["pype = pype.cli:cli"],
-        "pype_plugins": ["basic = pype.plugins"],
+        "console_scripts": ["mario = mario.cli:cli"],
+        "mario_plugins": ["basic = mario.plugins"],
     },
 )

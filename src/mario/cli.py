@@ -32,7 +32,7 @@ CONTEXT_SETTINGS = {"default_map": config.DEFAULTS}
     help="Python source code to be executed before any stage; typically set in the user config file. Combined with --exec-before value. ",
     default=config.DEFAULTS["base_exec_before"],
 )
-@click.version_option(_version.__version__, prog_name="pype")
+@click.version_option(_version.__version__, prog_name="mario")
 def cli(**kwargs):
     pass
 
