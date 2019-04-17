@@ -10,8 +10,9 @@ Usage
 Basics
 ~~~~~~
 
+Run ``mario`` with ``mario`` or ``mr``.
 
-At the command prompt, use ``mr`` to act on each item in the file with python commands: ::
+At the command prompt, use ``map`` to act on each item in the file with python commands: ::
 
   $ mr map x.upper() <<<'abc'
   ABC
@@ -22,7 +23,7 @@ Chain python functions together with ``!``: ::
   $ mr map 'x.upper() ! len(x)' <<<hello
   5
 
-or by adding another command like  ``map <pipeline>`` ::
+or by adding another command ::
 
    $ mr map 'x.upper()' map 'len(x)' <<<hello
    5
