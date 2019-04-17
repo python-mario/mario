@@ -34,6 +34,11 @@ CONTEXT_SETTINGS = {"default_map": config.DEFAULTS}
 )
 @click.version_option(_version.__version__, prog_name="mario")
 def cli(**kwargs):
+    """Mario: Python pipelines for your shell.
+
+    GitHub: https://github.com/python-mario/mario
+
+    """
     pass
 
 
