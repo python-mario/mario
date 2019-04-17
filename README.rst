@@ -1,6 +1,8 @@
 
 mario: command-line pipes in Python
-///////////////////////////////////
+===================================
+
+Your favorite plumber 🐍🔧 with your favorite pipes, right in your shell 🐢.
 
 Usage
 =====
