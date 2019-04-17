@@ -105,13 +105,17 @@ def upload(cfg):
     subprocess.run(
         [str(cfg.venv_bin / "python"), "-m", "pip", "install", "twine"], check=True
     )
-    subprocess.run([cfg.venv_bin / "twine", "check", "dist/*"], check=True)
+    subprocess.run(
+        [cfg.venv_bin / "python", "-m", "twine", "check", "dist/*"], check=True
+    )
     dists = [str(path) for path in pathlib.Path("dist").iterdir()]
     username = os.environ["PYPI_USERNAME"]
     password = os.environ["PYPI_PASSWORD"]
     subprocess.run(
         [
-            cfg.venv_bin / "twine",
+            cfg.venv_bin / "python",
+            "-m",
+            "twine",
             "upload",
             "--username",
             username,
