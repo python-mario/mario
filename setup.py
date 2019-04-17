@@ -38,7 +38,11 @@ setuptools.setup(
     python_requires=">=3.7",
     install_requires=INSTALL_REQUIRES,
     entry_points={
-        "console_scripts": ["mario = mario.cli:cli", "mr = mario.cli:cli"],
+        "console_scripts": [
+            "mario = mario.cli:cli",
+            "mr = mario.cli:cli",
+            "ma = mario.cli:cli",
+        ],
         "mario_plugins": ["basic = mario.plugins"],
     },
 )
