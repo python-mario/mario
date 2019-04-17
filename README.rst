@@ -264,7 +264,7 @@ Installation
 
 Get it with pip: ::
 
-   pip install mario
+   python3.7 -m pip install mario
 
 
 Caveats
