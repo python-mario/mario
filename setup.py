@@ -9,7 +9,7 @@ with open("requirements.in") as f:
 setuptools.setup(
     name="mario",
     version="0.0.89",
-    description="An example package. Generated with cookiecutter-pylibrary.",
+    description="Shell pipes for Python.",
     long_description=open("README.rst").read(),
     long_description_content_type="text/x-rst",
     author="mario contributors",
