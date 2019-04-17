@@ -197,7 +197,7 @@ For example: ::
 
   # ~/.config/mario/config.toml
 
-  exec_before = """
+  base_exec_before = """
 
   from itertools import *
   from collections import Counter
