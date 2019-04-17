@@ -78,7 +78,7 @@ def test_py_read():
             [
                 sys.executable,
                 "-m",
-                "pype",
+                "mario",
                 "--exec-before",
                 exec_before,
                 "map",
@@ -100,7 +100,7 @@ def test_apply_csv_dictreader_read_csv():
             [
                 sys.executable,
                 "-m",
-                "pype",
+                "mario",
                 "apply",
                 "csv.DictReader ! [dict(y) for y in x]",
             ],

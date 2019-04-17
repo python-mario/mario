@@ -6,7 +6,7 @@ import urllib.parse
 import pytest
 
 
-from pype import interpret
+from mario import interpret
 
 from tests import helpers
 

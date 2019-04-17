@@ -147,7 +147,7 @@ def build_source(components, howcall):
     howsig = howcall_to_howsig[howcall]
     source = textwrap.dedent(
         f"""\
-    async def _pype_runner({howsig.value}):
+    async def _mario_runner({howsig.value}):
 {lines}
         return {SYMBOL}
     """
@@ -173,7 +173,7 @@ def build_function(pipeline, global_namespace, howcall):
     source = build_source(split_pipestring(pipeline), howcall)
 
     exec(source, global_namespace)
-    function = global_namespace["_pype_runner"]
+    function = global_namespace["_mario_runner"]
     return Function(function, global_namespace, source)
 
 

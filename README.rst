@@ -1,5 +1,8 @@
-pype: command-line pipes in Python
-####################################
+
+mario: command-line pipes in Python
+===================================
+
+Your favorite plumber 🐍🔧 with your favorite pipes, right in your shell 🐢.
 
 Usage
 =====
@@ -7,37 +10,38 @@ Usage
 Basics
 ~~~~~~
 
+Run ``mario`` with ``mario`` or ``mr``.
 
-At the command prompt, use ``pype`` to act on each item in the file with python commands: ::
+At the command prompt, use ``map`` to act on each item in the file with python commands: ::
 
-  $ pype map x.upper() <<<'abc'
+  $ mr map x.upper() <<<'abc'
   ABC
 
 
 Chain python functions together with ``!``: ::
 
-  $ pype map 'x.upper() ! len(x)' <<<hello
+  $ mr map 'x.upper() ! len(x)' <<<hello
   5
 
-or by adding another command like  ``map <pipeline>`` ::
+or by adding another command ::
 
-   $ pype map 'x.upper()' map 'len(x)' <<<hello
+   $ mr map 'x.upper()' map 'len(x)' <<<hello
    5
 
 
 Use ``x`` as a placeholder for the input at each stage: ::
 
-  $ pype map ' x.split()[0] ! x.upper() + "!"' <<<'Hello world'
+  $ mr map ' x.split()[0] ! x.upper() + "!"' <<<'Hello world'
   HELLO!
 
-  $ pype map 'x.split()[0] ! x.upper() + "!" ! x.replace("H", "J")' <<<'Hello world'
+  $ mr map 'x.split()[0] ! x.upper() + "!" ! x.replace("H", "J")' <<<'Hello world'
   JELLO!
 
 
 
 Automatically import modules you need: ::
 
-   $ pype stack 'itertools.repeat(x, 2) ! "".join' <<<hello,world!
+   $ mr stack 'itertools.repeat(x, 2) ! "".join' <<<hello,world!
    hello,world!
    hello,world!
 
@@ -51,7 +55,7 @@ _______
 
 Use ``map`` to act on each input item. ::
 
-   $ pype map 'x * 2' <<<'a\nbb\n'
+   $ mr map 'x * 2' <<<'a\nbb\n'
    aa
    bbbb
 
@@ -61,7 +65,7 @@ __________
 
 Use ``filter`` to evaluate a condition on each line of input and exclude false values. ::
 
-   $  pype filter 'len(x) > 1' <<<'a\nbb\nccc\n'
+   $  mr filter 'len(x) > 1' <<<'a\nbb\nccc\n'
    bb
    ccc
 
@@ -71,7 +75,7 @@ _________
 
 Use ``apply`` to act on the sequence of items. ::
 
-    $   pype apply 'len(x)' <<<'a\nbb\n'
+    $   mr apply 'len(x)' <<<'a\nbb\n'
     2
 
 
@@ -80,12 +84,12 @@ _________
 
 Use ``stack`` to treat the input as a single string, including newlines. ::
 
-    $  pype stack 'len(x)' <<<'a\nbb\n'
+    $  mr stack 'len(x)' <<<'a\nbb\n'
     5
 
 Use ``eval`` to evaluate a python expression without any input. ::
 
-   $ pype eval 1+1
+   $ mr eval 1+1
    2
 
 ``reduce``
@@ -96,7 +100,7 @@ Use ``reduce`` to evaluate a function of two arguments successively over a seque
 For example, to multiply all the values together, first convert each value to ``int`` with ``map``, then use ``reduce`` to successively multiply each item with the product. ::
 
 
-   $ pype map int reduce operator.mul <<EOF
+   $ mr map int reduce operator.mul <<EOF
    1
    2
    3
@@ -113,12 +117,12 @@ Autocall
 
 You don't need to explicitly call the function with ``f(x)``; just use ``f``. For example, instead of ::
 
-  $ pype map 'len(x)' <<<'a\nbb'
+  $ mr map 'len(x)' <<<'a\nbb'
   5
 
 try ::
 
-  $ pype map len <<<'a\nbb'
+  $ mr map len <<<'a\nbb'
   5
 
 
@@ -128,7 +132,7 @@ Async
 
 Making sequential requests is slow. These requests take 20 seconds to complete. ::
 
-   $ time pype map 'requests.get ! x.text ! len' apply max <<EOF
+   $ time mr map 'requests.get ! x.text ! len' apply max <<EOF
    http://httpbin.org/delay/5
    http://httpbin.org/delay/1
    http://httpbin.org/delay/4
@@ -144,7 +148,7 @@ Making sequential requests is slow. These requests take 20 seconds to complete. 
 
 Concurrent requests can go much faster. The same requests now take only 6 seconds. Use ``amap``, or ``afilter``, or ``reduce`` with ``await some_async_function`` to get concurrency out of the box. ::
 
-   $ time pype amap 'await asks.get ! x.text ! len' apply max <<EOF
+   $ time mr amap 'await asks.get ! x.text ! len' apply max <<EOF
    http://httpbin.org/delay/5
    http://httpbin.org/delay/1
    http://httpbin.org/delay/4
@@ -170,7 +174,7 @@ For example, the ``3 seconds`` item is ready before the preceding ``4 seconds`` 
 
 ::
 
-    $ time pype --exec-before 'import datetime; now=datetime.datetime.utcnow; START_TIME=now(); print("Elapsed time | Response size")' map 'await asks.get !  f"{(now() - START_TIME).seconds} seconds    | {len(x.content)} bytes"'  <<EOF
+    $ time mr --exec-before 'import datetime; now=datetime.datetime.utcnow; START_TIME=now(); print("Elapsed time | Response size")' map 'await asks.get !  f"{(now() - START_TIME).seconds} seconds    | {len(x.content)} bytes"'  <<EOF
     http://httpbin.org/delay/1
     http://httpbin.org/delay/2
     http://httpbin.org/delay/4
@@ -191,7 +195,7 @@ Add code to automatically execute, into your config file.
 
 For example: ::
 
-  # ~/.config/pype/config.toml
+  # ~/.config/mario/config.toml
 
   exec_before = """
 
@@ -203,18 +207,18 @@ For example: ::
 Then you can directly use the imported objects without referencing the module. ::
 
 
-    $ pype map 'Counter ! json.dumps' <<<'hello\nworld\n'
+    $ mr map 'Counter ! json.dumps' <<<'hello\nworld\n'
     {"h": 1, "e": 1, "l": 2, "o": 1}
     {"w": 1, "o": 1, "r": 1, "l": 1, "d": 1}
 
 
-You can set any of the ``pype`` options in your config. For example, to set a different default value for the concurrency maximum ``pype --max-concurrent``, add ``max_concurrent`` to your config file (note the underscore): ::
+You can set any of the ``mario`` options in your config. For example, to set a different default value for the concurrency maximum ``mr --max-concurrent``, add ``max_concurrent`` to your config file (note the underscore): ::
 
-  # ~/.config/pype/config.toml
+  # ~/.config/mario/config.toml
 
   max_concurrent = 10
 
-then just use ``pype`` as normal.
+then just use ``mr`` as normal.
 
 
 
@@ -238,21 +242,21 @@ Define new commands in your config file which provide aliases to other commands.
 
 Now we can use it like a regular command: ::
 
-    $ pype jsonl  <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
+    $ mr jsonl  <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
     X(a=1, b=2)
     X(a=5, b=9)
 
 
 The new command ``jsonl`` can be used in pipelines as well. To get the maximum value in a sequence of jsonlines objects. ::
 
-   $ pype jsonl map 'x.a' apply max <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
+   $ mr jsonl map 'x.a' apply max <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
    5
 
 
 Plugins
 ~~~~~~~
 
-Add new commands like ``map`` and ``reduce`` by installing pype plugins. You can try them out without installing by adding them to any ``.py`` file in your ``~/.config/pype/modules/``.
+Add new commands like ``map`` and ``reduce`` by installing mario plugins. You can try them out without installing by adding them to any ``.py`` file in your ``~/.config/mario/modules/``.
 
 
 Installation
@@ -260,20 +264,20 @@ Installation
 
 Get it with pip: ::
 
-   pip install python-pype
+   python3.7 -m pip install mario
 
 
 Caveats
 =======
 
 
-* ``pype`` assumes *trusted command arguments* and *untrusted input stream data*. It uses ``eval`` on your commands, not on the input stream data. If you use ``exec``, ``eval``, ``subprocess``, or similar commands, you can execute arbitrary code from the input stream, like in regular python.
+* ``mario`` assumes *trusted command arguments* and *untrusted input stream data*. It uses ``eval`` on your commands, not on the input stream data. If you use ``exec``, ``eval``, ``subprocess``, or similar commands, you can execute arbitrary code from the input stream, like in regular python.
 
 
 Status
 ======
 
-* Check the `issues page <https://www.github.com/python-pype/pype/issues>`_ for open tickets.
+* Check the `issues page <https://www.github.com/python-mario/mario/issues>`_ for open tickets.
 * This package is experimental and is subject to change without notice.
 
 

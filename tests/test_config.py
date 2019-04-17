@@ -3,7 +3,7 @@ import textwrap
 
 import toml
 
-from pype import utils
+from mario import utils
 
 from . import helpers
 

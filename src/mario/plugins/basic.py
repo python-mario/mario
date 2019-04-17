@@ -1,9 +1,9 @@
 import click
 
-from pype import plug
-from pype import asynch
-from pype import interpret
-from pype import traversals
+from mario import plug
+from mario import asynch
+from mario import interpret
+from mario import traversals
 
 registry = plug.Registry()
 
