@@ -16,7 +16,7 @@ setuptools.setup(
     author_email="mario@example.com",
     packages=setuptools.find_packages("src"),
     package_dir={"": "src"},
-    url="http://example.com",
+    url="https://github.com/python-mario/mario",
     include_package_data=True,
     zip_safe=False,
     classifiers=[
