@@ -11,9 +11,7 @@ attrs==19.1.0
 bump2version==0.5.10
 click-default-group==1.2
 click==7.0
-contextvars==2.4          # via sniffio, trio
 idna==2.8                 # via trio
-immutables==0.9           # via contextvars
 outcome==1.0.0            # via trio
 parso==0.4.0
 sniffio==1.0.0            # via trio

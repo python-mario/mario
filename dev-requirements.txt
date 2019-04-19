@@ -28,7 +28,6 @@ chardet==3.0.4            # via aiohttp, requests
 cleo==0.6.8               # via poetry
 click==7.0                # via black, cuvner
 constantly==15.1.0        # via twisted
-contextvars==2.4          # via sniffio
 coverage==4.5.3
 cryptography==2.6.1       # via pyopenssl, service-identity
 cuvner==18.0.1
@@ -38,9 +37,7 @@ h11==0.8.1                # via asks
 html5lib==1.0.1           # via poetry
 hyperlink==19.0.0         # via twisted
 hypothesis==4.17.1
-idna-ssl==1.1.0           # via aiohttp
-idna==2.8                 # via hyperlink, idna-ssl, requests, twisted, yarl
-immutables==0.9           # via contextvars
+idna==2.8                 # via hyperlink, requests, twisted, yarl
 incremental==17.5.0       # via cuvner, treq, twisted
 isort==4.3.17             # via pylint
 jedi==0.13.3
@@ -88,7 +85,6 @@ treq==18.6.0
 twine==1.13.0
 twisted[tls]==19.2.0
 typed-ast==1.3.1          # via astroid
-typing-extensions==3.7.2  # via aiohttp
 unidiff==0.5.5            # via cuvner
 urllib3==1.24.1           # via requests
 virtualenv==16.4.3        # via tox
