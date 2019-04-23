@@ -1,4 +1,4 @@
 - Shouldn't collect items into list if not necessary. For example if it's just = map asks.get(x) ! x.text ! len(x) =, this could be printed out in streaming fashion, one item at a time, in the original order.
 - I'm making a library whose plugins provide functions with different signatures, and I need to call those functions with the right objects. I see two options. Pull the parameters off the plugin functions with inspect.signature(), and pass each function the values required by its signature. Have each plugin function separately declare which parameters it takes, e.g. @plug.takes('data', 'maxval', 'y') def my_plugin_function(data, maxval, y): ...
 - Is it possible to avoid collecting items into a list for =apply every_other= or =mean= e.g. with =run_sync_in_worker_thread()=
-- =mario map x=  is really slow compared to =py -x x=
+- Aliases that inject stages at the first and last position, such as wrapping user cli commands in `json.loads <cli commands> json.dumps`.
