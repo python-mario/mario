@@ -79,7 +79,7 @@ async def program_runner(
     items: AsyncIterable,
     context: interfaces.Context,
 ):
-
+    print(traversals[0].specific_invocation_params['kwargs'])
     async with async_exit_stack.AsyncExitStack() as stack:
         for traversal in traversals:
             items = await call_traversal(context, traversal, items, stack)

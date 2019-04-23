@@ -130,7 +130,7 @@ subcommands = [
 
 
 def build_callback(sub_command):
-    def callback(pipeline, autocall, **kwargs):
+    def callback(pipeline, autocall, parameters, **kwargs):
         if autocall:
             howcall = interpret.HowCall.SINGLE
         else:
@@ -141,12 +141,17 @@ def build_callback(sub_command):
                 "name": sub_command.name.replace("-", "_"),
                 "howcall": howcall,
                 "pipeline": pipeline,
+                "parameters": parameters,
                 **kwargs,
             }
         ]
 
     return callback
 
+
+option_exec_before = click.option(
+    "--exec-before", help="Execute code in the function's global namespace."
+)
 
 for subcommand in subcommands:
 
@@ -155,6 +160,7 @@ for subcommand in subcommands:
         click.Argument(["pipeline"]),
     ]
     subcommand.callback = build_callback(subcommand)
+    subcommand = option_exec_before(subcommand)
     # TODO: add_cli and add_traversal should be the non-decorator form
     registry.add_cli(name=subcommand.name)(subcommand)
 
@@ -163,13 +169,21 @@ for subcommand in subcommands:
 @click.command(
     "reduce", short_help="Reduce a sequence with a <function>. e.g. `operator.mul`."
 )
+@option_exec_before
 @click.argument("function_name")
-def _reduce(function_name):
-    return [{"pipeline": f"toolz.curry({function_name})", "name": "reduce"}]
+def _reduce(function_name, **parameters):
+    return [
+        {
+            "pipeline": f"toolz.curry({function_name})",
+            "name": "reduce",
+            "parameters": parameters,
+        }
+    ]
 
 
 @registry.add_cli(name="eval")
 @click.command("eval", short_help="Call <pipeline> without any input.")
+@option_exec_before
 @click.argument("expression")
-def _eval(expression):
-    return [{"pipeline": expression, "name": "eval"}]
+def _eval(expression, **parameters):
+    return [{"pipeline": expression, "name": "eval", "kwargs": parameters}]
