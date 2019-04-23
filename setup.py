@@ -40,8 +40,6 @@ setuptools.setup(
     entry_points={
         "console_scripts": [
             "mario = mario.cli:cli",
-            "mr = mario.cli:cli",
-            "ma = mario.cli:cli",
         ],
         "mario_plugins": ["basic = mario.plugins"],
     },

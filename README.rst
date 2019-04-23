@@ -10,38 +10,41 @@ Usage
 Basics
 ~~~~~~
 
-Run ``mario`` with ``mario`` or ``ma``.
+Invoke with  ``mario`` at the command line. ::
 
-At the command prompt, use ``map`` to act on each item in the file with python commands: ::
+  $ mario eval 1+1
+  2
 
-  $ ma map x.upper() <<<'abc'
+Use ``map`` to act on each item in the file with python commands: ::
+
+  $ mario map x.upper() <<<'abc'
   ABC
 
 
 Chain python functions together with ``!``: ::
 
-  $ ma map 'x.upper() ! len(x)' <<<hello
+  $ mario map 'x.upper() ! len(x)' <<<hello
   5
 
 or by adding another command ::
 
-   $ ma map 'x.upper()' map 'len(x)' <<<hello
+   $ mario map 'x.upper()' map 'len(x)' <<<hello
    5
 
 
 Use ``x`` as a placeholder for the input at each stage: ::
 
-  $ ma map ' x.split()[0] ! x.upper() + "!"' <<<'Hello world'
+  $ mario map ' x.split()[0] ! x.upper() + "!"' <<<'Hello world'
   HELLO!
 
-  $ ma map 'x.split()[0] ! x.upper() + "!" ! x.replace("H", "J")' <<<'Hello world'
+  $ mario map 'x.split()[0] ! x.upper() + "!" ! x.replace("H", "J")' <<<'Hello world'
   JELLO!
 
 
 
 Automatically import modules you need: ::
 
-   $ ma stack 'itertools.repeat(x, 2) ! "".join' <<<hello,world!
+   $ mario stack 'itertools.repeat(x, 2) ! "".join' <<<hello,world!
    hello,world!
    hello,world!
 
@@ -55,7 +58,7 @@ _______
 
 Use ``map`` to act on each input item. ::
 
-   $ ma map 'x * 2' <<<'a\nbb\n'
+   $ mario map 'x * 2' <<<'a\nbb\n'
    aa
    bbbb
 
@@ -65,7 +68,7 @@ __________
 
 Use ``filter`` to evaluate a condition on each line of input and exclude false values. ::
 
-   $  ma filter 'len(x) > 1' <<<'a\nbb\nccc\n'
+   $  mario filter 'len(x) > 1' <<<'a\nbb\nccc\n'
    bb
    ccc
 
@@ -75,7 +78,7 @@ _________
 
 Use ``apply`` to act on the sequence of items. ::
 
-    $   ma apply 'len(x)' <<<'a\nbb\n'
+    $   mario apply 'len(x)' <<<'a\nbb\n'
     2
 
 
@@ -84,12 +87,12 @@ _________
 
 Use ``stack`` to treat the input as a single string, including newlines. ::
 
-    $  ma stack 'len(x)' <<<'a\nbb\n'
+    $  mario stack 'len(x)' <<<'a\nbb\n'
     5
 
 Use ``eval`` to evaluate a python expression without any input. ::
 
-   $ ma eval 1+1
+   $ mario eval 1+1
    2
 
 ``reduce``
@@ -100,7 +103,7 @@ Use ``reduce`` to evaluate a function of two arguments successively over a seque
 For example, to multiply all the values together, first convert each value to ``int`` with ``map``, then use ``reduce`` to successively multiply each item with the product. ::
 
 
-   $ ma map int reduce operator.mul <<EOF
+   $ mario map int reduce operator.mul <<EOF
    1
    2
    3
@@ -117,12 +120,12 @@ Autocall
 
 You don't need to explicitly call the function with ``f(x)``; just use ``f``. For example, instead of ::
 
-  $ ma map 'len(x)' <<<'a\nbb'
+  $ mario map 'len(x)' <<<'a\nbb'
   5
 
 try ::
 
-  $ ma map len <<<'a\nbb'
+  $ mario map len <<<'a\nbb'
   5
 
 
@@ -132,7 +135,7 @@ Async
 
 Making sequential requests is slow. These requests take 20 seconds to complete. ::
 
-   $ time ma map 'requests.get ! x.text ! len' apply max <<EOF
+   $ time mario map 'requests.get ! x.text ! len' apply max <<EOF
    http://httpbin.org/delay/5
    http://httpbin.org/delay/1
    http://httpbin.org/delay/4
@@ -148,7 +151,7 @@ Making sequential requests is slow. These requests take 20 seconds to complete. 
 
 Concurrent requests can go much faster. The same requests now take only 6 seconds. Use ``amap``, or ``afilter``, or ``reduce`` with ``await some_async_function`` to get concurrency out of the box. ::
 
-   $ time ma amap 'await asks.get ! x.text ! len' apply max <<EOF
+   $ time mario amap 'await asks.get ! x.text ! len' apply max <<EOF
    http://httpbin.org/delay/5
    http://httpbin.org/delay/1
    http://httpbin.org/delay/4
@@ -174,7 +177,7 @@ For example, the ``3 seconds`` item is ready before the preceding ``4 seconds`` 
 
 ::
 
-    $ time ma --exec-before 'import datetime; now=datetime.datetime.utcnow; START_TIME=now(); print("Elapsed time | Response size")' map 'await asks.get !  f"{(now() - START_TIME).seconds} seconds    | {len(x.content)} bytes"'  <<EOF
+    $ time mario --exec-before 'import datetime; now=datetime.datetime.utcnow; START_TIME=now(); print("Elapsed time | Response size")' map 'await asks.get !  f"{(now() - START_TIME).seconds} seconds    | {len(x.content)} bytes"'  <<EOF
     http://httpbin.org/delay/1
     http://httpbin.org/delay/2
     http://httpbin.org/delay/4
@@ -207,18 +210,18 @@ For example: ::
 Then you can directly use the imported objects without referencing the module. ::
 
 
-    $ ma map 'Counter ! json.dumps' <<<'hello\nworld\n'
+    $ mario map 'Counter ! json.dumps' <<<'hello\nworld\n'
     {"h": 1, "e": 1, "l": 2, "o": 1}
     {"w": 1, "o": 1, "r": 1, "l": 1, "d": 1}
 
 
-You can set any of the ``mario`` options in your config. For example, to set a different default value for the concurrency maximum ``ma --max-concurrent``, add ``max_concurrent`` to your config file (note the underscore): ::
+You can set any of the ``mario`` options in your config. For example, to set a different default value for the concurrency maximum ``mario --max-concurrent``, add ``max_concurrent`` to your config file (note the underscore): ::
 
   # ~/.config/mario/config.toml
 
   max_concurrent = 10
 
-then just use ``ma`` as normal.
+then just use ``mario`` as normal.
 
 
 
@@ -242,14 +245,14 @@ Define new commands in your config file which provide aliases to other commands.
 
 Now we can use it like a regular command: ::
 
-    $ ma jsonl  <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
+    $ mario jsonl  <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
     X(a=1, b=2)
     X(a=5, b=9)
 
 
 The new command ``jsonl`` can be used in pipelines as well. To get the maximum value in a sequence of jsonlines objects. ::
 
-   $ ma jsonl map 'x.a' apply max <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
+   $ mario jsonl map 'x.a' apply max <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
    5
 
 
