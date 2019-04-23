@@ -53,6 +53,18 @@ Automatically import modules you need: ::
 Commands
 ~~~~~~~~
 
+
+``eval``
+________
+
+
+Use ``eval`` to evaluate a Python expression. ::
+
+  $ mario eval 'datetime.datetime.utcnow()'
+  2019-01-01 01:23:45.562736
+
+
+
 ``map``
 _______
 
