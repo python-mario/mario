@@ -102,10 +102,6 @@ Use ``stack`` to treat the input as a single string, including newlines. ::
     $  mario stack 'len(x)' <<<'a\nbb\n'
     5
 
-Use ``eval`` to evaluate a python expression without any input. ::
-
-   $ mario eval 1+1
-   2
 
 ``reduce``
 __________
