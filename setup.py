@@ -8,7 +8,7 @@ with open("requirements.in") as f:
 
 setuptools.setup(
     name="mario",
-    version="0.0.93",
+    version="0.0.94",
     description="Shell pipes for Python.",
     long_description=open("README.rst").read(),
     long_description_content_type="text/x-rst",
