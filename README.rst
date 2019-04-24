@@ -2,7 +2,7 @@
 mario: command-line pipes in Python
 ===================================
 
-Your favorite plumber 🐍🔧 with your favorite pipes, right in your shell 🐢.
+Your favorite plumbing snake 🐍🔧 with your favorite pipes, right in your shell 🐢.
 
 
 .. image:: https://travis-ci.com/python-mario/mario.svg?branch=master
