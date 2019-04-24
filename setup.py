@@ -1,8 +1,11 @@
 import re
+import pathlib
 
 import setuptools
 
-with open("requirements.in") as f:
+PROJECT_ROOT = pathlib.Path(__file__).parent
+
+with open(PROJECT_ROOT / "requirements.in") as f:
     INSTALL_REQUIRES = f.read().splitlines()
 
 
@@ -10,7 +13,7 @@ setuptools.setup(
     name="mario",
     version="0.0.96",
     description="Shell pipes for Python.",
-    long_description=open("README.rst").read(),
+    long_description=open(PROJECT_ROOT / "README.rst").read(),
     long_description_content_type="text/x-rst",
     author="mario contributors",
     author_email="mario@example.com",
