@@ -13,12 +13,22 @@ def calculate_function(traversal, howcall=None):
         howcall = traversal.specific_invocation_params.get("howcall")
     if howcall is None:
         howcall = interpret.HowCall.SINGLE
+
+    global_namespace = traversal.global_invocation_options.global_options[
+        "global_namespace"
+    ].copy()
+
+    if "exec_before" in traversal.specific_invocation_params["parameters"]:
+        global_namespace.update(
+            interpret.build_global_namespace(
+                traversal.specific_invocation_params["parameters"]["exec_before"]
+            )
+        )
+
     return {
         "function": interpret.build_function(
             traversal.specific_invocation_params["pipeline"],
-            global_namespace=traversal.global_invocation_options.global_options[
-                "global_namespace"
-            ],
+            global_namespace=global_namespace,
             howcall=howcall,
         )
     }
@@ -130,7 +140,7 @@ subcommands = [
 
 
 def build_callback(sub_command):
-    def callback(pipeline, autocall, parameters, **kwargs):
+    def callback(pipeline, autocall, **parameters):
         if autocall:
             howcall = interpret.HowCall.SINGLE
         else:
@@ -142,7 +152,6 @@ def build_callback(sub_command):
                 "howcall": howcall,
                 "pipeline": pipeline,
                 "parameters": parameters,
-                **kwargs,
             }
         ]
 
@@ -186,4 +195,4 @@ def _reduce(function_name, **parameters):
 @option_exec_before
 @click.argument("expression")
 def _eval(expression, **parameters):
-    return [{"pipeline": expression, "name": "eval", "kwargs": parameters}]
+    return [{"pipeline": expression, "name": "eval", "parameters": parameters}]

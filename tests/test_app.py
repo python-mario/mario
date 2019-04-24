@@ -53,7 +53,7 @@ def test_raises_on_nonexistent_option(option, runner):
 
 
 def test_eval_main(capsys):
-    mario.app.main([[{"name": "eval", "pipeline": "1+1"}]])
+    mario.app.main([[{"name": "eval", "pipeline": "1+1", "parameters": {}}]])
     assert capsys.readouterr().out == "2\n"
 
 
@@ -126,3 +126,7 @@ def test_exec_before():
         ).decode()
         == "['a', 'b']\n"
     )
+
+
+def test_stage_exec_before():
+    assert helpers.run(["eval", "--exec-before", "a=1", "a"]).decode() == "1\n"
