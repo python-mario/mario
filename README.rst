@@ -8,6 +8,11 @@ Your favorite plumbing snake 🐍🔧 with your favorite pipes, right in your sh
 .. image:: https://travis-ci.com/python-mario/mario.svg?branch=master
            :target: https://travis-ci.com/python-mario/mario#
 
+.. image:: https://img.shields.io/pypi/v/mario.svg
+   :target: https://pypi.python.org/pypi/mario
+   :alt:
+
+
 Usage
 =====
 
