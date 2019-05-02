@@ -21,3 +21,5 @@ pytest-clarity>=0.0.0dev
 black>=0.0.0dev
 lockfile
 urllib3>=1.24.2 # https://nvd.nist.gov/vuln/detail/CVE-2019-11324
+sphinx
+sphinx_rtd_theme
