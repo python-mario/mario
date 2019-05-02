@@ -6,7 +6,8 @@ install:
 - ./pycli init
 - pip install tox
 script:
-- ./venv/bin/tox -e coverage
+- tox -e coverage
+- tox -e check
 - tox -e codecov
 deploy:
   provider: script
