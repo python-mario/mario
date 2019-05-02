@@ -6,6 +6,7 @@ install:
 - ./pycli init
 script:
 - venv/bin/tox -e coverage
+- venv/bin/pip install codecov && venv/bin/codecov
 deploy:
   provider: script
   script: ./pycli clean && ./pycli init && ./pycli build &&./pycli upload
