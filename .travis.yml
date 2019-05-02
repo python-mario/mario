@@ -4,9 +4,10 @@ python: '3.7'
 env: LC_ALL=C.UTF-8 LANG=C.UTF-8
 install:
 - ./pycli init
+- pip install tox
 script:
 - ./venv/bin/tox -e coverage
-- ./venv/bin/tox -e codecov
+- tox -e codecov
 deploy:
   provider: script
   script: ./pycli clean && ./pycli init && ./pycli build &&./pycli upload
