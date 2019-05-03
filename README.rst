@@ -269,7 +269,7 @@ Now we can use it like a regular command: ::
     X(a=5, b=9)
 
 
-The new command ``jsonl`` can be used in pipelines as well. To get the maximum value in a sequence of jsonlines objects. ::
+The new command ``jsonl`` can be used in pipelines as well. To get the maximum value in a sequence of jsonlines objects: ::
 
    $ mario jsonl map 'x.a' apply max <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
    5
