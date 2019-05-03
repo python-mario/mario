@@ -306,6 +306,8 @@ Status
 Related work
 ============
 
+A number of cool projects have pioneered in the Python-in-shell space.
+
 * https://github.com/Russell91/pythonpy
 * http://gfxmonk.net/dist/doc/piep/
 * https://spy.readthedocs.io/en/latest/intro.html
