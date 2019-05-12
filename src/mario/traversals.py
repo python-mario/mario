@@ -1,45 +1,14 @@
+from __future__ import annotations
 from __future__ import generator_stop
 
 
-import collections
-import importlib
-import io
-import os
-import sys
-import textwrap
-import token
-import tokenize
 import itertools
-import re
-import contextlib
 import typing
 import types
-import functools
-import pathlib
 
-from typing import Callable
-from typing import Awaitable
-from typing import AsyncIterable
-from typing import AsyncIterator
-from typing import Optional
-from typing import List
-from typing import Iterable
-from typing import Any
-from typing import Set
 
-import attr
-import parso
-import click
-import click_default_group
-import toolz
 import trio
 import async_generator
-import async_exit_stack
-
-
-from . import _version
-from . import config
-from . import utils
 
 
 T = typing.TypeVar("T")

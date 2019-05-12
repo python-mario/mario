@@ -24,7 +24,7 @@ class Traversal:
     """Traversal"""
 
     # ...
-    "mario --max-concurrent"
+    # "mario --max-concurrent"
     global_invocation_options: Context
     "mario map --special reversed"
     specific_invocation_params: Dict[str, Any]
