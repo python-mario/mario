@@ -47,7 +47,7 @@ def alias_to_click(alias):
     callback = lambda: [
         {
             "name": component.name,
-            "pipeline": component.arguments[0],
+            "pipeline": component.arguments[0] if component.arguments else None,
             "parameters": component.options,
         }
         for component in alias.components
