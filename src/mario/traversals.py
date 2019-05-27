@@ -248,9 +248,15 @@ async def wait_for(x):
 @async_generator.asynccontextmanager
 async def sync_dropwhile(predicate, aiterable):
     async def wrap(ait):
+
         async for x in ait:
-            if predicate(x):
+            if await predicate(x):
+                continue
+            else:
+                yield x
                 break
+
+        async for x in ait:
             yield x
 
     yield wrap(aiterable)
