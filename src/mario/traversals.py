@@ -243,3 +243,20 @@ async def wait_for(x):
     if isinstance(x, types.CoroutineType):
         return await x
     return x
+
+
+@async_generator.asynccontextmanager
+async def sync_dropwhile(predicate, aiterable):
+    async def wrap(ait):
+
+        async for x in ait:
+            if await predicate(x):
+                continue
+            else:
+                yield x
+                break
+
+        async for x in ait:
+            yield x
+
+    yield wrap(aiterable)

@@ -114,6 +114,13 @@ async def reduce(function, items, exit_stack, max_concurrent):
     )
 
 
+@registry.add_traversal("dropwhile", calculate_more_params=calculate_function)
+async def dropwhile(function, items, exit_stack):
+    return await exit_stack.enter_async_context(
+        traversals.sync_dropwhile(function, items)
+    )
+
+
 subcommands = [
     click.Command("map", short_help="Call <pipeline> on each line of input."),
     click.Command("amap", short_help="Call <pipeline> on each line of input."),
@@ -135,6 +142,10 @@ subcommands = [
     click.Command(
         "amap-unordered",
         short_help="Call <pipeline> on each line of input, ignoring order of input items.",
+    ),
+    click.Command(
+        "dropwhile",
+        short_help="Evaluate <predicate> on function and drop values until first falsy.",
     ),
 ]
 
