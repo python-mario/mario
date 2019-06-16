@@ -13,7 +13,6 @@ vulture
 treq
 poetry
 twisted
-asks
 cuvner
 pytest-cov
 tox
@@ -24,3 +23,4 @@ urllib3>=1.24.2 # https://nvd.nist.gov/vuln/detail/CVE-2019-11324
 sphinx
 sphinx_rtd_theme
 pytest-sugar
+lxml
