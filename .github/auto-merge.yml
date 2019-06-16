@@ -49,3 +49,7 @@ requiredLabels:
 
 # Automatic merges will be blocked if there is a match between the regular expression and title.
 blockingTitleRegex: '\bwip\b'
+
+
+# The status of the auto-merge process will be shown in each PR as a check. This can be especially useful to find out why a PR is not being merged automatically.
+reportStatus: true
