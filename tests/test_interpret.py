@@ -1,10 +1,10 @@
 import textwrap
-import os
+import os.path
 import collections
 import urllib.parse
 
 import pytest
-
+import lxml.etree
 
 from mario import interpret
 
@@ -23,10 +23,11 @@ def test_split_pipestring():
     "name, expected",
     [
         ("str.upper", {}),
-        ("os.path.join", {"os.path": os}),
+        ("os.path.join", {"os": os, "os.path": os.path}),
         ("map", {}),
         ("collections.Counter", {"collections": collections}),
-        ("urllib.parse.urlparse", {"urllib.parse": urllib}),
+        ("urllib.parse.urlparse", {"urllib": urllib, "urllib.parse": urllib.parse}),
+        ("lxml.etree.parse", {"lxml": lxml, "lxml.etree": lxml.etree}),
     ],
 )
 def test_get_module(name, expected):

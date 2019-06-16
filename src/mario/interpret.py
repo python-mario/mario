@@ -4,7 +4,7 @@
 from __future__ import annotations
 from __future__ import generator_stop
 
-
+import importlib
 import sys
 import textwrap
 import re
@@ -53,8 +53,8 @@ def _get_named_module(name):
     if hasattr(builtins, name):
         return builtins
     try:
-        return __import__(name, {}, {})
-    except ImportError as e:
+        return importlib.import_module(name)
+    except ImportError:
         pass
     raise LookupError(f"Could not find {name}")
 
@@ -65,6 +65,7 @@ def _get_autoimport_module(fullname):
     for idx in range(len(name_parts)):
         try_names.insert(0, ".".join(name_parts[: idx + 1]))
 
+    name_to_module = {}
     for name in try_names:
         try:
             module = _get_named_module(name)
@@ -73,9 +74,9 @@ def _get_autoimport_module(fullname):
         else:
             if module is sys.modules["builtins"]:
                 return {}
-            return {name: module}
+            name_to_module[name] = module
 
-    return {}
+    return name_to_module
 
 
 def find_maybe_module_names(text):

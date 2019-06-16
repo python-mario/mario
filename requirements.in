@@ -1,7 +1,6 @@
 click
 toolz
 attrs
-click-default-group
 parso
 bump2version
 trio
@@ -9,3 +8,4 @@ async_generator
 async_exit_stack
 appdirs
 toml
+asks
