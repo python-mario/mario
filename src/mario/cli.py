@@ -1,4 +1,5 @@
 import os
+import sys
 
 import click
 
@@ -19,32 +20,59 @@ config.DEFAULTS.update(
 
 CONTEXT_SETTINGS = {"default_map": config.DEFAULTS}
 
-
-@click.group(chain=True, context_settings=CONTEXT_SETTINGS)
-@click.option("--max-concurrent", type=int, default=config.DEFAULTS["max_concurrent"])
-@click.option(
-    "--exec-before",
-    help="Python source code to be executed before any stage.",
-    default=config.DEFAULTS["exec_before"],
-)
-@click.option(
-    "--base-exec-before",
-    help="Python source code to be executed before any stage; typically set in the user config file. Combined with --exec-before value. ",
-    default=config.DEFAULTS["base_exec_before"],
-)
-@click.version_option(_version.__version__, prog_name="mario")
-def cli(**kwargs):
-    """Mario: Python pipelines for your shell.
+doc = """Mario: Python pipelines for your shell.
 
     GitHub: https://github.com/python-mario/mario
 
     """
-    pass
 
 
-def alias_to_click(alias):
+# click.version_option(_version.__version__, prog_name="mario")
 
-    callback = lambda: [
+# import pp
+def cli_main(pairs, **kwargs):
+    # pp({'pairs': pairs, 'kwargs':kwargs})
+    app.main(pairs, **kwargs)
+
+
+def version_option(ctx, param, value):
+    if not value:
+        return
+    click.echo("mario, version " + _version.__version__)
+    sys.exit()
+
+
+cli = click.Group(
+    result_callback=cli_main,
+    chain=True,
+    context_settings=CONTEXT_SETTINGS,
+    params=[
+        click.Option(
+            ["--max-concurrent"], type=int, default=config.DEFAULTS["max_concurrent"]
+        ),
+        click.Option(
+            ["--exec-before"],
+            help="Python source code to be executed before any stage.",
+            default=config.DEFAULTS["exec_before"],
+        ),
+        click.Option(
+            ["--base-exec-before"],
+            help="Python source code to be executed before any stage; typically set in the user config file. Combined with --exec-before value. ",
+            default=config.DEFAULTS["base_exec_before"],
+        ),
+        click.Option(
+            ["--version"],
+            callback=version_option,
+            is_flag=True,
+            help="Show the version and exit.",
+        ),
+    ],
+    help=doc,
+)
+
+
+def _make_callback(alias):
+    return [
         {
             "name": component.name,
             "pipeline": component.arguments[0] if component.arguments else None,
@@ -52,7 +80,15 @@ def alias_to_click(alias):
         }
         for component in alias.components
     ]
-    return click.Command(alias.name, callback=callback, short_help=alias.short_help)
+
+
+def alias_to_click(alias):
+
+    params = []
+
+    return click.Command(
+        alias.name, callback=cli.callback, params=params, short_help=alias.short_help
+    )
 
 
 for subcommand_name, subcommand in plug.global_registry.cli_functions.items():
@@ -61,8 +97,3 @@ for subcommand_name, subcommand in plug.global_registry.cli_functions.items():
 
 for alias_name, alias in plug.global_registry.aliases.items():
     cli.add_command(alias_to_click(alias), name=alias_name)
-
-
-@cli.resultcallback()
-def cli_main(pairs, **kwargs):
-    app.main(pairs, **kwargs)
