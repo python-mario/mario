@@ -68,6 +68,7 @@ cli = click.Group(
         ),
     ],
     help=doc,
+    commands=plug.global_registry.cli_functions,
 )
 
 
@@ -83,16 +84,13 @@ def _make_callback(alias):
 
 
 def alias_to_click(alias):
+    print(alias)
 
     params = []
 
     return click.Command(
         alias.name, callback=cli.callback, params=params, short_help=alias.short_help
     )
-
-
-for subcommand_name, subcommand in plug.global_registry.cli_functions.items():
-    cli.add_command(subcommand, name=subcommand_name)
 
 
 for alias_name, alias in plug.global_registry.aliases.items():
