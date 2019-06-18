@@ -42,8 +42,6 @@ def show(x):
     return repr(x)
 
 
-
-
 def cli_main(pairs, **kwargs):
     app.main(pairs, **kwargs)
 

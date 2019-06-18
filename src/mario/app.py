@@ -89,11 +89,13 @@ async def async_main(basic_traversals, **kwargs):
             # TODO Make classes or use pyrsistent.
             traversal_namespace = {
                 **global_context.global_options["global_namespace"],
-                **d["parameters"].get("inject_values", {'HELLO': 'WORLD'}),
+                **d["parameters"].get("inject_values", {"HELLO": "WORLD"}),
             }
             traversal_context = attr.evolve(
                 global_context,
-                global_options=dict(global_context.global_options, global_namespace=traversal_namespace),
+                global_options=dict(
+                    global_context.global_options, global_namespace=traversal_namespace
+                ),
             )
             traversal = interfaces.Traversal(
                 global_invocation_options=traversal_context,

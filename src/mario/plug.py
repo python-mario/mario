@@ -34,7 +34,8 @@ class AliasStage:
 
     options: List[str]
     arguments: List[str]
-    remap_params: Dict 
+    remap_params: Dict
+
 
 @attr.dataclass
 class AliasCommand:
@@ -202,7 +203,7 @@ def make_aliases(conf):
     if "alias" not in conf:
 
         return []
-    return aliasing.AliasSchema(many=True).load(conf['alias'])
+    return aliasing.AliasSchema(many=True).load(conf["alias"])
 
 
 def make_config_aliases_registry():
