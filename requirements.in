@@ -9,3 +9,4 @@ async_exit_stack
 appdirs
 toml
 asks
+marshmallow>=3.0rc1
