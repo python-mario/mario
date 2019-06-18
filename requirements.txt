@@ -14,6 +14,7 @@ bump2version==0.5.10
 click==7.0
 h11==0.9.0                # via asks
 idna==2.8                 # via trio
+marshmallow==3.0.0rc7
 outcome==1.0.0            # via trio
 parso==0.4.0
 sniffio==1.1.0            # via anyio, trio

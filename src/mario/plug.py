@@ -4,7 +4,7 @@ import types
 import importlib
 import importlib.util
 
-
+import typing as t
 from typing import List
 from typing import Dict
 from typing import Iterable
@@ -17,6 +17,7 @@ from mario import asynch
 from mario import interpret
 from mario import utils
 from mario import config
+from mario import aliasing
 
 
 @attr.dataclass
@@ -30,8 +31,10 @@ class PluginObject:
 @attr.dataclass
 class AliasStage:
     name: str
+
     options: List[str]
     arguments: List[str]
+    remap_params: Dict
 
 
 @attr.dataclass
@@ -39,6 +42,8 @@ class AliasCommand:
     name: str
     components: List[AliasStage]
     short_help: str
+    options: t.Dict = attr.ib(factory=dict)
+    arguments: t.Dict = attr.ib(factory=dict)
 
 
 NO_DEFAULT = attr.make_class("NO_DEFAULT", [])()
@@ -174,11 +179,23 @@ def make_global_registry():
 
 
 def make_synthetic_command(cmd,):
+    aliasing.AliasSchema()
     components = [
-        AliasStage(d["command"], d.get("options", []), d.get("arguments", []))
+        AliasStage(
+            d["command"],
+            d.get("options", []),
+            d.get("arguments", []),
+            remap_params=d.get("remap_params", []),
+        )
         for d in cmd["stage"]
     ]
-    return AliasCommand(cmd["name"], components, cmd["short_help"])
+    return AliasCommand(
+        cmd["name"],
+        components,
+        cmd["short_help"],
+        options=cmd.get("options", {}),
+        arguments=cmd.get("arguments", []),
+    )
 
 
 def make_aliases(conf):
@@ -186,11 +203,7 @@ def make_aliases(conf):
     if "alias" not in conf:
 
         return []
-
-    for cmd in conf["alias"]:
-
-        synth_commands.append(make_synthetic_command(cmd))
-    return synth_commands
+    return aliasing.AliasSchema(many=True).load(conf["alias"])
 
 
 def make_config_aliases_registry():

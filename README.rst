@@ -258,8 +258,7 @@ Define new commands in your config file which provide aliases to other commands.
    [[alias.stage]]
 
    command = "map"
-   options = []
-   arguments = [ "json.loads ! types.SimpleNameSpace(**x)" ]
+   options = {pipeline="json.loads ! types.SimpleNameSpace(**x)"}
 
 
 Now we can use it like a regular command: ::

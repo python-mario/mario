@@ -1,5 +1,7 @@
 import os
+import sys
 
+import attr
 import click
 
 
@@ -8,7 +10,7 @@ from . import utils
 from . import _version
 from . import app
 from . import plug
-
+from . import aliasing
 
 config.DEFAULTS.update(
     config.load_config(
@@ -19,50 +21,94 @@ config.DEFAULTS.update(
 
 CONTEXT_SETTINGS = {"default_map": config.DEFAULTS}
 
-
-@click.group(chain=True, context_settings=CONTEXT_SETTINGS)
-@click.option("--max-concurrent", type=int, default=config.DEFAULTS["max_concurrent"])
-@click.option(
-    "--exec-before",
-    help="Python source code to be executed before any stage.",
-    default=config.DEFAULTS["exec_before"],
-)
-@click.option(
-    "--base-exec-before",
-    help="Python source code to be executed before any stage; typically set in the user config file. Combined with --exec-before value. ",
-    default=config.DEFAULTS["base_exec_before"],
-)
-@click.version_option(_version.__version__, prog_name="mario")
-def cli(**kwargs):
-    """Mario: Python pipelines for your shell.
+doc = """Mario: Python pipelines for your shell.
 
     GitHub: https://github.com/python-mario/mario
 
     """
-    pass
+basics = click.Group(commands=plug.global_registry.cli_functions)
+ALIASES = plug.global_registry.aliases
 
 
-def alias_to_click(alias):
-
-    callback = lambda: [
-        {
-            "name": component.name,
-            "pipeline": component.arguments[0] if component.arguments else None,
-            "parameters": component.options,
-        }
-        for component in alias.components
-    ]
-    return click.Command(alias.name, callback=callback, short_help=alias.short_help)
-
-
-for subcommand_name, subcommand in plug.global_registry.cli_functions.items():
-    cli.add_command(subcommand, name=subcommand_name)
+def show(x):
+    if hasattr(x, "__dict__"):
+        return attr.make_class(type(x).__name__, list(vars(x).keys()))(
+            **{k: show(v) for k, v in vars(x).items()}
+        )
+    if isinstance(x, list):
+        return [show(v) for v in x]
+    if isinstance(x, dict):
+        return {k: show(v) for k, v in x.items()}
+    return repr(x)
 
 
-for alias_name, alias in plug.global_registry.aliases.items():
-    cli.add_command(alias_to_click(alias), name=alias_name)
-
-
-@cli.resultcallback()
 def cli_main(pairs, **kwargs):
     app.main(pairs, **kwargs)
+
+
+def version_option(ctx, param, value):
+    if not value:
+        return
+    click.echo("mario, version " + _version.__version__)
+    sys.exit()
+
+
+def build_stages(alias):
+    def run(ctx, **cli_params):
+        out = []
+        for stage in alias.stages:
+
+            mapped_stage_params = {
+                remap.old.lstrip("-"): cli_params[remap.new.lstrip("-")]
+                for remap in stage.remap_params
+            }
+            mapped_stage_params.update(stage.options)
+            inject_namespace = {
+                k: v for k, v in cli_params.items() if k in alias.inject_values
+            }
+            cmd = cli.get_command(ctx, stage.command)
+            # TODO Find and inject the values for the stage or globally.
+            out.extend(
+                ctx.invoke(cmd, **mapped_stage_params, inject_values=inject_namespace)
+            )
+        return out
+
+    params = alias.arguments + alias.options
+    return click.Command(
+        name=alias.name, params=params, callback=click.pass_context(run)
+    )
+
+
+COMMANDS = plug.global_registry.cli_functions
+for k, v in ALIASES.items():
+    COMMANDS[k] = build_stages(v)
+
+
+cli = click.Group(
+    result_callback=cli_main,
+    chain=True,
+    context_settings=CONTEXT_SETTINGS,
+    params=[
+        click.Option(
+            ["--max-concurrent"], type=int, default=config.DEFAULTS["max_concurrent"]
+        ),
+        click.Option(
+            ["--exec-before"],
+            help="Python source code to be executed before any stage.",
+            default=config.DEFAULTS["exec_before"],
+        ),
+        click.Option(
+            ["--base-exec-before"],
+            help="Python source code to be executed before any stage; typically set in the user config file. Combined with --exec-before value. ",
+            default=config.DEFAULTS["base_exec_before"],
+        ),
+        click.Option(
+            ["--version"],
+            callback=version_option,
+            is_flag=True,
+            help="Show the version and exit.",
+        ),
+    ],
+    help=doc,
+    commands=plug.global_registry.cli_functions,
+)
