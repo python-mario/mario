@@ -50,7 +50,6 @@ class OptionSchema(marshmallow.Schema):
 
     @marshmallow.post_load()
     def make_option(self, validated, partial, many):
-        print(validated)
         return click.Option(**validated)
 
 
@@ -106,6 +105,7 @@ class Alias:
     arguments: t.List[click.Argument]
     options: t.List[click.Option]
     stages: t.List[AliasStage]
+    inject_values: t.List[str]
 
 
 class AliasSchema(marshmallow.Schema):
@@ -114,6 +114,7 @@ class AliasSchema(marshmallow.Schema):
     arguments = fields.List(fields.Nested(ArgumentSchema), missing=list)
     options = fields.List(fields.Nested(OptionSchema), missing=list)
     stages = fields.List(fields.Nested(AliasStageSchema), data_key="stage")
+    inject_values = fields.List(fields.String())
 
     @marshmallow.post_load()
     def make(self, validated, partial, many):

@@ -12,9 +12,10 @@ import functools
 from typing import AsyncIterable
 from typing import List
 
-
+import attr
 import trio
 import async_exit_stack
+import pyrsistent
 
 
 from . import _version
@@ -81,13 +82,23 @@ async def async_main(basic_traversals, **kwargs):
     global_context.global_options["global_namespace"].update(
         interpret.build_global_namespace(global_context.global_options["exec_before"])
     )
-
     traversals = []
-    for bt in basic_traversals:
-        for d in bt:
+    import pp
 
+    for bt in basic_traversals:
+
+        for d in bt:
+            # TODO Make classes or use pyrsistent.
+            traversal_namespace = {
+                **global_context.global_options["global_namespace"],
+                **d["parameters"]["inject_values"],
+            }
+            traversal_context = attr.evolve(
+                global_context,
+                global_options={**global_context.global_options, **traversal_namespace},
+            )
             traversal = interfaces.Traversal(
-                global_invocation_options=global_context,
+                global_invocation_options=traversal_context,
                 specific_invocation_params=d,
                 plugin_object=plug.global_registry.traversals[d["name"]],
             )

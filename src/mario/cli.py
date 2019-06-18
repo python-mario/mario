@@ -42,32 +42,10 @@ def show(x):
     return repr(x)
 
 
-def alias_to_click(alias):
-    print(alias)
-
-    options = aliasing.OptionSchema(many=True).load(alias.options)
-    arguments = aliasing.ArgumentSchema(many=True).load(alias.arguments)
-    params = options + arguments
-    print([show(x) for x in params])
-    return click.Command(
-        alias.name,
-        callback=_make_callback(alias),
-        params=params,
-        short_help=alias.short_help,
-    )
-
-
-# ALIASES = {
-#     alias_name: alias_to_click(alias_command)
-#     for alias_name, alias_command in plug.global_registry.aliases.items()
-# }
-# click.version_option(_version.__version__, prog_name="mario")
-
 import pp
 
 
 def cli_main(pairs, **kwargs):
-    pp({"pairs": pairs, "kwargs": kwargs})
     app.main(pairs, **kwargs)
 
 
@@ -86,8 +64,10 @@ def build_stages(alias):
                 remap.old.lstrip("-"): cli_params[remap.new.lstrip("-")]
                 for remap in stage.remap_params
             }
+            inject_namespace = {k:v for k,v in cli_params.items() if k in alias.inject_values}
             cmd = cli.get_command(ctx, stage.command)
-            out.extend(ctx.invoke(cmd, **mapped_stage_params))
+            # TODO Find and inject the values for the stage or globally.
+            out.extend(ctx.invoke(cmd, **mapped_stage_params, inject_values=inject_namespace))
         return out
 
     params = alias.arguments + alias.options
