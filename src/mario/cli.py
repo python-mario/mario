@@ -42,7 +42,6 @@ def show(x):
     return repr(x)
 
 
-import pp
 
 
 def cli_main(pairs, **kwargs):
@@ -60,14 +59,20 @@ def build_stages(alias):
     def run(ctx, **cli_params):
         out = []
         for stage in alias.stages:
+
             mapped_stage_params = {
                 remap.old.lstrip("-"): cli_params[remap.new.lstrip("-")]
                 for remap in stage.remap_params
             }
-            inject_namespace = {k:v for k,v in cli_params.items() if k in alias.inject_values}
+            mapped_stage_params.update(stage.options)
+            inject_namespace = {
+                k: v for k, v in cli_params.items() if k in alias.inject_values
+            }
             cmd = cli.get_command(ctx, stage.command)
             # TODO Find and inject the values for the stage or globally.
-            out.extend(ctx.invoke(cmd, **mapped_stage_params, inject_values=inject_namespace))
+            out.extend(
+                ctx.invoke(cmd, **mapped_stage_params, inject_values=inject_namespace)
+            )
         return out
 
     params = alias.arguments + alias.options

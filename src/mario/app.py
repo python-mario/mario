@@ -48,7 +48,6 @@ async def call_traversal(
         param: available_params[param]
         for param in traversal.plugin_object.required_parameters
     }
-
     return await traversal.plugin_object.traversal_function(**args)
 
 
@@ -83,7 +82,6 @@ async def async_main(basic_traversals, **kwargs):
         interpret.build_global_namespace(global_context.global_options["exec_before"])
     )
     traversals = []
-    import pp
 
     for bt in basic_traversals:
 
@@ -91,11 +89,11 @@ async def async_main(basic_traversals, **kwargs):
             # TODO Make classes or use pyrsistent.
             traversal_namespace = {
                 **global_context.global_options["global_namespace"],
-                **d["parameters"]["inject_values"],
+                **d["parameters"].get("inject_values", {'HELLO': 'WORLD'}),
             }
             traversal_context = attr.evolve(
                 global_context,
-                global_options={**global_context.global_options, **traversal_namespace},
+                global_options=dict(global_context.global_options, global_namespace=traversal_namespace),
             )
             traversal = interfaces.Traversal(
                 global_invocation_options=traversal_context,

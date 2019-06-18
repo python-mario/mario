@@ -146,7 +146,6 @@ def build_function(pipeline, global_namespace, howcall):
     global_namespace = {**name_to_module, **global_namespace}
 
     source = build_source(split_pipestring(pipeline), howcall)
-
     exec(source, global_namespace)
     function = global_namespace["_mario_runner"]
     return Function(function, global_namespace, source)

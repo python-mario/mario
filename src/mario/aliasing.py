@@ -114,7 +114,7 @@ class AliasSchema(marshmallow.Schema):
     arguments = fields.List(fields.Nested(ArgumentSchema), missing=list)
     options = fields.List(fields.Nested(OptionSchema), missing=list)
     stages = fields.List(fields.Nested(AliasStageSchema), data_key="stage")
-    inject_values = fields.List(fields.String())
+    inject_values = fields.List(fields.String(), missing=list)
 
     @marshmallow.post_load()
     def make(self, validated, partial, many):
