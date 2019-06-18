@@ -67,7 +67,6 @@ def build_stages(alias):
                 k: v for k, v in cli_params.items() if k in alias.inject_values
             }
             cmd = cli.get_command(ctx, stage.command)
-            # TODO Find and inject the values for the stage or globally.
             out.extend(
                 ctx.invoke(cmd, **mapped_stage_params, inject_values=inject_namespace)
             )
@@ -110,5 +109,5 @@ cli = click.Group(
         ),
     ],
     help=doc,
-    commands=plug.global_registry.cli_functions,
+    commands=COMMANDS,
 )
