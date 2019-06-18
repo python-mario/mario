@@ -110,5 +110,5 @@ cli = click.Group(
         ),
     ],
     help=doc,
-    commands=plug.global_registry.cli_functions,
+    commands=COMMANDS,
 )
