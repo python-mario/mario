@@ -78,12 +78,6 @@ def version_option(ctx, param, value):
     sys.exit()
 
 
-def call_alias(ctx, alias, *args, **kwargs):
-    for stage in alias.stages:
-        referent = ctx.get_command(stage.name)
-        ctx.invoke(referent, *args, **kwargs)
-
-
 def build_stages(alias):
     def run(ctx, **cli_params):
         out = []
@@ -103,7 +97,10 @@ def build_stages(alias):
 
 
 COMMANDS = plug.global_registry.cli_functions
-COMMANDS["xpath"] = build_stages(ALIASES["xpath"])
+for k, v in ALIASES.items():
+    COMMANDS[k] = build_stages(v)
+
+
 cli = click.Group(
     result_callback=cli_main,
     chain=True,
