@@ -5,6 +5,7 @@ from __future__ import generator_stop
 import itertools
 import typing
 import types
+from typing import Callable, Awaitable, AsyncIterable, AsyncIterator, Iterable
 
 
 import trio
@@ -115,6 +116,16 @@ async def sync_map(
     function: Callable[[T], Awaitable[U]], iterable: AsyncIterable[T], max_concurrent
 ) -> AsyncIterator[AsyncIterable[U]]:
     yield (await function(item) async for item in iterable)
+
+
+@async_generator.asynccontextmanager
+async def sync_chain(iterable: AsyncIterable[Iterable], **kwargs):
+    yield (item async for subiterable in iterable for item in subiterable)
+
+
+@async_generator.asynccontextmanager
+async def async_chain(iterable: AsyncIterable[AsyncIterable], **kwargs):
+    yield (item async for subiterable in iterable async for item in subiterable)
 
 
 @async_generator.asynccontextmanager
