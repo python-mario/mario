@@ -48,7 +48,7 @@ def test_cli_async_chain_map_apply(runner, reactor, server):
         "mario",
         "--max-concurrent",
         "100",
-        "amap",
+        "async-map",
         "await asks.get(x) ! x.json()",
         "filter",
         'x["id"] % 6 == 0',
@@ -77,7 +77,7 @@ def test_cli_async_map(runner, reactor, server, capsys):
     args = [
         "--exec-before",
         "import datetime; now=datetime.datetime.now; START_TIME=now()",
-        "amap",
+        "async-map",
         'await asks.get !  f"{types.SimpleNamespace(**x.json()).delay}"',
     ]
 
@@ -97,7 +97,7 @@ def test_cli_async_map_unordered(runner, reactor, server, capsys):
     in_stream = "".join(base_url.format(i) for i in [5, 2, 3, 1, 4])
 
     args = [
-        "amap-unordered",
+        "async-map-unordered",
         'await asks.get !  f"{types.SimpleNamespace(**x.json()).delay}"',
     ]
 
@@ -129,7 +129,7 @@ def test_cli_async_reduce_without_curry(runner, reactor, server, capsys):
     in_stream = "".join(base_url.format(i) for i in [6, 2, 1])
 
     args = [
-        "amap",
+        "async-map",
         'await asks.get !  f"{types.SimpleNamespace(**x.json()).delay}"',
         "map",
         "json.loads",

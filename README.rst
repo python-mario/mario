@@ -134,12 +134,12 @@ For example, to multiply all the values together, first convert each value to ``
 ``chain``
 _________
 
-Use ``chain`` to flatten an iterable of iterables of items into an iterable of items, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_. 
+Use ``chain`` to flatten an iterable of iterables of items into an iterable of items, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_.
 
 For example, after calculating a several rows of items, ::
 
 
-    $ mario  map 'x*2 ! [x[i:i+2] for i in range(len(x))]'   <<<$'ab\nce'     
+    $ mario  map 'x*2 ! [x[i:i+2] for i in range(len(x))]'   <<<$'ab\nce'
     ['ab', 'ba', 'ab', 'b']
     ['ce', 'ec', 'ce', 'e']
 
@@ -203,9 +203,9 @@ Making sequential requests is slow. These requests take 20 seconds to complete. 
    0.06s system
    19.612 total
 
-Concurrent requests can go much faster. The same requests now take only 6 seconds. Use ``amap``, or ``afilter``, or ``reduce`` with ``await some_async_function`` to get concurrency out of the box. ::
+Concurrent requests can go much faster. The same requests now take only 6 seconds. Use ``async-map``, or ``async-filter``, or ``reduce`` with ``await some_async_function`` to get concurrency out of the box. ::
 
-   $ time mario amap 'await asks.get ! x.text ! len' apply max <<EOF
+   $ time mario async-map 'await asks.get ! x.text ! len' apply max <<EOF
    http://httpbin.org/delay/5
    http://httpbin.org/delay/1
    http://httpbin.org/delay/4
@@ -223,7 +223,7 @@ Concurrent requests can go much faster. The same requests now take only 6 second
 Async streaming
 ~~~~~~~~~~~~~~~
 
-``amap`` and ``afilter`` values are handled in streaming fashion, while retaining the order of the input items in the output. The order of function calls is not constrained -- if you need the function to be **called** with items in a specific order, use the synchronous version.
+``async-map`` and ``async-filter`` values are handled in streaming fashion, while retaining the order of the input items in the output. The order of function calls is not constrained -- if you need the function to be **called** with items in a specific order, use the synchronous version.
 
 Making concurrent requests, each response is printed one at a time, as soon as (1) it is ready and (2) all of the preceding requests have already been handled.
 
