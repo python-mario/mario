@@ -56,14 +56,14 @@ async def map(function, items, exit_stack, max_concurrent):
     )
 
 
-@registry.add_traversal("amap", calculate_more_params=calculate_function)
-async def amap(function, items, exit_stack, max_concurrent):
+@registry.add_traversal("async_map", calculate_more_params=calculate_function)
+async def async_map(function, items, exit_stack, max_concurrent):
     return await exit_stack.enter_async_context(
         traversals.async_map(function, items, max_concurrent)
     )
 
 
-@registry.add_traversal("amap_unordered", calculate_more_params=calculate_function)
+@registry.add_traversal("async_map_unordered", calculate_more_params=calculate_function)
 async def map_unordered(function, items, exit_stack, max_concurrent):
     return await exit_stack.enter_async_context(
         traversals.async_map_unordered(function, items, max_concurrent)
@@ -77,8 +77,8 @@ async def filter(function, items, exit_stack, max_concurrent):
     )
 
 
-@registry.add_traversal("afilter", calculate_more_params=calculate_function)
-async def afilter(function, items, exit_stack, max_concurrent):
+@registry.add_traversal("async_filter", calculate_more_params=calculate_function)
+async def async_filter(function, items, exit_stack, max_concurrent):
     return await exit_stack.enter_async_context(
         traversals.async_filter(function, items, max_concurrent)
     )
@@ -89,8 +89,8 @@ async def apply(function, items):
     return traversals.AsyncIterableWrapper([await function([x async for x in items])])
 
 
-@registry.add_traversal("aapply", calculate_more_params=calculate_function)
-async def aapply(function, items):
+@registry.add_traversal("async_apply", calculate_more_params=calculate_function)
+async def async_apply(function, items):
     return await traversals.async_apply(function, items)
 
 
@@ -136,35 +136,36 @@ async def chain(items, exit_stack):
 
 
 @registry.add_traversal(
-    "achain",
+    "async-chain",
     calculate_more_params=lambda x: calculate_function(
         x, howcall=interpret.HowCall.NONE
     ),
 )
-async def achain(items, exit_stack):
+async def async_chain(items, exit_stack):
     return await exit_stack.enter_async_context(traversals.async_chain(items))
 
 
 subcommands = [
     click.Command("map", short_help="Call <pipeline> on each line of input."),
-    click.Command("amap", short_help="Call <pipeline> on each line of input."),
+    click.Command("async-map", short_help="Call <pipeline> on each line of input."),
     click.Command("apply", short_help="Call <pipeline> on input as a sequence."),
     click.Command(
-        "aapply", short_help="Call <pipeline> asynchronously on input as a sequence."
+        "async-apply",
+        short_help="Call <pipeline> asynchronously on input as a sequence.",
     ),
     click.Command(
         "filter",
         short_help="Call <pipeline> on each line of input and exclude false values.",
     ),
     click.Command(
-        "afilter",
+        "async-filter",
         short_help="Async call <pipeline> on each line of input and exclude false values.",
     ),
     click.Command(
         "stack", short_help="Call <pipeline> on input as a single concatenated string."
     ),
     click.Command(
-        "amap-unordered",
+        "async-map-unordered",
         short_help="Call <pipeline> on each line of input, ignoring order of input items.",
     ),
     click.Command(
@@ -240,8 +241,8 @@ more_commands = [
         short_help="Expand iterable of iterables of items into an iterable of items.",
     ),
     click.Command(
-        "achain",
-        callback=lambda **kw: [{"name": "achain", "parameters": kw}],
+        "async-chain",
+        callback=lambda **kw: [{"name": "async-chain", "parameters": kw}],
         short_help="Expand iterable of async iterables into an iterable of items.",
     ),
 ]
