@@ -11,7 +11,7 @@ with open(PROJECT_ROOT / "requirements.in") as f:
 
 setuptools.setup(
     name="mario",
-    version="0.0.105",
+    version="0.0.106",
     description="Shell pipes for Python.",
     long_description=open(PROJECT_ROOT / "README.rst").read(),
     long_description_content_type="text/x-rst",
