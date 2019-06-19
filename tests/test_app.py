@@ -68,6 +68,12 @@ def test_stack():
     assert output == "4\n"
 
 
+def test_chain():
+    expected = "1\n1\n1\n1\n"
+    result = helpers.run(["stack", "x", "chain", "map", "len"], input=b"abc\n").decode()
+    assert result == expected, (result, expected)
+
+
 def test_exec_before():
     args = [
         sys.executable,

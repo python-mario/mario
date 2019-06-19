@@ -25,13 +25,17 @@ def calculate_function(traversal, howcall=None):
             )
         )
 
-    return {
-        "function": interpret.build_function(
-            traversal.specific_invocation_params["pipeline"],
-            global_namespace=global_namespace,
-            howcall=howcall,
-        )
-    }
+    if "pipeline" in traversal.specific_invocation_params:
+
+        return {
+            "function": interpret.build_function(
+                traversal.specific_invocation_params["pipeline"],
+                global_namespace=global_namespace,
+                howcall=howcall,
+            )
+        }
+
+    return {"function": None}
 
 
 def calculate_reduce(traversal):
@@ -121,6 +125,26 @@ async def dropwhile(function, items, exit_stack):
     )
 
 
+@registry.add_traversal(
+    "chain",
+    calculate_more_params=lambda x: calculate_function(
+        x, howcall=interpret.HowCall.NONE
+    ),
+)
+async def chain(items, exit_stack):
+    return await exit_stack.enter_async_context(traversals.sync_chain(items))
+
+
+@registry.add_traversal(
+    "achain",
+    calculate_more_params=lambda x: calculate_function(
+        x, howcall=interpret.HowCall.NONE
+    ),
+)
+async def achain(items, exit_stack):
+    return await exit_stack.enter_async_context(traversals.async_chain(items))
+
+
 subcommands = [
     click.Command("map", short_help="Call <pipeline> on each line of input."),
     click.Command("amap", short_help="Call <pipeline> on each line of input."),
@@ -207,3 +231,19 @@ def _reduce(function_name, **parameters):
 @click.argument("expression")
 def _eval(expression, **parameters):
     return [{"pipeline": expression, "name": "eval", "parameters": parameters}]
+
+
+more_commands = [
+    click.Command(
+        "chain",
+        callback=lambda **kw: [{"name": "chain", "parameters": kw}],
+        short_help="Expand iterable of iterables of items into an iterable of items.",
+    ),
+    click.Command(
+        "achain",
+        callback=lambda **kw: [{"name": "achain", "parameters": kw}],
+        short_help="Expand iterable of async iterables into an iterable of items.",
+    ),
+]
+for cmd in more_commands:
+    registry.add_cli(name=cmd.name)(cmd)

@@ -131,13 +131,48 @@ For example, to multiply all the values together, first convert each value to ``
 
    24
 
+``chain``
+_________
 
+Use ``chain`` to flatten an iterable of iterables of items into an iterable of items, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_. 
+
+For example, after calculating a several rows of items, ::
+
+
+    $ mario  map 'x*2 ! [x[i:i+2] for i in range(len(x))]'   <<<$'ab\nce'     
+    ['ab', 'ba', 'ab', 'b']
+    ['ce', 'ec', 'ce', 'e']
+
+
+use ``chain`` to put each item on its own row: ::
+
+    $ mario  map 'x*2 ! [x[i:i+2] for i in range(len(x))]' chain  <<<$'ab\nce'
+    ab
+    ba
+    ab
+    b
+    ce
+    ec
+    ce
+    e
+
+Then subsequent commands will act on these new rows, as normal. Here we get the length of each row. ::
+
+    $ mario  map 'x*2 ! [x[i:i+2] for i in range(len(x))]' chain map len <<<$'ab\nce'
+    2
+    2
+    2
+    1
+    2
+    2
+    2
+    1
 
 
 Autocall
 ~~~~~~~~
 
-You don't need to explicitly call the function with ``f(x)``; just use ``f``. For example, instead of ::
+You don't need to explicitly call the function with ``some_function(x)``; just use the function's name ``some_function``. For example, instead of ::
 
   $ mario map 'len(x)' <<<'a\nbb'
   5
