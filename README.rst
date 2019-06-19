@@ -60,6 +60,20 @@ Automatically import modules you need: ::
    hello,world!
 
 
+Autocall
+~~~~~~~~
+
+You don't need to explicitly call the function with ``some_function(x)``; just use the function's name ``some_function``. For example, instead of ::
+
+  $ mario map 'len(x)' <<<'a\nbb'
+  5
+
+try ::
+
+  $ mario map len <<<'a\nbb'
+  5
+
+
 
 Commands
 ~~~~~~~~
@@ -167,20 +181,6 @@ Then subsequent commands will act on these new rows, as normal. Here we get the 
     2
     2
     1
-
-
-Autocall
-~~~~~~~~
-
-You don't need to explicitly call the function with ``some_function(x)``; just use the function's name ``some_function``. For example, instead of ::
-
-  $ mario map 'len(x)' <<<'a\nbb'
-  5
-
-try ::
-
-  $ mario map len <<<'a\nbb'
-  5
 
 
 
