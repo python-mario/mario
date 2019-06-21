@@ -89,6 +89,15 @@ try
   5
 
 
+Autocall also works for methods:
+
+.. code-block:: bash
+
+    $ mario map 'x.upper' <<<'abc'
+    abc
+
+
+
 
 Commands
 ~~~~~~~~
