@@ -21,29 +21,38 @@ Usage
 Basics
 ~~~~~~
 
-Invoke with  ``mario`` at the command line. ::
+Invoke with  ``mario`` at the command line.
+
+.. code-block:: bash
 
   $ mario eval 1+1
   2
 
-Use ``map`` to act on each item in the file with python commands: ::
+Use ``map`` to act on each item in the file with python commands:
+
+.. code-block:: bash
 
   $ mario map x.upper() <<<'abc'
   ABC
 
 
-Chain python functions together with ``!``: ::
+Chain python functions together with ``!``:
+.. code-block:: bash
 
   $ mario map 'x.upper() ! len(x)' <<<hello
   5
 
-or by adding another command ::
+or by adding another command
+
+.. code-block:: bash
 
    $ mario map 'x.upper()' map 'len(x)' <<<hello
    5
 
 
-Use ``x`` as a placeholder for the input at each stage: ::
+Use ``x`` as a placeholder for the input at each stage:
+
+.. code-block:: bash
 
   $ mario map ' x.split()[0] ! x.upper() + "!"' <<<'Hello world'
   HELLO!
@@ -53,7 +62,9 @@ Use ``x`` as a placeholder for the input at each stage: ::
 
 
 
-Automatically import modules you need: ::
+Automatically import modules you need:
+
+.. code-block:: bash
 
    $ mario stack 'itertools.repeat(x, 2) ! "".join' <<<hello,world!
    hello,world!
@@ -63,12 +74,16 @@ Automatically import modules you need: ::
 Autocall
 ~~~~~~~~
 
-You don't need to explicitly call the function with ``some_function(x)``; just use the function's name ``some_function``. For example, instead of ::
+You don't need to explicitly call the function with ``some_function(x)``; just use the function's name ``some_function``. For example, instead of
+
+.. code-block:: bash
 
   $ mario map 'len(x)' <<<'a\nbb'
   5
 
-try ::
+try
+
+.. code-block:: bash
 
   $ mario map len <<<'a\nbb'
   5
@@ -83,7 +98,9 @@ Commands
 ________
 
 
-Use ``eval`` to evaluate a Python expression. ::
+Use ``eval`` to evaluate a Python expression.
+
+.. code-block:: bash
 
   $ mario eval 'datetime.datetime.utcnow()'
   2019-01-01 01:23:45.562736
@@ -93,7 +110,9 @@ Use ``eval`` to evaluate a Python expression. ::
 ``map``
 _______
 
-Use ``map`` to act on each input item. ::
+Use ``map`` to act on each input item.
+
+.. code-block:: bash
 
    $ mario map 'x * 2' <<<'a\nbb\n'
    aa
@@ -103,7 +122,9 @@ Use ``map`` to act on each input item. ::
 __________
 
 
-Use ``filter`` to evaluate a condition on each line of input and exclude false values. ::
+Use ``filter`` to evaluate a condition on each line of input and exclude false values.
+
+.. code-block:: bash
 
    $  mario filter 'len(x) > 1' <<<'a\nbb\nccc\n'
    bb
@@ -113,7 +134,9 @@ Use ``filter`` to evaluate a condition on each line of input and exclude false v
 ``apply``
 _________
 
-Use ``apply`` to act on the sequence of items. ::
+Use ``apply`` to act on the sequence of items.
+
+.. code-block:: bash
 
     $   mario apply 'len(x)' <<<'a\nbb\n'
     2
@@ -122,7 +145,9 @@ Use ``apply`` to act on the sequence of items. ::
 ``stack``
 _________
 
-Use ``stack`` to treat the input as a single string, including newlines. ::
+Use ``stack`` to treat the input as a single string, including newlines.
+
+.. code-block:: bash
 
     $  mario stack 'len(x)' <<<'a\nbb\n'
     5
@@ -133,7 +158,9 @@ __________
 
 Use ``reduce`` to evaluate a function of two arguments successively over a sequence, like `functools.reduce <https://docs.python.org/3/library/functools.html#functools.reduce>`_.
 
-For example, to multiply all the values together, first convert each value to ``int`` with ``map``, then use ``reduce`` to successively multiply each item with the product. ::
+For example, to multiply all the values together, first convert each value to ``int`` with ``map``, then use ``reduce`` to successively multiply each item with the product.
+
+.. code-block:: bash
 
 
    $ mario map int reduce operator.mul <<EOF
@@ -150,7 +177,9 @@ _________
 
 Use ``chain`` to flatten an iterable of iterables of items into an iterable of items, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_.
 
-For example, after calculating a several rows of items, ::
+For example, after calculating a several rows of items,
+
+.. code-block:: bash
 
 
     $ mario  map 'x*2 ! [x[i:i+2] for i in range(len(x))]'   <<<$'ab\nce'
@@ -158,7 +187,9 @@ For example, after calculating a several rows of items, ::
     ['ce', 'ec', 'ce', 'e']
 
 
-use ``chain`` to put each item on its own row: ::
+use ``chain`` to put each item on its own row:
+
+.. code-block:: bash
 
     $ mario  map 'x*2 ! [x[i:i+2] for i in range(len(x))]' chain  <<<$'ab\nce'
     ab
@@ -170,7 +201,9 @@ use ``chain`` to put each item on its own row: ::
     ce
     e
 
-Then subsequent commands will act on these new rows, as normal. Here we get the length of each row. ::
+Then subsequent commands will act on these new rows, as normal. Here we get the length of each row.
+
+.. code-block:: bash
 
     $ mario  map 'x*2 ! [x[i:i+2] for i in range(len(x))]' chain map len <<<$'ab\nce'
     2
@@ -187,7 +220,9 @@ Then subsequent commands will act on these new rows, as normal. Here we get the 
 Async
 ~~~~~
 
-Making sequential requests is slow. These requests take 20 seconds to complete. ::
+Making sequential requests is slow. These requests take 20 seconds to complete.
+
+.. code-block:: bash
 
    $ time mario map 'requests.get ! x.text ! len' apply max <<EOF
    http://httpbin.org/delay/5
@@ -203,7 +238,9 @@ Making sequential requests is slow. These requests take 20 seconds to complete. 
    0.06s system
    19.612 total
 
-Concurrent requests can go much faster. The same requests now take only 6 seconds. Use ``async-map``, or ``async-filter``, or ``reduce`` with ``await some_async_function`` to get concurrency out of the box. ::
+Concurrent requests can go much faster. The same requests now take only 6 seconds. Use ``async-map``, or ``async-filter``, or ``reduce`` with ``await some_async_function`` to get concurrency out of the box.
+
+.. code-block:: bash
 
    $ time mario async-map 'await asks.get ! x.text ! len' apply max <<EOF
    http://httpbin.org/delay/5
@@ -229,7 +266,9 @@ Making concurrent requests, each response is printed one at a time, as soon as (
 
 For example, the ``3 seconds`` item is ready before the preceding ``4 seconds`` item, but it is held until the ``4 seconds`` is ready because ``4 seconds`` was started first, so the ordering of the input items is maintained in the output.
 
-::
+
+
+.. code-block:: bash
 
     $ time mario --exec-before 'import datetime; now=datetime.datetime.utcnow; START_TIME=now(); print("Elapsed time | Response size")' map 'await asks.get !  f"{(now() - START_TIME).seconds} seconds    | {len(x.content)} bytes"'  <<EOF
     http://httpbin.org/delay/1
@@ -263,7 +302,9 @@ For example:
 
   """
 
-Then you can directly use the imported objects without referencing the module. ::
+Then you can directly use the imported objects without referencing the module.
+
+.. code-block:: bash
 
 
     $ mario map 'Counter ! json.dumps' <<<'hello\nworld\n'
@@ -271,11 +312,13 @@ Then you can directly use the imported objects without referencing the module. :
     {"w": 1, "o": 1, "r": 1, "l": 1, "d": 1}
 
 
-You can set any of the ``mario`` options in your config. For example, to set a different default value for the concurrency maximum ``mario --max-concurrent``, add ``max_concurrent`` to your config file (note the underscore): ::
+You can set any of the ``mario`` options in your config. For example, to set a different default value for the concurrency maximum ``mario --max-concurrent``, add ``max_concurrent`` to your config file (note the underscore):
 
-  # ~/.config/mario/config.toml
+.. code-block:: toml
 
-  max_concurrent = 10
+    # ~/.config/mario/config.toml
+
+    max_concurrent = 10
 
 then just use ``mario`` as normal.
 
@@ -299,14 +342,18 @@ Define new commands in your config file which provide aliases to other commands.
    options = {pipeline="json.loads ! types.SimpleNameSpace(**x)"}
 
 
-Now we can use it like a regular command: ::
+Now we can use it like a regular command:
+
+.. code-block:: bash
 
     $ mario jsonl  <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
     X(a=1, b=2)
     X(a=5, b=9)
 
 
-The new command ``jsonl`` can be used in pipelines as well. To get the maximum value in a sequence of jsonlines objects: ::
+The new command ``jsonl`` can be used in pipelines as well. To get the maximum value in a sequence of jsonlines objects:
+
+.. code-block:: bash
 
    $ mario jsonl map 'x.a' apply max <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
    5
@@ -321,7 +368,9 @@ Add new commands like ``map`` and ``reduce`` by installing mario plugins. You ca
 Installation
 ============
 
-Get it with pip: ::
+Get it with pip:
+
+.. code-block:: bash
 
    python3.7 -m pip install mario
 
