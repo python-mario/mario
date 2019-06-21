@@ -32,7 +32,7 @@ Use ``map`` to act on each item in the file with python commands:
 
 .. code-block:: bash
 
-  $ mario map x.upper() <<<'abc'
+  $ mario map 'x.upper()' <<<'abc'
   ABC
 
 
