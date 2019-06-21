@@ -250,7 +250,9 @@ Configuration
 
 Add code to automatically execute, into your config file.
 
-For example: ::
+For example:
+
+.. code-block:: toml
 
   # ~/.config/mario/config.toml
 
@@ -282,8 +284,9 @@ then just use ``mario`` as normal.
 Aliases
 ~~~~~~~~~~~~~~~~~~
 
-Define new commands in your config file which provide aliases to other commands. For example, this config adds a ``jsonl`` command for reading jsonlines streams into Python objects, by calling calling out to the ``map`` traversal. ::
+Define new commands in your config file which provide aliases to other commands. For example, this config adds a ``jsonl`` command for reading jsonlines streams into Python objects, by calling calling out to the ``map`` traversal.
 
+.. code-block:: toml
 
    [[alias]]
 
