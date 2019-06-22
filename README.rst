@@ -89,14 +89,6 @@ try
   5
 
 
-Autocall also works for methods:
-
-.. code-block:: bash
-
-    $ mario map 'x.upper' <<<'abc'
-    abc
-
-
 
 
 Commands
@@ -147,7 +139,7 @@ Use ``apply`` to act on the sequence of items.
 
 .. code-block:: bash
 
-    $   mario apply 'len(x)' <<<'a\nbb\n'
+    $ mario apply 'len(x)' <<<$'a\nbb'
     2
 
 
@@ -158,7 +150,7 @@ Use ``stack`` to treat the input as a single string, including newlines.
 
 .. code-block:: bash
 
-    $  mario stack 'len(x)' <<<'a\nbb\n'
+    $  mario stack 'len(x)' <<<$'a\nbb'
     5
 
 
@@ -233,7 +225,7 @@ Making sequential requests is slow. These requests take 20 seconds to complete.
 
 .. code-block:: bash
 
-   $ time mario map 'requests.get ! x.text ! len' apply max <<EOF
+   % time mario map 'requests.get ! x.text ! len' apply max <<EOF
    http://httpbin.org/delay/5
    http://httpbin.org/delay/1
    http://httpbin.org/delay/4
@@ -251,7 +243,7 @@ Concurrent requests can go much faster. The same requests now take only 6 second
 
 .. code-block:: bash
 
-   $ time mario async-map 'await asks.get ! x.text ! len' apply max <<EOF
+   % time mario async-map 'await asks.get ! x.text ! len' apply max <<EOF
    http://httpbin.org/delay/5
    http://httpbin.org/delay/1
    http://httpbin.org/delay/4
@@ -279,7 +271,7 @@ For example, the ``3 seconds`` item is ready before the preceding ``4 seconds`` 
 
 .. code-block:: bash
 
-    $ time mario --exec-before 'import datetime; now=datetime.datetime.utcnow; START_TIME=now(); print("Elapsed time | Response size")' map 'await asks.get !  f"{(now() - START_TIME).seconds} seconds    | {len(x.content)} bytes"'  <<EOF
+    % time mario --exec-before 'import datetime; now=datetime.datetime.utcnow; START_TIME=now(); print("Elapsed time | Response size")' map 'await asks.get !  f"{(now() - START_TIME).seconds} seconds    | {len(x.content)} bytes"'  <<EOF
     http://httpbin.org/delay/1
     http://httpbin.org/delay/2
     http://httpbin.org/delay/4
@@ -316,7 +308,7 @@ Then you can directly use the imported objects without referencing the module.
 .. code-block:: bash
 
 
-    $ mario map 'Counter ! json.dumps' <<<'hello\nworld\n'
+    $ mario map 'Counter ! json.dumps' <<<$'hello\nworld'
     {"h": 1, "e": 1, "l": 2, "o": 1}
     {"w": 1, "o": 1, "r": 1, "l": 1, "d": 1}
 
@@ -355,7 +347,7 @@ Now we can use it like a regular command:
 
 .. code-block:: bash
 
-    $ mario jsonl  <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
+    % mario jsonl  <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
     X(a=1, b=2)
     X(a=5, b=9)
 
