@@ -24,3 +24,5 @@ sphinx
 sphinx_rtd_theme
 pytest-sugar
 lxml
+docshtest
+pygments>=2.4
