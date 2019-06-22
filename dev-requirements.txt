@@ -30,6 +30,7 @@ constantly==15.1.0        # via twisted
 coverage==4.5.3
 cryptography==2.6.1       # via pyopenssl, service-identity
 cuvner==18.0.1
+docshtest==0.0.2
 docutils==0.14            # via readme-renderer, sphinx
 filelock==3.0.10          # via tox
 html5lib==1.0.1           # via poetry
@@ -61,7 +62,7 @@ py==1.8.0                 # via pytest, tox
 pyasn1-modules==0.2.4     # via service-identity
 pyasn1==0.4.5             # via pyasn1-modules, service-identity
 pycparser==2.19           # via cffi
-pygments==2.3.1           # via cuvner, readme-renderer, sphinx
+pygments==2.4.2
 pyhamcrest==1.9.0         # via twisted
 pylev==1.3.0              # via cleo
 pylint==2.3.1
