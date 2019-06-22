@@ -308,7 +308,7 @@ Then you can directly use the imported objects without referencing the module.
 .. code-block:: bash
 
 
-    $ mario map 'Counter ! json.dumps' <<<$'hello\nworld'
+    % mario map 'Counter ! json.dumps' <<<$'hello\nworld'
     {"h": 1, "e": 1, "l": 2, "o": 1}
     {"w": 1, "o": 1, "r": 1, "l": 1, "d": 1}
 
