@@ -10,3 +10,4 @@ appdirs
 toml
 asks
 marshmallow>=3.0rc1
+pyrsistent
