@@ -17,6 +17,8 @@ idna==2.8                 # via trio
 marshmallow==3.0.0rc7
 outcome==1.0.0            # via trio
 parso==0.4.0
+pyrsistent==0.15.2
+six==1.12.0               # via pyrsistent
 sniffio==1.1.0            # via anyio, trio
 sortedcontainers==2.1.0   # via trio
 toml==0.10.0
