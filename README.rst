@@ -37,6 +37,7 @@ Use ``map`` to act on each item in the file with python commands:
 
 
 Chain python functions together with ``!``:
+
 .. code-block:: bash
 
   $ mario map 'x.upper() ! len(x)' <<<hello
