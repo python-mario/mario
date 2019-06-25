@@ -366,6 +366,12 @@ ____________________
 Convert yaml to json
 ++++++++++++++++++++++++
 
+Convenient for removing trailing commas.
+
+.. code-block:: bash
+
+    % mario yml2json <<<'{"x": 1,}'
+
 .. code-block:: toml
 
     [[alias]]
@@ -381,6 +387,28 @@ Convert yaml to json
 Search for xpath elements with xpath
 +++++++++++++++++++++++++++++++++++++++++
 
+Pull text out of xml documents.
+
+.. code-block:: bash
+
+
+    % mario xpath '//'  map 'x.text' <<EOF
+          <slide type="all">
+            <title>Overview</title>
+              <item>Anything <em>can be</em> in here</item>
+              <item>Or <em>also</em> in here</item>
+          </slide>
+    EOF
+
+    Overview
+    Anything
+    can be
+    Or
+    also
+
+
+
+
 .. code-block:: toml
 
     [[alias]]
@@ -390,12 +418,21 @@ Search for xpath elements with xpath
         inject_values=["query"]
 
         [[alias.stage]]
-
         command = "stack"
         options= {pipeline="x.encode() ! io.BytesIO ! lxml.etree.parse ! x.findall(query) ! map(lambda y: y, x) ! list" }
 
+        [[alias.stage]]
+        command="chain"
+
+
 Generate json objects
 ++++++++++++++++++++++
+
+.. code-block:: bash
+
+    % mario jo 'name=Alice age=21 hobbies=["running"]'
+    {"name": "Alice", "age": 21, "hobbies": ["running"]}
+
 
 .. code-block:: toml
 
