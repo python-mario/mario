@@ -5,3 +5,4 @@
 - Edit files in place using a temp file.
 - TODO Add a command that unwraps a single-line list into one element per line
 - Add `if ___ then ___ else ___` command
+- Add tests for the config aliases in the docs
