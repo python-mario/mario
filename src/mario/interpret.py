@@ -131,9 +131,9 @@ def build_source(components, howcall):
     return source
 
 
-def build_name_to_module(pipeline):
+def build_name_to_module(code):
     name_to_module = {}
-    components = split_pipestring(pipeline)
+    components = split_pipestring(code)
     module_names = {name for c in components for name in find_maybe_module_names(c)}
     for name in module_names:
         name_to_module.update(_get_autoimport_module(name))
@@ -141,11 +141,11 @@ def build_name_to_module(pipeline):
     return name_to_module
 
 
-def build_function(pipeline, global_namespace, howcall):
-    name_to_module = build_name_to_module(pipeline)
+def build_function(code, global_namespace, howcall):
+    name_to_module = build_name_to_module(code)
     global_namespace = {**name_to_module, **global_namespace}
 
-    source = build_source(split_pipestring(pipeline), howcall)
+    source = build_source(split_pipestring(code), howcall)
     exec(source, global_namespace)
     function = global_namespace["_mario_runner"]
     return Function(function, global_namespace, source)

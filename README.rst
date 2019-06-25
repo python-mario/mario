@@ -341,7 +341,7 @@ Define new commands in your config file which provide aliases to other commands.
    [[alias.stage]]
 
    command = "map"
-   options = {pipeline="json.loads ! types.SimpleNameSpace(**x)"}
+   options = {code="json.loads ! types.SimpleNameSpace(**x)"}
 
 
 Now we can use it like a regular command:
@@ -383,7 +383,7 @@ Convenient for removing trailing commas.
         [[alias.stage]]
 
         command = "stack"
-        options = {pipeline="yaml.safe_load ! json.dumps"}
+        options = {code="yaml.safe_load ! json.dumps"}
 
 Search for xpath elements with xpath
 +++++++++++++++++++++++++++++++++++++++++
@@ -420,7 +420,7 @@ Pull text out of xml documents.
 
         [[alias.stage]]
         command = "stack"
-        options= {pipeline="x.encode() ! io.BytesIO ! lxml.etree.parse ! x.findall(query) ! map(lambda y: y, x) ! list" }
+        options= {code="x.encode() ! io.BytesIO ! lxml.etree.parse ! x.findall(query) ! map(lambda y: y, x) ! list" }
 
         [[alias.stage]]
         command="chain"
@@ -447,26 +447,26 @@ Generate json objects
 
         [[alias.stage]]
         command = "eval"
-        options = {expression="pairs", autocall=false}
+        options = {code="pairs"}
 
         [[alias.stage]]
         command = "map"
-        options = {pipeline="shlex.split(x, posix=False)"}
+        options = {code="shlex.split(x, posix=False)"}
 
         [[alias.stage]]
         command = "chain"
 
         [[alias.stage]]
         command = "map"
-        options = {pipeline="x.partition('=') ! [x[0], ast.literal_eval(re.sub(r'^(?P<value>[A-Za-z]+)$', r'\"\\g<value>\"', x[2]))]"}
+        options = {code="x.partition('=') ! [x[0], ast.literal_eval(re.sub(r'^(?P<value>[A-Za-z]+)$', r'\"\\g<value>\"', x[2]))]"}
 
         [[alias.stage]]
         command = "apply"
-        options = {"pipeline"="dict"}
+        options = {"code"="dict"}
 
         [[alias.stage]]
         command = "map"
-        options = {pipeline="json.dumps"}
+        options = {code="json.dumps"}
 
 
 

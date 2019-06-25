@@ -25,11 +25,11 @@ def calculate_function(traversal, howcall=None):
             )
         )
 
-    if "pipeline" in traversal.specific_invocation_params:
+    if "code" in traversal.specific_invocation_params:
 
         return {
             "function": interpret.build_function(
-                traversal.specific_invocation_params["pipeline"],
+                traversal.specific_invocation_params["code"],
                 global_namespace=global_namespace,
                 howcall=howcall,
             )
@@ -41,7 +41,7 @@ def calculate_function(traversal, howcall=None):
 def calculate_reduce(traversal):
 
     function = interpret.build_function(
-        traversal.specific_invocation_params["pipeline"],
+        traversal.specific_invocation_params["code"],
         traversal.global_invocation_options.global_options["global_namespace"],
         howcall=interpret.HowCall.VARARGS,
     )
@@ -146,37 +146,37 @@ async def async_chain(items, exit_stack):
 
 
 subcommands = [
-    click.Command("map", short_help="Call <pipeline> on each line of input."),
-    click.Command("async-map", short_help="Call <pipeline> on each line of input."),
-    click.Command("apply", short_help="Call <pipeline> on input as a sequence."),
+    click.Command("map", short_help="Call <code> on each line of input."),
+    click.Command("async-map", short_help="Call <code> on each line of input."),
+    click.Command("apply", short_help="Call <code> on input as a sequence."),
     click.Command(
-        "async-apply",
-        short_help="Call <pipeline> asynchronously on input as a sequence.",
+        "async-apply", short_help="Call <code> asynchronously on input as a sequence."
     ),
     click.Command(
         "filter",
-        short_help="Call <pipeline> on each line of input and exclude false values.",
+        short_help="Call <code> on each line of input and exclude false values.",
     ),
     click.Command(
         "async-filter",
-        short_help="Async call <pipeline> on each line of input and exclude false values.",
+        short_help="Async call <code> on each line of input and exclude false values.",
     ),
     click.Command(
-        "stack", short_help="Call <pipeline> on input as a single concatenated string."
+        "stack", short_help="Call <code> on input as a single concatenated string."
     ),
     click.Command(
         "async-map-unordered",
-        short_help="Call <pipeline> on each line of input, ignoring order of input items.",
+        short_help="Call <code> on each line of input, ignoring order of input items.",
     ),
     click.Command(
         "dropwhile",
         short_help="Evaluate <predicate> on function and drop values until first falsy.",
     ),
+    click.Command("eval", short_help="Evaluate a python expression <code>"),
 ]
 
 
 def build_callback(sub_command):
-    def callback(pipeline, autocall, **parameters):
+    def callback(code, autocall, **parameters):
         if autocall:
             howcall = interpret.HowCall.SINGLE
         else:
@@ -186,7 +186,7 @@ def build_callback(sub_command):
             {
                 "name": sub_command.name.replace("-", "_"),
                 "howcall": howcall,
-                "pipeline": pipeline,
+                "code": code,
                 "parameters": parameters,
             }
         ]
@@ -202,7 +202,7 @@ for subcommand in subcommands:
 
     subcommand.params = [
         click.Option(["--autocall/--no-autocall"], is_flag=True, default=True),
-        click.Argument(["pipeline"]),
+        click.Argument(["code"]),
     ]
     subcommand.callback = build_callback(subcommand)
     subcommand = option_exec_before(subcommand)
@@ -219,19 +219,19 @@ for subcommand in subcommands:
 def _reduce(function_name, **parameters):
     return [
         {
-            "pipeline": f"toolz.curry({function_name})",
+            "code": f"toolz.curry({function_name})",
             "name": "reduce",
             "parameters": parameters,
         }
     ]
 
 
-@registry.add_cli(name="eval")
-@click.command("eval", short_help="Call <pipeline> without any input.")
-@option_exec_before
-@click.argument("expression")
-def _eval(expression, **parameters):
-    return [{"pipeline": expression, "name": "eval", "parameters": parameters}]
+# @registry.add_cli(name="eval")
+# @click.command("eval", short_help="Call <code> without any input.")
+# @option_exec_before
+# @click.argument("expression")
+# def _eval(expression, **parameters):
+#     return [{"code": expression, "name": "eval", "parameters": parameters}]
 
 
 more_commands = [
