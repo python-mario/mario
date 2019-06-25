@@ -447,7 +447,7 @@ Generate json objects
 
         [[alias.stage]]
         command = "eval"
-        options = {expression="pairs", autocall=false}
+        options = {pipeline="pairs"}
 
         [[alias.stage]]
         command = "map"

@@ -172,6 +172,7 @@ subcommands = [
         "dropwhile",
         short_help="Evaluate <predicate> on function and drop values until first falsy.",
     ),
+    click.Command("eval", short_help="Evaluate a python expression <pipeline>"),
 ]
 
 
@@ -226,12 +227,12 @@ def _reduce(function_name, **parameters):
     ]
 
 
-@registry.add_cli(name="eval")
-@click.command("eval", short_help="Call <pipeline> without any input.")
-@option_exec_before
-@click.argument("expression")
-def _eval(expression, **parameters):
-    return [{"pipeline": expression, "name": "eval", "parameters": parameters}]
+# @registry.add_cli(name="eval")
+# @click.command("eval", short_help="Call <pipeline> without any input.")
+# @option_exec_before
+# @click.argument("expression")
+# def _eval(expression, **parameters):
+#     return [{"pipeline": expression, "name": "eval", "parameters": parameters}]
 
 
 more_commands = [
