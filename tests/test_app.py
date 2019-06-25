@@ -53,7 +53,7 @@ def test_raises_on_nonexistent_option(option, runner):
 
 
 def test_eval_main(capsys):
-    mario.app.main([[{"name": "eval", "pipeline": "1+1", "parameters": {}}]])
+    mario.app.main([[{"name": "eval", "code": "1+1", "parameters": {}}]])
     assert capsys.readouterr().out == "2\n"
 
 
