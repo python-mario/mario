@@ -37,6 +37,7 @@ Use ``map`` to act on each item in the file with python commands:
 
 
 Chain python functions together with ``!``:
+
 .. code-block:: bash
 
   $ mario map 'x.upper() ! len(x)' <<<hello
@@ -358,6 +359,115 @@ The new command ``jsonl`` can be used in pipelines as well. To get the maximum v
 
    $ mario jsonl map 'x.a' apply max <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
    5
+
+More alias examples
+____________________
+
+
+Convert yaml to json
+++++++++++++++++++++++++
+
+Convenient for removing trailing commas.
+
+.. code-block:: bash
+
+    % mario yml2json <<<'{"x": 1,}'
+
+.. code-block:: toml
+
+    [[alias]]
+
+        name = "yml2json"
+        short_help = "Convert yaml to json"
+
+        [[alias.stage]]
+
+        command = "stack"
+        options = {pipeline="yaml.safe_load ! json.dumps"}
+
+Search for xpath elements with xpath
++++++++++++++++++++++++++++++++++++++++++
+
+Pull text out of xml documents.
+
+.. code-block:: bash
+
+
+    % mario xpath '//'  map 'x.text' <<EOF
+          <slide type="all">
+            <title>Overview</title>
+              <item>Anything <em>can be</em> in here</item>
+              <item>Or <em>also</em> in here</item>
+          </slide>
+    EOF
+
+    Overview
+    Anything
+    can be
+    Or
+    also
+
+
+
+
+.. code-block:: toml
+
+    [[alias]]
+        name="xpath"
+        short_help = "Find xml elements matching xpath query."
+        arguments = [{name="query", type="str"}]
+        inject_values=["query"]
+
+        [[alias.stage]]
+        command = "stack"
+        options= {pipeline="x.encode() ! io.BytesIO ! lxml.etree.parse ! x.findall(query) ! map(lambda y: y, x) ! list" }
+
+        [[alias.stage]]
+        command="chain"
+
+
+Generate json objects
+++++++++++++++++++++++
+
+.. code-block:: bash
+
+    % mario jo 'name=Alice age=21 hobbies=["running"]'
+    {"name": "Alice", "age": 21, "hobbies": ["running"]}
+
+
+.. code-block:: toml
+
+    [[alias]]
+
+
+        name="jo"
+        short_help="Make json objects"
+        arguments=[{name="pairs", type="str"}]
+        inject_values=["pairs"]
+
+        [[alias.stage]]
+        command = "eval"
+        options = {expression="pairs", autocall=false}
+
+        [[alias.stage]]
+        command = "map"
+        options = {pipeline="shlex.split(x, posix=False)"}
+
+        [[alias.stage]]
+        command = "chain"
+
+        [[alias.stage]]
+        command = "map"
+        options = {pipeline="x.partition('=') ! [x[0], ast.literal_eval(re.sub(r'^(?P<value>[A-Za-z]+)$', r'\"\\g<value>\"', x[2]))]"}
+
+        [[alias.stage]]
+        command = "apply"
+        options = {"pipeline"="dict"}
+
+        [[alias.stage]]
+        command = "map"
+        options = {pipeline="json.dumps"}
+
 
 
 Plugins
