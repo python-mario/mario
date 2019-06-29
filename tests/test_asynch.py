@@ -111,7 +111,7 @@ def test_cli_async_map_unordered(runner, reactor, server, capsys):
         output = helpers.run(args, input=in_stream.encode()).decode()
 
     assert output == expected
-    limit_seconds = 6.0
+    limit_seconds = 7.0
     assert t.elapsed < limit_seconds
 
 
