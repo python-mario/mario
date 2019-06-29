@@ -21,7 +21,7 @@ def _reactor():
 @pytest.fixture(name="server")
 def _server():
     # TODO Replace subprocess with reactor
-    command = ["python", config.TEST_DIR / "server.py"]
+    command = [sys.executable, "-m", "tests.server"]
     proc = subprocess.Popen(command, stderr=subprocess.PIPE)
     time.sleep(1)
     yield
