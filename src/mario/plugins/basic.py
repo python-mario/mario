@@ -87,8 +87,7 @@ async def async_filter(function, items, exit_stack, max_concurrent):
 @registry.add_traversal("apply", calculate_more_params=calculate_function)
 async def apply(function, items):
     """When ``function`` takes an iterable."""
-    # XXX This should be changed to threading to avoid listifying.
-    return traversals.AsyncIterableWrapper([await function([x async for x in items])])
+    return traversals.sync_apply(function, items)
 
 
 @registry.add_traversal("async_apply", calculate_more_params=calculate_function)
