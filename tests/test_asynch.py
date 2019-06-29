@@ -42,7 +42,7 @@ class Timer:
         self.elapsed = self.end - self.start
 
 
-def test_cli_async_chain_map_apply(runner, reactor, server):
+def test_cli_async_map_then_apply(runner, reactor, server):
     base_url = "http://localhost:8080/?delay={}\n"
 
     in_stream = "".join(base_url.format(i) for i in [1, 2, 3, 4, 5] * 9)
