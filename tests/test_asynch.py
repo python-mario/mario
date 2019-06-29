@@ -4,7 +4,7 @@ import sys
 import time
 import string
 
-
+import requests
 import pytest
 
 from . import config
@@ -26,6 +26,10 @@ def _server():
     time.sleep(1)
     yield
     proc.terminate()
+
+
+def test_server(server):
+    assert requests.get("http://localhost:8080/?delay=1")
 
 
 class Timer:
