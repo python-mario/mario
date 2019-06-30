@@ -46,5 +46,5 @@ setuptools.setup(
         "console_scripts": ["mario = mario.cli:cli"],
         "mario_plugins": ["basic = mario.plugins"],
     },
-    extras={"dev": DEV_INSTALL_REQUIRES},
+    extras_require={"dev": DEV_INSTALL_REQUIRES},
 )
