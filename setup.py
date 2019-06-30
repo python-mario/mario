@@ -8,6 +8,8 @@ PROJECT_ROOT = pathlib.Path(__file__).parent
 with open(PROJECT_ROOT / "requirements.in") as f:
     INSTALL_REQUIRES = f.read().splitlines()
 
+with open(PROJECT_ROOT / "dev-requirements.in") as f:
+    DEV_INSTALL_REQUIRES = f.read().splitlines()
 
 setuptools.setup(
     name="mario",
@@ -44,4 +46,5 @@ setuptools.setup(
         "console_scripts": ["mario = mario.cli:cli"],
         "mario_plugins": ["basic = mario.plugins"],
     },
+    extras={"dev": DEV_INSTALL_REQUIRES},
 )
