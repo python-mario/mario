@@ -1,3 +1,4 @@
+-r requirements.in
 bump2version
 coverage
 hypothesis

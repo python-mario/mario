@@ -8,10 +8,12 @@ PROJECT_ROOT = pathlib.Path(__file__).parent
 with open(PROJECT_ROOT / "requirements.in") as f:
     INSTALL_REQUIRES = f.read().splitlines()
 
+with open(PROJECT_ROOT / "dev-requirements.in") as f:
+    DEV_INSTALL_REQUIRES = f.read().splitlines()
 
 setuptools.setup(
     name="mario",
-    version="0.0.109",
+    version="0.0.110",
     description="Shell pipes for Python.",
     long_description=open(PROJECT_ROOT / "README.rst").read(),
     long_description_content_type="text/x-rst",
@@ -44,4 +46,5 @@ setuptools.setup(
         "console_scripts": ["mario = mario.cli:cli"],
         "mario_plugins": ["basic = mario.plugins"],
     },
+    extras={"dev": DEV_INSTALL_REQUIRES},
 )

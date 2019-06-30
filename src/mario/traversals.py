@@ -68,15 +68,101 @@ class IterableToAsyncIterable:
             raise StopAsyncIteration
 
 
-async def async_apply(
-    function: Callable[[Iterable[T]], Any], aiterable: AsyncIterable[T]
+import typing as t
+import functools
+import itertools
+import threading
+
+
+import trio
+import trio_typing
+
+T = t.TypeVar("T")
+
+
+def _pull_values_from_async_iterator(
+    in_trio: trio.BlockingTrioPortal,
+    ait: t.AsyncIterator[T],
+    send_to_trio: trio.abc.SendChannel[T],
 ):
-    async for item in IterableToAsyncIterable(
-        [function((await x) for x in AsyncIterableToIterable(aiterable))]
-    ):
-        if isinstance(item, types.CoroutineType):
-            return await item
-        return item
+    """Make a generator by asking Trio to async-iterate over the async iterable,
+    then yield the results.
+
+    This function is run in a thread.
+    """
+    while True:
+        try:
+            yield in_trio.run(ait.__anext__)
+        except StopAsyncIteration:
+            break
+
+
+def _threaded_sync_apply(
+    in_trio: trio.BlockingTrioPortal,
+    function: t.Callable[[t.Iterable[T]], t.Any],
+    send_to_trio: trio.abc.SendChannel,
+    ait: t.AsyncIterator[T],
+    receive_from_thread: trio.abc.ReceiveChannel,
+    iterator=None,
+):
+    """Extract values from async iterable into a sync iterator, apply function to
+    it, and send the result back into Trio.
+
+    This function is run in a thread.
+
+    """
+
+    try:
+        for x in iterator:
+            in_trio.run(send_to_trio.send, x)
+    finally:
+        in_trio.run(send_to_trio.aclose)
+
+
+async def sync_apply(
+    sync_function: t.Callable[[t.Iterable[T]], t.Any], data: t.AsyncIterable[T]
+):
+    """Apply a sync Callable[Iterable] to an async iterable by pulling values in a
+    thread.
+    """
+    in_trio = trio.BlockingTrioPortal()
+    send_to_trio, receive_from_thread = trio.open_memory_channel[t.Tuple[T, t.Any]](0)
+
+    async with trio.open_nursery() as n:
+
+        iterator = await sync_function(
+            _pull_values_from_async_iterator(in_trio, data, send_to_trio)
+        )
+        n.start_soon(
+            trio.run_sync_in_worker_thread,
+            functools.partial(
+                _threaded_sync_apply,
+                function=sync_function,
+                iterator=iterator,
+                ait=data,
+                in_trio=in_trio,
+                send_to_trio=send_to_trio,
+                receive_from_thread=receive_from_thread,
+            ),
+        )
+
+        async for x in receive_from_thread:
+            yield x
+
+
+import functools
+
+
+def wrap_sync_fold(function):
+    @functools.wraps(function)
+    def wrap(items):
+        yield from [function(items)]
+
+    return wrap
+
+
+async def async_apply(function, data):
+    return await function(data)
 
 
 @async_generator.asynccontextmanager

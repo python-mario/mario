@@ -4,7 +4,7 @@ import sys
 import time
 import string
 
-
+import requests
 import pytest
 
 from . import config
@@ -21,11 +21,15 @@ def _reactor():
 @pytest.fixture(name="server")
 def _server():
     # TODO Replace subprocess with reactor
-    command = ["python", config.TEST_DIR / "server.py"]
+    command = [sys.executable, "-m", "tests.server"]
     proc = subprocess.Popen(command, stderr=subprocess.PIPE)
     time.sleep(1)
     yield
     proc.terminate()
+
+
+def test_server(server):
+    assert requests.get("http://localhost:8080/?delay=1")
 
 
 class Timer:
@@ -38,7 +42,7 @@ class Timer:
         self.elapsed = self.end - self.start
 
 
-def test_cli_async_chain_map_apply(runner, reactor, server):
+def test_cli_async_map_then_apply(runner, reactor, server):
     base_url = "http://localhost:8080/?delay={}\n"
 
     in_stream = "".join(base_url.format(i) for i in [1, 2, 3, 4, 5] * 9)
@@ -107,7 +111,7 @@ def test_cli_async_map_unordered(runner, reactor, server, capsys):
         output = helpers.run(args, input=in_stream.encode()).decode()
 
     assert output == expected
-    limit_seconds = 6.0
+    limit_seconds = 7.0
     assert t.elapsed < limit_seconds
 
 
