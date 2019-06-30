@@ -150,6 +150,15 @@ async def sync_apply(
             yield x
 
 
+import functools
+def wrap_sync_fold(function):
+    @functools.wraps(function)
+    def wrap(items):
+        yield from [function(items)]
+
+    return wrap
+
+
 async def async_apply(function, data):
     return await function(data)
 
