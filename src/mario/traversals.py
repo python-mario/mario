@@ -111,7 +111,7 @@ def _threaded_sync_apply(
     This function is run in a thread.
 
     """
-    # iterator = _pull_values_from_async_iterator(in_trio, ait, send_to_trio)
+
     try:
         for x in iterator:
             in_trio.run(send_to_trio.send, x)
@@ -126,8 +126,6 @@ async def sync_apply(
     thread.
     """
     in_trio = trio.BlockingTrioPortal()
-    # send_to_trio: trio.abc.SendChannel
-    # receive_from_thread: trio.abc.ReceiveChannel
     send_to_trio, receive_from_thread = trio.open_memory_channel[t.Tuple[T, t.Any]](0)
 
     async with trio.open_nursery() as n:
