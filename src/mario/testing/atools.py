@@ -44,6 +44,8 @@ def gen_max(items):
 
 
 import functools
+
+
 def wrap_sync_fold(function):
     @functools.wraps(function)
     def wrap(items):

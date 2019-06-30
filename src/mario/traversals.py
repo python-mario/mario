@@ -151,6 +151,8 @@ async def sync_apply(
 
 
 import functools
+
+
 def wrap_sync_fold(function):
     @functools.wraps(function)
     def wrap(items):
