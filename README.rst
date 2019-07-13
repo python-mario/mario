@@ -495,8 +495,17 @@ Generate json objects
 Read csv file
 +++++++++++++
 
-Read a csv file into Python dicts.
+Read a csv file into Python dicts. Given a csv like this:
 
+
+.. code-block:: bash
+
+    % cat names.csv
+    name,age
+    Alice,21
+    Bob,25
+
+try:
 
 .. code-block:: bash
 
