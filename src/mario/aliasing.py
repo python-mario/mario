@@ -46,7 +46,7 @@ class OptionSchema(marshmallow.Schema):
     required = fields.Boolean(default=False)
     nargs = fields.Integer()
     multiple = fields.Boolean()
-    default = fields.String(default=None)
+    default = fields.Field(default=None)
 
     @marshmallow.post_load()
     def make_option(self, validated, partial, many):
