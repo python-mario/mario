@@ -310,9 +310,28 @@ For example, the ``3 seconds`` item is ready before the preceding ``4 seconds`` 
 Configuration
 ~~~~~~~~~~~~~
 
-Add code to automatically execute, into your config file.
+The config file location follows the `freedesktop.org standard <https://www.freedesktop.org/wiki/Software/xdg-user-dirs/>`_. Check the location on your system by running ``mario --help``:
 
-For example:
+
+.. code-block:: bash
+
+    % mario --help
+    Usage: mario [OPTIONS] COMMAND1 [ARGS]... [COMMAND2 [ARGS]...]...
+
+      Mario: Python pipelines for your shell.
+
+      GitHub: https://github.com/python-mario/mario
+
+      Configuration:
+        Declarative config: /home/user/.config/mario/config.toml
+        Python modules: /home/user/.config/mario/modules/*.py
+
+
+
+
+For example on Ubuntu we use ``~/.config/mario/config.toml`` for declarative configuration. Add code and settings into your config.
+
+
 
 .. code-block:: toml
 
@@ -495,8 +514,17 @@ Generate json objects
 Read csv file
 +++++++++++++
 
-Read a csv file into Python dicts.
+Read a csv file into Python dicts. Given a csv like this:
 
+
+.. code-block:: bash
+
+    % cat names.csv
+    name,age
+    Alice,21
+    Bob,25
+
+try:
 
 .. code-block:: bash
 

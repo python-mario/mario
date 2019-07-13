@@ -21,11 +21,17 @@ config.DEFAULTS.update(
 
 CONTEXT_SETTINGS = {"default_map": config.DEFAULTS}
 
-doc = """Mario: Python pipelines for your shell.
+doc = f"""\
+Mario: Python pipelines for your shell.
 
-    GitHub: https://github.com/python-mario/mario
+GitHub: https://github.com/python-mario/mario
 
-    """
+\b
+Configuration:
+  Declarative config: {config.get_config_dir() / 'config.toml'}
+  Python modules: {config.get_config_dir() / 'modules/*.py'}
+
+"""
 basics = click.Group(commands=plug.global_registry.cli_functions)
 ALIASES = plug.global_registry.aliases
 
