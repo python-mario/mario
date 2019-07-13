@@ -341,7 +341,7 @@ Define new commands in your config file which provide aliases to other commands.
    [[alias.stage]]
 
    command = "map"
-   options = {code="json.loads ! types.SimpleNameSpace(**x)"}
+   options = {code="json.loads"}
 
 
 Now we can use it like a regular command:
@@ -349,8 +349,8 @@ Now we can use it like a regular command:
 .. code-block:: bash
 
     % mario jsonl  <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
-    X(a=1, b=2)
-    X(a=5, b=9)
+    {'a': 1, 'b': 2}
+    {'a': 5, 'b': 9}
 
 
 The new command ``jsonl`` can be used in pipelines as well. To get the maximum value in a sequence of jsonlines objects:
@@ -421,7 +421,7 @@ Pull text out of xml documents.
 
         [[alias.stage]]
         command = "stack"
-        options= {code="x.encode() ! io.BytesIO ! lxml.etree.parse ! x.findall(query) ! map(lambda y: y, x) ! list" }
+        options= {code="x.encode() ! io.BytesIO ! lxml.etree.parse ! x.findall(query) ! list" }
 
         [[alias.stage]]
         command="chain"
