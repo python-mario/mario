@@ -80,7 +80,11 @@ def build_stages(alias):
 
     params = alias.arguments + alias.options
     return click.Command(
-        name=alias.name, params=params, callback=click.pass_context(run), short_help=alias.short_help, help=alias.help
+        name=alias.name,
+        params=params,
+        callback=click.pass_context(run),
+        short_help=alias.short_help,
+        help=alias.help,
     )
 
 
