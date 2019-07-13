@@ -563,7 +563,7 @@ try:
 
     [[alias]]
         name = "csv"
-        help = "Load csv rows into python objects"
+        help = "Load csv rows into python dicts. With --no-header, keys will be numbered from 0."
         inject_values=["delimiter", "header"]
 
         [[alias.options]]
