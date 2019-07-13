@@ -536,21 +536,22 @@ try:
 .. code-block:: toml
 
     [[alias]]
-
         name = "csv"
         short_help = "Load csv rows into python objects"
+        inject_values=["delimiter"]
+
+        [[alias.options]]
+        name = "--delimiter"
+        default = ","
 
         [[alias.stage]]
-
         command = "apply"
-        options = {code="csv.DictReader"}
+        options = {code="csv.DictReader(x, delimiter=delimiter)"}
 
         [[alias.stage]]
-
         command = "chain"
 
         [[alias.stage]]
-
         command = "map"
         options = {code="dict"}
 
