@@ -24,7 +24,7 @@ Get it with pip:
 
    python3.7 -m pip install mario
 
-If you're not inside a virtualenv, you might get a PermissionsError. In that case, try using:
+If you're not inside a virtualenv, you might get a `PermissionsError`. In that case, try using:
 
 .. code-block:: bash
 
@@ -32,7 +32,7 @@ If you're not inside a virtualenv, you might get a PermissionsError. In that cas
 
 or for more flexibility and safety, use `pipx <https://github.com/pipxproject/pipx/>`_:
 
-.. code-block::bash
+.. code-block:: bash
 
      pipx install --python python3.7 mario
 
