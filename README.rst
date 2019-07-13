@@ -376,7 +376,7 @@ Define new commands in your config file which provide aliases to other commands.
    [[alias]]
 
    name = "jsonl"
-   short_help = "Load jsonlines into python objects."
+   help = "Load jsonlines into python objects."
 
    [[alias.stage]]
 
@@ -419,7 +419,7 @@ Convenient for removing trailing commas.
     [[alias]]
 
         name = "yml2json"
-        short_help = "Convert yaml to json"
+        help = "Convert yaml to json"
 
         [[alias.stage]]
 
@@ -455,7 +455,7 @@ Pull text out of xml documents.
 
     [[alias]]
         name="xpath"
-        short_help = "Find xml elements matching xpath query."
+        help = "Find xml elements matching xpath query."
         arguments = [{name="query", type="str"}]
         inject_values=["query"]
 
@@ -482,7 +482,7 @@ Generate json objects
 
 
         name="jo"
-        short_help="Make json objects"
+        help="Make json objects"
         arguments=[{name="pairs", type="str"}]
         inject_values=["pairs"]
 
@@ -563,7 +563,7 @@ try:
 
     [[alias]]
         name = "csv"
-        short_help = "Load csv rows into python objects"
+        help = "Load csv rows into python objects"
         inject_values=["delimiter", "header"]
 
         [[alias.options]]
