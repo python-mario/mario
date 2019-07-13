@@ -15,6 +15,27 @@ Your favorite plumbing snake 🐍🔧 with your favorite pipes, right in your sh
    :target: https://codecov.io/gh/python-mario/mario
 
 
+Installation
+============
+
+Get it with pip:
+
+.. code-block:: bash
+
+   python3.7 -m pip install mario
+
+If you're not inside a virtualenv, you might get a PermissionsError. In that case, try using:
+
+.. code-block:: bash
+
+    python3.7 -m pip install --user mario
+
+or for more flexibility and safety, use `pipx <https://github.com/pipxproject/pipx/>`_:
+
+.. code-block::bash
+
+     pipx install --python python3.7 mario
+
 Usage
 =====
 
@@ -512,15 +533,6 @@ Plugins
 
 Add new commands like ``map`` and ``reduce`` by installing mario plugins. You can try them out without installing by adding them to any ``.py`` file in your ``~/.config/mario/modules/``.
 
-
-Installation
-============
-
-Get it with pip:
-
-.. code-block:: bash
-
-   python3.7 -m pip install mario
 
 
 Caveats
