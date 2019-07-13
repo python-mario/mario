@@ -101,7 +101,8 @@ class AliasStageSchema(marshmallow.Schema):
 @attr.dataclass
 class Alias:
     name: str
-    short_help: str
+    short_help: t.Optional[str]
+    help: t.Optional[str]
     arguments: t.List[click.Argument]
     options: t.List[click.Option]
     stages: t.List[AliasStage]
@@ -110,7 +111,8 @@ class Alias:
 
 class AliasSchema(marshmallow.Schema):
     name = fields.String()
-    short_help = fields.String(default=None)
+    help = fields.String(default=None, missing=None)
+    short_help = fields.String(default=None, missing=None)
     arguments = fields.List(fields.Nested(ArgumentSchema), missing=list)
     options = fields.List(fields.Nested(OptionSchema), missing=list)
     stages = fields.List(fields.Nested(AliasStageSchema), data_key="stage")
