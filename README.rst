@@ -24,7 +24,7 @@ Get it with pip:
 
    python3.7 -m pip install mario
 
-If you're not inside a virtualenv, you might get a `PermissionsError`. In that case, try using:
+If you're not inside a virtualenv, you might get a ``PermissionsError``. In that case, try using:
 
 .. code-block:: bash
 
