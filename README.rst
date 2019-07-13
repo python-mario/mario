@@ -471,6 +471,42 @@ Generate json objects
 
 
 
+Read csv file
++++++++++++++
+
+Read a csv file into Python dicts.
+
+
+.. code-block:: bash
+
+    % mario csv < names.csv
+    {'name': 'Alice', 'age': '21'}
+    {'name': 'Bob', 'age': '25'}
+
+
+.. code-block:: toml
+
+    [[alias]]
+
+        name = "csv"
+        short_help = "Load csv rows into python objects"
+
+        [[alias.stage]]
+
+        command = "apply"
+        options = {code="csv.DictReader"}
+
+        [[alias.stage]]
+
+        command = "chain"
+
+        [[alias.stage]]
+
+        command = "map"
+        options = {code="dict"}
+
+
+
 Plugins
 ~~~~~~~
 
