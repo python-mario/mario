@@ -372,6 +372,7 @@ Convenient for removing trailing commas.
 .. code-block:: bash
 
     % mario yml2json <<<'{"x": 1,}'
+    {"x": 1}
 
 .. code-block:: toml
 
