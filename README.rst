@@ -376,7 +376,7 @@ Define new commands in your config file which provide aliases to other commands.
    [[alias]]
 
    name = "jsonl"
-   short_help = "Load jsonlines into python objects."
+   help = "Load jsonlines into python objects."
 
    [[alias.stage]]
 
@@ -419,7 +419,7 @@ Convenient for removing trailing commas.
     [[alias]]
 
         name = "yml2json"
-        short_help = "Convert yaml to json"
+        help = "Convert yaml to json"
 
         [[alias.stage]]
 
@@ -455,7 +455,7 @@ Pull text out of xml documents.
 
     [[alias]]
         name="xpath"
-        short_help = "Find xml elements matching xpath query."
+        help = "Find xml elements matching xpath query."
         arguments = [{name="query", type="str"}]
         inject_values=["query"]
 
@@ -482,7 +482,7 @@ Generate json objects
 
 
         name="jo"
-        short_help="Make json objects"
+        help="Make json objects"
         arguments=[{name="pairs", type="str"}]
         inject_values=["pairs"]
 
@@ -535,25 +535,57 @@ try:
 
 .. code-block:: toml
 
+    base_exec_before = '''
+    import csv
+    import typing as t
+
+
+    def read_csv(
+        file, header: bool, **kwargs
+    ) -> t.Iterable[t.Dict[t.Union[str, int], str]]:
+        "Read csv rows into an iterable of dicts."
+
+        rows = list(file)
+
+        first_row = next(csv.reader(rows))
+        if header:
+            fieldnames = first_row
+            reader = csv.DictReader(rows, fieldnames=fieldnames, **kwargs)
+            return list(reader)[1:]
+
+        fieldnames = range(len(first_row))
+        return csv.DictReader(rows, fieldnames=fieldnames, **kwargs)
+
+    '''
+
+
+
+
     [[alias]]
         name = "csv"
-        short_help = "Load csv rows into python objects"
-        inject_values=["delimiter"]
+        help = "Load csv rows into python dicts. With --no-header, keys will be numbered from 0."
+        inject_values=["delimiter", "header"]
 
         [[alias.options]]
         name = "--delimiter"
         default = ","
+        help = "field delimiter character"
+
+        [[alias.options]]
+        name = "--header/--no-header"
+        default=true
+        help = "Treat the first row as a header?"
 
         [[alias.stage]]
         command = "apply"
-        options = {code="csv.DictReader(x, delimiter=delimiter)"}
+        options = {code="read_csv(x, header=header)"}
 
         [[alias.stage]]
         command = "chain"
 
         [[alias.stage]]
         command = "map"
-        options = {code="dict"}
+        options = {code="dict(x)"}
 
 
 
