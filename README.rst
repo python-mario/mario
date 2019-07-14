@@ -578,7 +578,7 @@ try:
 
         [[alias.stage]]
         command = "apply"
-        options = {code="read_csv(x, header=header)"}
+        options = {code="read_csv(x, header=header, delimiter=delimiter)"}
 
         [[alias.stage]]
         command = "chain"
