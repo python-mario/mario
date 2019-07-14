@@ -1,5 +1,5 @@
 
-mario: command-line pipes in Python
+Mario: Shell pipes in Python
 ===================================
 
 Your favorite plumbing snake 🐍🔧 with your favorite pipes, right in your shell 🐢.
