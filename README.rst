@@ -613,7 +613,7 @@ Status
 Related work
 ============
 
-A number of cool projects have pioneered in the Python-in-shell space. I didn't know about these when I started writing Mario.  Mario has features missing from the others (user configuration, multi-stage pipelines, async, plugins, etc).
+A number of cool projects have pioneered in the Python-in-shell space. I wrote Mario because I didn't know these existed at the time, but now Mario has a bunch of features the others don't (user configuration, multi-stage pipelines, async, plugins, etc).
 
 * https://github.com/Russell91/pythonpy
 * http://gfxmonk.net/dist/doc/piep/
