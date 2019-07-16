@@ -19,7 +19,6 @@ from tests import config
 from tests import helpers
 
 import mario
-import mario._version
 import mario.app
 import mario.cli
 from mario import interpret
@@ -91,7 +90,7 @@ def test_cli_version(runner):
 
     result = runner.invoke(mario.cli.cli, args)
 
-    assert result.output == f"mario, version {mario._version.__version__}\n"
+    assert result.output == f"mario, version {mario.__version__}\n"
     assert result.output.rstrip()[-1].isdigit()
     assert not result.exception
     assert result.exit_code == 0

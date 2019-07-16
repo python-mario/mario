@@ -4,7 +4,8 @@ import sys
 import attr
 import click
 
-from . import _version
+import mario
+
 from . import aliasing
 from . import app
 from . import config
@@ -55,7 +56,7 @@ def cli_main(pairs, **kwargs):
 def version_option(ctx, param, value):
     if not value:
         return
-    click.echo("mario, version " + _version.__version__)
+    click.echo("mario, version " + mario.__version__)
     sys.exit()
 
 

@@ -14,7 +14,6 @@ import attr
 import pyrsistent
 import trio
 
-from . import _version
 from . import asynch
 from . import config
 from . import interfaces
