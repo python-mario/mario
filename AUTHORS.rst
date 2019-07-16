@@ -1,4 +1,5 @@
+
 Authors
 =======
 
-- Full name
+* mario contributors - https://github.com/python-mario/mario

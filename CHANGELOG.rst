@@ -1,3 +1,12 @@
 Changelog
 =========
-- 2019-05-01 Add docs
+
+0.1.0 (2019-07-15)
+------------------
+
+Changes
+^^^^^^^
+
+- First release on PyPI.
+
+---

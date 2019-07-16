@@ -4,7 +4,6 @@ import argparse
 import functools
 import os
 import pathlib
-import platform
 import shutil
 import subprocess
 import sys
@@ -33,14 +32,15 @@ _register = _Registry()
 @_register
 def clean(cfg):
     """Remove extraneous files."""
-    paths = [cfg.venv_bin, ".coverage", "dist"]
+    paths = (
+        [str(cfg.venv_path), ".coverage"]
+        + list(pathlib.Path().glob(".coverage.*"))
+        + ["dist"]
+    )
 
     for path in paths:
-        path = pathlib.Path(path)
         try:
             shutil.rmtree(path)
-        except NotADirectoryError:
-            path.unlink()
         except FileNotFoundError:
             pass
 
@@ -50,41 +50,51 @@ def init(cfg):
     """Set up a virtualenv, install requirements.txt, dev-requirements.txt, and current dir."""
 
     subprocess.run(
-        ["virtualenv", "--python", sys.executable, str(cfg.venv_bin.parent)], check=True
+        ["virtualenv", "--python", sys.executable, str(cfg.venv_path)], check=True
     )
     if not pathlib.Path("requirements.txt").exists():
         raise FileNotFoundError("Run `lock` first, to create requirements.txt.")
     if pathlib.Path("dev-requirements.txt").exists():
         subprocess.run(
-            [cfg.venv_bin / "pip", "install", "--requirement", "dev-requirements.txt"],
+            [
+                cfg.venv_path / "bin/pip",
+                "install",
+                "--requirement",
+                "dev-requirements.txt",
+            ],
             check=True,
         )
     subprocess.run(
-        [cfg.venv_bin / "pip", "install", "--requirement", "requirements.txt"],
+        [cfg.venv_path / "bin/pip", "install", "--requirement", "requirements.txt"],
         check=True,
     )
-    subprocess.run([cfg.venv_bin / "pip", "install", "--editable", "."], check=True)
+    subprocess.run(
+        [cfg.venv_path / "bin/pip", "install", "--editable", "."], check=True
+    )
 
 
 @_register
 def lock(cfg):
     """Use pip-compile to generate package hashes from setup.py and write them into requirements.txt."""
-    subprocess.run([cfg.venv_bin / "pip", "install", "pip-tools"], check=True)
+    subprocess.run([cfg.venv_path / "bin/pip", "install", "pip-tools"], check=True)
     subprocess.run(
         [
-            cfg.venv_bin / "pip-compile",
+            cfg.venv_path / "bin/pip-compile",
+            "--generate-hashes",
             "--output-file",
             "requirements.txt",
-            "requirements.in",
+            "setup.py",
         ],
         check=True,
     )
     if pathlib.Path("dev-requirements.in").exists():
         subprocess.run(
             [
-                cfg.venv_bin / "pip-compile",
+                cfg.venv_path / "bin/pip-compile",
+                "--generate-hashes",
                 "--output-file",
                 "dev-requirements.txt",
+                "setup.py",
                 "dev-requirements.in",
             ],
             check=True,
@@ -95,36 +105,16 @@ def lock(cfg):
 def build(cfg):
     """Build source and binary distributions."""
     subprocess.run(
-        [str(cfg.venv_bin / "python"), "setup.py", "sdist", "bdist_wheel"], check=True
+        [cfg.venv_path / "bin/python", "setup.py", "sdist", "bdist_wheel"], check=True
     )
 
 
 @_register
 def upload(cfg):
     """Upload the distributions to PyPI."""
-    subprocess.run(
-        [str(cfg.venv_bin / "python"), "-m", "pip", "install", "twine"], check=True
-    )
-    subprocess.run(
-        [cfg.venv_bin / "python", "-m", "twine", "check", "dist/*"], check=True
-    )
+    subprocess.run([cfg.venv_path / "bin/python", "-m", "pip", "install", "twine"])
     dists = [str(path) for path in pathlib.Path("dist").iterdir()]
-    username = os.environ["PYPI_USERNAME"]
-    password = os.environ["PYPI_PASSWORD"]
-    subprocess.run(
-        [
-            cfg.venv_bin / "python",
-            "-m",
-            "twine",
-            "upload",
-            "--username",
-            username,
-            "--password",
-            password,
-            *dists,
-        ],
-        check=True,
-    )
+    subprocess.run([cfg.venv_path / "bin/twine", "upload", *dists], check=True)
 
 
 @_register
@@ -136,12 +126,12 @@ def bundle(cfg):
 
     subprocess.run(
         [
-            cfg.venv_bin / "pex",
+            cfg.venv_path / "bin/pex",
             ".",
             *requirements,
             "-m",
             "mario",
-            "-o", "mario.pex",
+            "-o" "mario.pex",
             "--disable-cache",
         ]
     )
@@ -186,9 +176,7 @@ def cli():
 
     function = _register.registered[args.command_name]
     cfg = types.SimpleNamespace()
-
-    cfg.venv_bin = args.venv / ("Scripts" if platform.system() == "Windows" else "bin")
-
+    cfg.venv_path = args.venv
     function(cfg)
 
 
