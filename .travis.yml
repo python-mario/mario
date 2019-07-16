@@ -10,9 +10,9 @@ env:
       - python: '3.7'
         dist: xenial
         sudo: required
-
-    - TOXENV=check
-    - TOXENV=doc
+        env:
+        - TOXENV=check
+        - TOXENV=doc
 matrix:
   include:
     - python: '3.7'
