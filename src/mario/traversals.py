@@ -17,8 +17,8 @@ import trio
 import trio_typing
 
 
-T = typing.TypeVar("T")
-U = typing.TypeVar("U")
+T = t.TypeVar("T")
+U = t.TypeVar("U")
 
 _PYPE_VALUE = "_PYPE_VALUE"
 
