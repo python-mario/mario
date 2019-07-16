@@ -5,14 +5,6 @@ env:
   global:
     - LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
     - SEGFAULT_SIGNALS=all
-  matrix:
-    include:
-      - python: '3.7'
-        dist: xenial
-        sudo: required
-        env:
-        - TOXENV=check
-        - TOXENV=doc
 matrix:
   include:
     - python: '3.7'
@@ -20,6 +12,16 @@ matrix:
       sudo: required
       env:
         - TOXENV=coverage,codecov
+    - python: '3.7'
+      dist: xenial
+      sudo: required
+      env:
+      - TOXENV=check
+    - python: '3.7'
+      dist: xenial
+      sudo: required
+      env:
+      - TOXENV=doc
 before_install:
   - python --version
   - uname -a
