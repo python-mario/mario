@@ -41,11 +41,11 @@ class Handler:
 
         return web.Response(text=response)
 
+if __name__ == '__main__':
+    with contextlib.redirect_stdout(new_target=sys.stderr):
+        app = web.Application()
+        handler = Handler()
+        handle = handler.handle
+        app.add_routes([web.get("/", handle), web.get("/delay/{delay}", handle)])
 
-with contextlib.redirect_stdout(new_target=sys.stderr):
-    app = web.Application()
-    handler = Handler()
-    handle = handler.handle
-    app.add_routes([web.get("/", handle), web.get("/delay/{delay}", handle)])
-
-    web.run_app(app)
+        web.run_app(app)
