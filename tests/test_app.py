@@ -2,31 +2,28 @@
 
 from __future__ import generator_stop
 
-import textwrap
 import collections
 import os
 import string
-import urllib
 import subprocess
-import time
 import sys
+import textwrap
+import time
+import urllib
 
 import click.testing
-import pytest
 import hypothesis
 import hypothesis.strategies as st
-
-
-import mario
-import mario.app
-import mario.cli
-import mario._version
-from mario import utils
-from mario import interpret
-
-
+import pytest
 from tests import config
 from tests import helpers
+
+import mario
+import mario._version
+import mario.app
+import mario.cli
+from mario import interpret
+from mario import utils
 
 
 hypothesis.settings.register_profile("ci", max_examples=1000)

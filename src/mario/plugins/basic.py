@@ -1,9 +1,10 @@
 import click
 
-from mario import plug
 from mario import asynch
 from mario import interpret
+from mario import plug
 from mario import traversals
+
 
 registry = plug.Registry()
 

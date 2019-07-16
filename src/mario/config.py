@@ -1,11 +1,11 @@
-import pathlib
 import os
+import pathlib
 
 import appdirs
 import toml
 
-from . import utils
 from . import interpret
+from . import utils
 
 
 DEFAULTS = {

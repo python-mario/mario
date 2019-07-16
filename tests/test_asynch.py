@@ -1,11 +1,11 @@
 import json
+import string
 import subprocess
 import sys
 import time
-import string
 
-import requests
 import pytest
+import requests
 
 from . import config
 from . import helpers

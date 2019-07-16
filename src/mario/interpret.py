@@ -4,14 +4,13 @@
 from __future__ import annotations
 from __future__ import generator_stop
 
-import importlib
-import sys
-import textwrap
-import re
-import types
 import ast
 import enum
-
+import importlib
+import re
+import sys
+import textwrap
+import types
 
 import attr
 import parso

@@ -1,11 +1,10 @@
-import sys
 import csv
 import io
 import subprocess
-
-from typing import Iterable
-from typing import Generator
+import sys
 from typing import Dict
+from typing import Generator
+from typing import Iterable
 
 import pytest
 

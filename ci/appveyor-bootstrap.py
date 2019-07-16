@@ -5,9 +5,11 @@ This is a port of https://github.com/pypa/python-packaging-user-guide/blob/maste
 with various fixes and improvements that just weren't feasible to implement in PowerShell.
 """
 from __future__ import print_function
+
 from os import environ
 from os.path import exists
 from subprocess import check_call
+
 
 try:
     from urllib.request import urlretrieve
@@ -29,10 +31,30 @@ URLS = {
 }
 INSTALL_CMD = {
     # Commands are allowed to fail only if they are not the last command.  Eg: uninstall (/x) allowed to fail.
-    "2.7": [["msiexec.exe", "/L*+!", "install.log", "/qn", "/x", "{path}"],
-            ["msiexec.exe", "/L*+!", "install.log", "/qn", "/i", "{path}", "TARGETDIR={home}"]],
-    "3.4": [["msiexec.exe", "/L*+!", "install.log", "/qn", "/x", "{path}"],
-            ["msiexec.exe", "/L*+!", "install.log", "/qn", "/i", "{path}", "TARGETDIR={home}"]],
+    "2.7": [
+        ["msiexec.exe", "/L*+!", "install.log", "/qn", "/x", "{path}"],
+        [
+            "msiexec.exe",
+            "/L*+!",
+            "install.log",
+            "/qn",
+            "/i",
+            "{path}",
+            "TARGETDIR={home}",
+        ],
+    ],
+    "3.4": [
+        ["msiexec.exe", "/L*+!", "install.log", "/qn", "/x", "{path}"],
+        [
+            "msiexec.exe",
+            "/L*+!",
+            "install.log",
+            "/qn",
+            "/i",
+            "{path}",
+            "TARGETDIR={home}",
+        ],
+    ],
     "3.5": [["{path}", "/quiet", "TargetDir={home}"]],
     "3.6": [["{path}", "/quiet", "TargetDir={home}"]],
 }
@@ -106,6 +128,14 @@ def install_packages(home, *packages):
 
 
 if __name__ == "__main__":
-    install_python(environ["PYTHON_VERSION"], environ["PYTHON_ARCH"], environ["PYTHON_HOME"])
+    install_python(
+        environ["PYTHON_VERSION"], environ["PYTHON_ARCH"], environ["PYTHON_HOME"]
+    )
     install_pip(environ["PYTHON_HOME"])
-    install_packages(environ["PYTHON_HOME"], "setuptools>=18.0.1", "wheel", "tox", "virtualenv>=13.1.0")
+    install_packages(
+        environ["PYTHON_HOME"],
+        "setuptools>=18.0.1",
+        "wheel",
+        "tox",
+        "virtualenv>=13.1.0",
+    )

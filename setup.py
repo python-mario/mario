@@ -1,7 +1,8 @@
-import re
 import pathlib
+import re
 
 import setuptools
+
 
 PROJECT_ROOT = pathlib.Path(__file__).parent
 

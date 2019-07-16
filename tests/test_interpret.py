@@ -1,14 +1,14 @@
-import textwrap
-import os.path
 import collections
+import os.path
+import textwrap
 import urllib.parse
 
-import pytest
 import lxml.etree
+import pytest
+from tests import helpers
 
 from mario import interpret
 
-from tests import helpers
 
 SYMBOL = "x"
 

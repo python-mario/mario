@@ -4,13 +4,13 @@ import sys
 import attr
 import click
 
-
-from . import config
-from . import utils
 from . import _version
-from . import app
-from . import plug
 from . import aliasing
+from . import app
+from . import config
+from . import plug
+from . import utils
+
 
 config.DEFAULTS.update(
     config.load_config(

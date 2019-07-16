@@ -1,14 +1,13 @@
-import contextlib
-import json
 import asyncio
+import contextlib
 import datetime
-import contextvars
 import itertools
+import json
 import sys
 
-
-from aiohttp import web
 import attr
+import contextvars
+from aiohttp import web
 
 
 START_TIME = None

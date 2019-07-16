@@ -18,17 +18,17 @@ extensions = [
     "sphinx.ext.viewcode",
 ]
 if os.getenv("SPELLCHECK"):
-    extensions += "sphinxcontrib.spelling",
+    extensions += ("sphinxcontrib.spelling",)
     spelling_show_suggestions = True
     spelling_lang = "en_US"
 
 source_suffix = ".rst"
 master_doc = "index"
-project = 'mario'
-year = '2019'
-author = 'mario contributors'
+project = "mario"
+year = "2019"
+author = "mario contributors"
 copyright = "{0}, {1}".format(year, author)
-version = release = '0.1.0'
+version = release = "0.1.0"
 
 pygments_style = "trac"
 templates_path = ["."]
@@ -45,9 +45,7 @@ if not on_rtd:  # only set the theme if we"re building docs locally
 html_use_smartypants = True
 html_last_updated_fmt = "%b %d, %Y"
 html_split_index = False
-html_sidebars = {
-   "**": ["searchbox.html", "globaltoc.html", "sourcelink.html"],
-}
+html_sidebars = {"**": ["searchbox.html", "globaltoc.html", "sourcelink.html"]}
 html_short_title = "%s-%s" % (project, version)
 
 napoleon_use_ivar = True

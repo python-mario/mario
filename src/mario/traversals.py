@@ -1,15 +1,20 @@
 from __future__ import annotations
 from __future__ import generator_stop
 
-
+import functools
 import itertools
-import typing
+import threading
 import types
-from typing import Callable, Awaitable, AsyncIterable, AsyncIterator, Iterable
+import typing as t
+from typing import AsyncIterable
+from typing import AsyncIterator
+from typing import Awaitable
+from typing import Callable
+from typing import Iterable
 
-
-import trio
 import async_generator
+import trio
+import trio_typing
 
 
 T = typing.TypeVar("T")
@@ -67,15 +72,6 @@ class IterableToAsyncIterable:
         except StopIteration:
             raise StopAsyncIteration
 
-
-import typing as t
-import functools
-import itertools
-import threading
-
-
-import trio
-import trio_typing
 
 T = t.TypeVar("T")
 
@@ -148,9 +144,6 @@ async def sync_apply(
 
         async for x in receive_from_thread:
             yield x
-
-
-import functools
 
 
 def wrap_sync_fold(function):
