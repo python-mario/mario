@@ -53,3 +53,5 @@ napoleon_use_rtype = False
 napoleon_use_param = True
 
 autoapi_dirs = ["../src/mario"]
+
+html_theme_options = {"navigation_depth": 4}
