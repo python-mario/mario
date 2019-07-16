@@ -41,7 +41,8 @@ class Handler:
 
         return web.Response(text=response)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     with contextlib.redirect_stdout(new_target=sys.stderr):
         app = web.Application()
         handler = Handler()
