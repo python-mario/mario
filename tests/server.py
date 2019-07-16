@@ -1,12 +1,12 @@
 import asyncio
 import contextlib
+import contextvars
 import datetime
 import itertools
 import json
 import sys
 
 import attr
-import contextvars
 from aiohttp import web
 
 
