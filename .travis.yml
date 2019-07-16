@@ -10,29 +10,11 @@ env:
     - TOXENV=docs
 matrix:
   include:
-    - python: '2.7'
-      env:
-        - TOXENV=py27,report
-    - python: '3.4'
-      env:
-        - TOXENV=py34,report
-    - python: '3.5'
-      env:
-        - TOXENV=py35,report
-    - python: '3.6'
-      env:
-        - TOXENV=py36,report
     - python: '3.7'
       dist: xenial
       sudo: required
       env:
         - TOXENV=py37,report
-    - python: 'pypy'
-      env:
-        - TOXENV=pypy,report
-    - python: 'pypy3'
-      env:
-        - TOXENV=pypy3,report
 before_install:
   - python --version
   - uname -a
