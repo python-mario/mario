@@ -3,28 +3,24 @@
 
 from __future__ import generator_stop
 
-
 import collections
-import os
 import functools
-
-
+import os
 from typing import AsyncIterable
 from typing import List
 
-import attr
-import trio
 import async_exit_stack
+import attr
 import pyrsistent
-
+import trio
 
 from . import _version
-from . import config
-from . import utils
 from . import asynch
+from . import config
+from . import interfaces
 from . import interpret
 from . import plug
-from . import interfaces
+from . import utils
 
 
 async def call_traversal(

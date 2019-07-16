@@ -1,0 +1,54 @@
+# This file exists so you can easily regenerate your project.
+#
+# `cookiepatcher` is a convenient shim around `cookiecutter`
+# for regenerating projects (it will generate a .cookiecutterrc
+# automatically for any template). To use it:
+#
+#    pip install cookiepatcher
+#    cookiepatcher gh:adamboche/cookiecutter-pylibrary project-path
+#
+# See:
+#    https://pypi.org/pypi/cookiepatcher
+#
+# Alternatively, you can run:
+#
+#    cookiecutter --overwrite-if-exists --config-file=project-path/.cookiecutterrc gh:adamboche/cookiecutter-pylibrary
+
+default_context:
+
+    _template:                 'gh:adamboche/cookiecutter-pylibrary'
+    appveyor:                  'yes'
+    c_extension_function:      'longest'
+    c_extension_module:        '_mario'
+    c_extension_optional:      'no'
+    c_extension_support:       'no'
+    codacy:                    'no'
+    codeclimate:               'no'
+    codecov:                   'no'
+    command_line_interface:    'click'
+    command_line_interface_bin_name: 'mario'
+    coveralls:                 'no'
+    distribution_name:         'mario'
+    email:                     'mario@example.com'
+    full_name:                 'mario contributors'
+    github_username:           'python-mario'
+    landscape:                 'no'
+    license:                   'GNU General Public License v3 (GPLv3)'
+    linter:                    'flake8'
+    package_name:              'mario'
+    project_name:              'mario'
+    project_short_description: 'An example package. Generated with cookiecutter-pylibrary.'
+    release_date:              'today'
+    repo_name:                 'python-mario'
+    requiresio:                'no'
+    scrutinizer:               'no'
+    sphinx_docs:               'yes'
+    sphinx_doctest:            'no'
+    sphinx_theme:              'sphinx-rtd-theme'
+    test_matrix_configurator:  'no'
+    test_matrix_separate_coverage: 'no'
+    test_runner:               'pytest'
+    travis:                    'yes'
+    version:                   '0.1.0'
+    website:                   'https://github.com/python-mario/mario'
+    year:                      'now'

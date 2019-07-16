@@ -6,6 +6,8 @@ import os
 
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
+    "sphinx_autodoc_typehints",  # Must come *after* sphinx.ext.napoleon.
     "sphinx.ext.autosummary",
     "sphinx.ext.coverage",
     "sphinx.ext.doctest",
@@ -24,20 +26,20 @@ source_suffix = ".rst"
 master_doc = "index"
 project = "mario"
 year = "2019"
-author = "Full Namge"
+author = "mario contributors"
 copyright = "{0}, {1}".format(year, author)
-version = release = "0.0.98"
+version = release = "0.1.0"
 
 pygments_style = "trac"
 templates_path = ["."]
 extlinks = {
-    "issue": ("https://github.com/githubuser/python-mario/issues/%s", "#"),
-    "pr": ("https://github.com/githubuser/python-mario/pull/%s", "PR #"),
+    "issue": ("https://github.com/python-mario/python-mario/issues/%s", "#"),
+    "pr": ("https://github.com/python-mario/python-mario/pull/%s", "PR #"),
 }
 # on_rtd is whether we are on readthedocs.org
 on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 
-if not on_rtd:  # only set the theme if we're building docs locally
+if not on_rtd:  # only set the theme if we"re building docs locally
     html_theme = "sphinx_rtd_theme"
 
 html_use_smartypants = True
@@ -48,4 +50,6 @@ html_short_title = "%s-%s" % (project, version)
 
 napoleon_use_ivar = True
 napoleon_use_rtype = False
-napoleon_use_param = False
+napoleon_use_param = True
+
+autoapi_dirs = ["../src/mario"]

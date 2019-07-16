@@ -1,14 +1,13 @@
-import contextlib
-import json
 import asyncio
+import contextlib
 import datetime
-import contextvars
 import itertools
+import json
 import sys
 
-
-from aiohttp import web
 import attr
+import contextvars
+from aiohttp import web
 
 
 START_TIME = None
@@ -43,10 +42,11 @@ class Handler:
         return web.Response(text=response)
 
 
-with contextlib.redirect_stdout(new_target=sys.stderr):
-    app = web.Application()
-    handler = Handler()
-    handle = handler.handle
-    app.add_routes([web.get("/", handle), web.get("/delay/{delay}", handle)])
+if __name__ == "__main__":
+    with contextlib.redirect_stdout(new_target=sys.stderr):
+        app = web.Application()
+        handler = Handler()
+        handle = handler.handle
+        app.add_routes([web.get("/", handle), web.get("/delay/{delay}", handle)])
 
-    web.run_app(app)
+        web.run_app(app)

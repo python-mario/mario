@@ -5,6 +5,7 @@ import click
 import marshmallow
 from marshmallow import fields
 
+
 TYPES = {t.__name__: t for t in [int, str, bool, float]}
 
 

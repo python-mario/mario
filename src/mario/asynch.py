@@ -3,16 +3,13 @@
 
 from __future__ import generator_stop
 
-
+import functools
 import itertools
 import typing
 
-import functools
-
-
+import async_exit_stack
 import toolz
 import trio
-import async_exit_stack
 
 
 T = typing.TypeVar("T")

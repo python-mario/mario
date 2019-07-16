@@ -3,10 +3,10 @@ Contents
 ========
 
 .. toctree::
-   :maxdepth: 2
+   :numbered:
+
 
    readme
-   installation
    usage
    reference/index
    contributing
