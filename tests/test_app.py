@@ -44,8 +44,7 @@ def test_raises_on_nonexistent_option(option, runner):
     in_stream = "a.b.c\n"
 
     result = runner.invoke(mario.cli.cli, args, input=in_stream)
-
-    assert_exception_equal(result.exception, SystemExit(2))
+    assert result.exception
 
 
 def test_eval_main(capsys):
@@ -87,13 +86,8 @@ def test_exec_before():
 
 def test_cli_version(runner):
     args = ["--version"]
-
-    result = runner.invoke(mario.cli.cli, args)
-
-    assert result.output == f"mario, version {mario.__version__}\n"
-    assert result.output.rstrip()[-1].isdigit()
-    assert not result.exception
-    assert result.exit_code == 0
+    result = helpers.run(args).decode()
+    assert result == f"mario, version {mario.__version__}\n"
 
 
 def test_config_file(tmp_path):

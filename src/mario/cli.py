@@ -20,6 +20,105 @@ config.DEFAULTS.update(
 )
 
 
+class SectionedFormatter(click.formatting.HelpFormatter):
+    def __init__(self, *args, sections, **kwargs):
+        self.sections = sections
+        super().__init__(*args, **kwargs)
+
+    def write_dl(self, rows, *args, **kwargs):
+
+        cmd_to_section = {}
+        for section, commands in self.sections.items():
+            for command in commands:
+                cmd_to_section[command] = section
+
+        sections = {}
+        for subcommand, help in rows:
+            sections.setdefault(
+                cmd_to_section.get(subcommand, "Custom commands"), []
+            ).append((subcommand, help))
+
+        for section_name, rows in sections.items():
+            if rows[0][0][0] == "-":
+                # with super().section('XXX'):
+                super().write_dl(rows)
+            else:
+                with super().section(section_name):
+                    super().write_dl(rows)
+
+
+class SectionedContext(click.Context):
+    def __init__(self, *args, sections, **kwargs):
+        self.sections = sections
+        super().__init__(*args, **kwargs)
+
+    def make_formatter(self):
+        """Creates the formatter for the help and usage output."""
+        return SectionedFormatter(
+            sections=self.sections,
+            width=self.terminal_width,
+            max_width=self.max_content_width,
+        )
+
+
+class SectionedGroup(click.Group):
+    def __init__(self, *args, sections, **kwargs):
+        self.sections = sections
+        super().__init__(self, *args, **kwargs)
+
+    def make_context(self, info_name, args, parent=None, **extra):
+        """This function when given an info name and arguments will kick
+        off the parsing and create a new :class:`Context`.  It does not
+        invoke the actual command callback though.
+
+        :param info_name: the info name for this invokation.  Generally this
+                          is the most descriptive name for the script or
+                          command.  For the toplevel script it's usually
+                          the name of the script, for commands below it it's
+                          the name of the script.
+        :param args: the arguments to parse as list of strings.
+        :param parent: the parent context if available.
+        :param extra: extra keyword arguments forwarded to the context
+                      constructor.
+        """
+        for key, value in click._compat.iteritems(self.context_settings):
+            if key not in extra:
+                extra[key] = value
+        ctx = SectionedContext(
+            self, info_name=info_name, parent=parent, sections=self.sections, **extra
+        )
+        with ctx.scope(cleanup=False):
+            self.parse_args(ctx, args)
+        return ctx
+
+    def format_commands(self, ctx, formatter):
+        """Extra format methods for multi methods that adds all the commands
+        after the options.
+        """
+        commands = []
+        for subcommand in self.list_commands(ctx):
+            cmd = self.get_command(ctx, subcommand)
+            # What is this, the tool lied about a command.  Ignore it
+            if cmd is None:
+                continue
+            if cmd.hidden:
+                continue
+
+            commands.append((subcommand, cmd))
+
+        # allow for 3 times the default spacing
+        if len(commands):
+            limit = formatter.width - 6 - max(len(cmd[0]) for cmd in commands)
+
+            rows = []
+            for subcommand, cmd in commands:
+                help = cmd.get_short_help_str(limit)
+                rows.append((subcommand, help))
+
+            if rows:
+                formatter.write_dl(rows)
+
+
 CONTEXT_SETTINGS = {"default_map": config.DEFAULTS}
 
 doc = f"""\
@@ -33,7 +132,17 @@ Configuration:
   Python modules: {config.get_config_dir() / 'modules/*.py'}
 
 """
-basics = click.Group(commands=plug.global_registry.cli_functions)
+SECTIONS = {
+    "Traversals": ["map", "filter", "apply", "stack", "eval", "reduce", "chain"],
+    "Async traversals": [
+        "async-map",
+        "async-apply",
+        "async-filter",
+        "async-chain",
+        "async-map-unordered",
+    ],
+}
+basics = SectionedGroup(commands=plug.global_registry.cli_functions, sections=SECTIONS)
 ALIASES = plug.global_registry.aliases
 
 
@@ -94,7 +203,7 @@ for k, v in ALIASES.items():
     COMMANDS[k] = build_stages(v)
 
 
-cli = click.Group(
+cli = SectionedGroup(
     result_callback=cli_main,
     chain=True,
     context_settings=CONTEXT_SETTINGS,
@@ -121,4 +230,5 @@ cli = click.Group(
     ],
     help=doc,
     commands=COMMANDS,
+    sections=SECTIONS,
 )
