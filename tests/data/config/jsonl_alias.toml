@@ -6,4 +6,4 @@ short_help = "Load jsonlines into python objects"
 [[alias.stage]]
 
 command = "map"
-options = {code="json.loads ! attr.make_class('X', list(x.keys()))(**x)"}
+options = {code="json.loads"}
