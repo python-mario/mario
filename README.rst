@@ -596,11 +596,6 @@ Add new commands like ``map`` and ``reduce`` by installing mario plugins. You ca
 
 
 
-Caveats
-=======
-
-
-* ``mario`` assumes *trusted command arguments* and *untrusted input stream data*. It uses ``eval`` on your commands, not on the input stream data. If you use ``exec``, ``eval``, ``subprocess``, or similar commands, you can execute arbitrary code from the input stream, like in regular python.
 
 
 Status
