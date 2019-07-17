@@ -14,7 +14,7 @@ Your favorite plumbing snake 🐍🔧 with your favorite pipes, right in your sh
 .. image:: https://img.shields.io/codecov/c/github/python-mario/mario.svg
    :target: https://codecov.io/gh/python-mario/mario
 
-
+============
 Installation
 ============
 
@@ -36,6 +36,7 @@ or for more flexibility and safety, use `pipx <https://github.com/pipxproject/pi
 
      pipx install --python python3.7 mario
 
+=====
 Usage
 =====
 
@@ -306,7 +307,7 @@ For example, the ``3 seconds`` item is ready before the preceding ``4 seconds`` 
     3 seconds    | 297 bytes
 
 
-
+===============
 Configuration
 ===============
 
@@ -597,16 +598,20 @@ Add new commands like ``map`` and ``reduce`` by installing mario plugins. You ca
 
 
 
-
-Status
 ======
+Q & A
+======
+
+
+What's the status of this package?
+--------------------------------------
 
 * Check the `issues page <https://www.github.com/python-mario/mario/issues>`_ for open tickets.
 * This package is experimental and is subject to change without notice.
 
 
-Related work
-============
+Why another package?
+-----------------------------------
 
 A number of cool projects have pioneered in the Python-in-shell space. I wrote Mario because I didn't know these existed at the time, but now Mario has a bunch of features the others don't (user configuration, multi-stage pipelines, async, plugins, etc).
 
