@@ -7,7 +7,6 @@ Contents
 
 
    readme
-   usage
    reference/index
    contributing
    authors
