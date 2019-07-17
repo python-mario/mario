@@ -43,7 +43,7 @@ def test_config_jsonl_alias(tmp_path):
     output = helpers.run(args, input=stdin, env=env).decode()
     assert output == textwrap.dedent(
         """\
-    X(a=1, b=2)
-    X(a=3, b=4)
+    {'a': 1, 'b': 2}
+    {'a': 3, 'b': 4}
     """
     )

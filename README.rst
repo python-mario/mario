@@ -407,7 +407,7 @@ The new command ``jsonl`` can be used in pipelines as well. To get the maximum v
 
 .. code-block:: bash
 
-   $ mario jsonl map 'x.a' apply max <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
+   $ mario jsonl map 'x["a"]' apply max <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
    5
 
 More alias examples
