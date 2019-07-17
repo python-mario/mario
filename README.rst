@@ -1,6 +1,6 @@
-
+====================================
 Mario: Shell pipes in Python
-===================================
+====================================
 
 Your favorite plumbing snake 🐍🔧 with your favorite pipes, right in your shell 🐢.
 
@@ -40,7 +40,7 @@ Usage
 =====
 
 Basics
-~~~~~~
+-----------------------------------
 
 Invoke with  ``mario`` at the command line.
 
@@ -94,7 +94,7 @@ Automatically import modules you need:
 
 
 Autocall
-~~~~~~~~
+-----------------------------------
 
 You don't need to explicitly call the function with ``some_function(x)``; just use the function's name ``some_function``. For example, instead of
 
@@ -114,7 +114,7 @@ try
 
 
 Commands
-~~~~~~~~
+-----------------------------------
 
 
 ``eval``
@@ -241,7 +241,7 @@ Then subsequent commands will act on these new rows, as normal. Here we get the 
 
 
 Async
-~~~~~
+-----------------------------------
 
 Making sequential requests is slow. These requests take 20 seconds to complete.
 
@@ -281,7 +281,7 @@ Concurrent requests can go much faster. The same requests now take only 6 second
 
 
 Async streaming
-~~~~~~~~~~~~~~~
+-----------------------------------
 
 ``async-map`` and ``async-filter`` values are handled in streaming fashion, while retaining the order of the input items in the output. The order of function calls is not constrained -- if you need the function to be **called** with items in a specific order, use the synchronous version.
 
@@ -308,7 +308,7 @@ For example, the ``3 seconds`` item is ready before the preceding ``4 seconds`` 
 
 
 Configuration
-~~~~~~~~~~~~~
+===============
 
 The config file location follows the `freedesktop.org standard <https://www.freedesktop.org/wiki/Software/xdg-user-dirs/>`_. Check the location on your system by running ``mario --help``:
 
@@ -367,7 +367,7 @@ then just use ``mario`` as normal.
 
 
 Aliases
-~~~~~~~~~~~~~~~~~~
+-----------------------------------
 
 Define new commands in your config file which provide aliases to other commands. For example, this config adds a ``jsonl`` command for reading jsonlines streams into Python objects, by calling calling out to the ``map`` traversal.
 
@@ -590,7 +590,7 @@ try:
 
 
 Plugins
-~~~~~~~
+-----------------------------------
 
 Add new commands like ``map`` and ``reduce`` by installing mario plugins. You can try them out without installing by adding them to any ``.py`` file in your ``~/.config/mario/modules/``.
 
