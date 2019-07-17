@@ -1,20 +1,29 @@
-
+====================================
 Mario: Shell pipes in Python
-===================================
+====================================
 
 Your favorite plumbing snake 🐍🔧 with your favorite pipes, right in your shell 🐢.
 
 
+
+.. image:: https://readthedocs.org/projects/python-mario/badge/?style=flat
+   :target: https://readthedocs.org/projects/python-mario
+   :alt: Documentation Status
+
 .. image:: https://travis-ci.com/python-mario/mario.svg?branch=master
-           :target: https://travis-ci.com/python-mario/mario#
+   :target: https://travis-ci.com/python-mario/mario#
+   :alt: Build status
 
 .. image:: https://img.shields.io/pypi/v/mario.svg
    :target: https://pypi.python.org/pypi/mario
+   :alt: PyPI package
 
 .. image:: https://img.shields.io/codecov/c/github/python-mario/mario.svg
    :target: https://codecov.io/gh/python-mario/mario
+   :alt: Coverage
 
 
+============
 Installation
 ============
 
@@ -36,11 +45,12 @@ or for more flexibility and safety, use `pipx <https://github.com/pipxproject/pi
 
      pipx install --python python3.7 mario
 
+=====
 Usage
 =====
 
 Basics
-~~~~~~
+-----------------------------------
 
 Invoke with  ``mario`` at the command line.
 
@@ -94,7 +104,7 @@ Automatically import modules you need:
 
 
 Autocall
-~~~~~~~~
+-----------------------------------
 
 You don't need to explicitly call the function with ``some_function(x)``; just use the function's name ``some_function``. For example, instead of
 
@@ -114,7 +124,7 @@ try
 
 
 Commands
-~~~~~~~~
+-----------------------------------
 
 
 ``eval``
@@ -241,7 +251,7 @@ Then subsequent commands will act on these new rows, as normal. Here we get the 
 
 
 Async
-~~~~~
+-----------------------------------
 
 Making sequential requests is slow. These requests take 20 seconds to complete.
 
@@ -281,7 +291,7 @@ Concurrent requests can go much faster. The same requests now take only 6 second
 
 
 Async streaming
-~~~~~~~~~~~~~~~
+-----------------------------------
 
 ``async-map`` and ``async-filter`` values are handled in streaming fashion, while retaining the order of the input items in the output. The order of function calls is not constrained -- if you need the function to be **called** with items in a specific order, use the synchronous version.
 
@@ -306,9 +316,9 @@ For example, the ``3 seconds`` item is ready before the preceding ``4 seconds`` 
     3 seconds    | 297 bytes
 
 
-
+===============
 Configuration
-~~~~~~~~~~~~~
+===============
 
 The config file location follows the `freedesktop.org standard <https://www.freedesktop.org/wiki/Software/xdg-user-dirs/>`_. Check the location on your system by running ``mario --help``:
 
@@ -367,7 +377,7 @@ then just use ``mario`` as normal.
 
 
 Aliases
-~~~~~~~~~~~~~~~~~~
+-----------------------------------
 
 Define new commands in your config file which provide aliases to other commands. For example, this config adds a ``jsonl`` command for reading jsonlines streams into Python objects, by calling calling out to the ``map`` traversal.
 
@@ -590,28 +600,27 @@ try:
 
 
 Plugins
-~~~~~~~
+-----------------------------------
 
 Add new commands like ``map`` and ``reduce`` by installing mario plugins. You can try them out without installing by adding them to any ``.py`` file in your ``~/.config/mario/modules/``.
 
 
 
-Caveats
-=======
 
-
-* ``mario`` assumes *trusted command arguments* and *untrusted input stream data*. It uses ``eval`` on your commands, not on the input stream data. If you use ``exec``, ``eval``, ``subprocess``, or similar commands, you can execute arbitrary code from the input stream, like in regular python.
-
-
-Status
 ======
+Q & A
+======
+
+
+What's the status of this package?
+--------------------------------------
 
 * Check the `issues page <https://www.github.com/python-mario/mario/issues>`_ for open tickets.
 * This package is experimental and is subject to change without notice.
 
 
-Related work
-============
+Why another package?
+-----------------------------------
 
 A number of cool projects have pioneered in the Python-in-shell space. I wrote Mario because I didn't know these existed at the time, but now Mario has a bunch of features the others don't (user configuration, multi-stage pipelines, async, plugins, etc).
 
