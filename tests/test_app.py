@@ -44,8 +44,7 @@ def test_raises_on_nonexistent_option(option, runner):
     in_stream = "a.b.c\n"
 
     result = runner.invoke(mario.cli.cli, args, input=in_stream)
-
-    assert_exception_equal(result.exception, SystemExit(2))
+    assert result.exception
 
 
 def test_eval_main(capsys):
