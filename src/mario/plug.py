@@ -237,8 +237,3 @@ def make_plugin_aliases_registry(package="mario.plugins"):
         for commands in conf_alias_groups
     ]
     return combine_registries(registries)
-
-
-global_registry = make_global_registry()
-
-sys.path.append(str(config.get_config_dir() / "modules"))
