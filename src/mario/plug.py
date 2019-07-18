@@ -58,14 +58,12 @@ class GlobalOption:
     default: type(NO_DEFAULT)
 
 
+@attr.s
 class Registry:
-    def __init__(
-        self, traversals=None, global_options=None, cli_functions=None, aliases=None
-    ):
-        self.traversals: Dict[str, PluginObject] = traversals or {}
-        self.global_options: Dict[str, GlobalOption] = global_options or {}
-        self.cli_functions: Dict[str, Any] = cli_functions or {}
-        self.aliases: Dict[str, AliasCommand] = aliases or {}
+    traversals: Dict[str, PluginObject] = attr.ib(factory=dict)
+    global_options: Dict[str, GlobalOption] = attr.ib(factory=dict)
+    cli_functions: Dict[str, Any] = attr.ib(factory=dict)
+    aliases: Dict[str, AliasCommand] = attr.ib(factory=dict)
 
     def register(self, name=None, params=None):
         def wrap(function):
