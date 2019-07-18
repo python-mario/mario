@@ -220,14 +220,14 @@ def make_config_aliases_registry():
     return Registry(aliases={c.name: c for c in commands})
 
 
-def make_plugin_aliases_registry():
+def make_plugin_aliases_registry(package="mario.plugins"):
     plugin_tomls = [
         filename
-        for filename in importlib.resources.contents("mario.plugins")
+        for filename in importlib.resources.contents(package)
         if filename.endswith(".toml")
     ]
     confs = [
-        toml.loads(importlib.resources.read_text("mario.plugins", filename))
+        toml.loads(importlib.resources.read_text(package, filename))
         for filename in plugin_tomls
     ]
 
