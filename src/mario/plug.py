@@ -1,4 +1,5 @@
 import importlib
+import importlib.resources
 import importlib.util
 import inspect
 import pathlib
@@ -12,6 +13,7 @@ from typing import List
 
 import attr
 import pkg_resources
+import toml
 
 from mario import aliasing
 from mario import asynch
@@ -174,7 +176,12 @@ def import_config_dir_modules(user_config_dir=None):
 
 def make_global_registry():
     return combine_registries(
-        [make_plugin_registry(), make_config_registry(), make_config_aliases_registry()]
+        [
+            make_plugin_registry(),
+            make_config_registry(),
+            make_config_aliases_registry(),
+            make_plugin_aliases_registry(),
+        ]
     )
 
 
@@ -211,6 +218,25 @@ def make_config_aliases_registry():
 
     commands = make_aliases(conf)
     return Registry(aliases={c.name: c for c in commands})
+
+
+def make_plugin_aliases_registry():
+    plugin_tomls = [
+        filename
+        for filename in importlib.resources.contents("mario.plugins")
+        if filename.endswith(".toml")
+    ]
+    confs = [
+        toml.loads(importlib.resources.read_text("mario.plugins", filename))
+        for filename in plugin_tomls
+    ]
+
+    conf_alias_groups = [make_aliases(conf) for conf in confs]
+    registries = [
+        Registry(aliases={c.name: c for c in commands})
+        for commands in conf_alias_groups
+    ]
+    return combine_registries(registries)
 
 
 global_registry = make_global_registry()
