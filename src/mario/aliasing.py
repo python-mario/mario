@@ -100,6 +100,23 @@ class AliasStageSchema(marshmallow.Schema):
 
 
 @attr.dataclass
+class AliasTestSpec:
+    invocation: t.List[str]
+    input: str
+    output: str
+
+
+class AliasTestSpecSchema(marshmallow.Schema):
+    invocation = fields.List(fields.String())
+    input = fields.String()
+    output = fields.String()
+
+    @marshmallow.post_load()
+    def make(self, validated, partial, many):
+        return AliasTestSpec(**validated)
+
+
+@attr.dataclass
 class Alias:
     name: str
     short_help: t.Optional[str]
@@ -108,6 +125,7 @@ class Alias:
     options: t.List[click.Option]
     stages: t.List[AliasStage]
     inject_values: t.List[str]
+    test_specs: t.List[AliasTestSpec]
 
 
 class AliasSchema(marshmallow.Schema):
@@ -118,6 +136,9 @@ class AliasSchema(marshmallow.Schema):
     options = fields.List(fields.Nested(OptionSchema), missing=list)
     stages = fields.List(fields.Nested(AliasStageSchema), data_key="stage")
     inject_values = fields.List(fields.String(), missing=list)
+    test_specs = fields.List(
+        fields.Nested(AliasTestSpecSchema), missing=list, data_key="test_spec"
+    )
 
     @marshmallow.post_load()
     def make(self, validated, partial, many):
