@@ -27,7 +27,11 @@ Your favorite plumbing snake 🐍🔧 with your favorite pipes, right in your sh
 Installation
 ============
 
-Get it with pip:
+Mario
+======
+
+
+Get Mario with pip:
 
 .. code-block:: bash
 
@@ -44,6 +48,33 @@ or for more flexibility and safety, use `pipx <https://github.com/pipxproject/pi
 .. code-block:: bash
 
      pipx install --python python3.7 mario
+
+
+
+Mario addons
+=============
+
+The ``mario-addons`` package provides a number of useful commands not found in the base collection.
+
+
+Get Mario addons with pip:
+
+.. code-block:: bash
+
+   python3.7 -m pip install mario-addons
+
+If you're not inside a virtualenv, you might get a ``PermissionsError``. In that case, try using:
+
+.. code-block:: bash
+
+    python3.7 -m pip install --user mario-addons
+
+or for more flexibility and safety, use `pipx <https://github.com/pipxproject/pipx/>`_:
+
+.. code-block:: bash
+
+     pipx install --python python3.7 mario-addons
+
 
 =====
 Usage
