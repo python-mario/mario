@@ -1,7 +1,9 @@
 import importlib
+import importlib.resources
 import importlib.util
 import inspect
 import pathlib
+import sys
 import types
 import typing as t
 from typing import Any
@@ -11,6 +13,7 @@ from typing import List
 
 import attr
 import pkg_resources
+import toml
 
 from mario import aliasing
 from mario import asynch
@@ -55,14 +58,12 @@ class GlobalOption:
     default: type(NO_DEFAULT)
 
 
+@attr.s
 class Registry:
-    def __init__(
-        self, traversals=None, global_options=None, cli_functions=None, aliases=None
-    ):
-        self.traversals: Dict[str, PluginObject] = traversals or {}
-        self.global_options: Dict[str, GlobalOption] = global_options or {}
-        self.cli_functions: Dict[str, Any] = cli_functions or {}
-        self.aliases: Dict[str, AliasCommand] = aliases or {}
+    traversals: Dict[str, PluginObject] = attr.ib(factory=dict)
+    global_options: Dict[str, GlobalOption] = attr.ib(factory=dict)
+    cli_functions: Dict[str, Any] = attr.ib(factory=dict)
+    aliases: Dict[str, AliasCommand] = attr.ib(factory=dict)
 
     def register(self, name=None, params=None):
         def wrap(function):
@@ -173,7 +174,12 @@ def import_config_dir_modules(user_config_dir=None):
 
 def make_global_registry():
     return combine_registries(
-        [make_plugin_registry(), make_config_registry(), make_config_aliases_registry()]
+        [
+            make_plugin_registry(),
+            make_config_registry(),
+            make_config_aliases_registry(),
+            make_plugin_aliases_registry(),
+        ]
     )
 
 
@@ -212,4 +218,20 @@ def make_config_aliases_registry():
     return Registry(aliases={c.name: c for c in commands})
 
 
-global_registry = make_global_registry()
+def make_plugin_aliases_registry(package="mario.plugins"):
+    plugin_tomls = [
+        filename
+        for filename in importlib.resources.contents(package)
+        if filename.endswith(".toml")
+    ]
+    confs = [
+        toml.loads(importlib.resources.read_text(package, filename))
+        for filename in plugin_tomls
+    ]
+
+    conf_alias_groups = [make_aliases(conf) for conf in confs]
+    registries = [
+        Registry(aliases={c.name: c for c in commands})
+        for commands in conf_alias_groups
+    ]
+    return combine_registries(registries)

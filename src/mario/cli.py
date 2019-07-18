@@ -142,8 +142,8 @@ SECTIONS = {
         "async-map-unordered",
     ],
 }
-basics = SectionedGroup(commands=plug.global_registry.cli_functions, sections=SECTIONS)
-ALIASES = plug.global_registry.aliases
+basics = SectionedGroup(commands=app.global_registry.cli_functions, sections=SECTIONS)
+ALIASES = app.global_registry.aliases
 
 
 def show(x):
@@ -198,7 +198,7 @@ def build_stages(alias):
     )
 
 
-COMMANDS = plug.global_registry.cli_functions
+COMMANDS = app.global_registry.cli_functions
 for k, v in ALIASES.items():
     COMMANDS[k] = build_stages(v)
 

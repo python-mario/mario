@@ -6,6 +6,7 @@ from __future__ import generator_stop
 import collections
 import functools
 import os
+import sys
 from typing import AsyncIterable
 from typing import List
 
@@ -63,7 +64,7 @@ async def async_main(basic_traversals, **kwargs):
     receiver = asynch.TerminatedFrameReceiver(stream, b"\n")
     items = (item.decode() async for item in receiver)
 
-    global_context = interfaces.Context(plug.global_registry.global_options.copy())
+    global_context = interfaces.Context(global_registry.global_options.copy())
     global_context.global_options.update(config.DEFAULTS)
     global_context.global_options.update(kwargs)
 
@@ -95,7 +96,7 @@ async def async_main(basic_traversals, **kwargs):
             traversal = interfaces.Traversal(
                 global_invocation_options=traversal_context,
                 specific_invocation_params=d,
-                plugin_object=plug.global_registry.traversals[d["name"]],
+                plugin_object=global_registry.traversals[d["name"]],
             )
             traversals.append(traversal)
 
@@ -108,3 +109,8 @@ async def async_main(basic_traversals, **kwargs):
 
 def main(pairs, **kwargs):
     trio.run(functools.partial(async_main, pairs, **kwargs))
+
+
+global_registry = plug.make_global_registry()
+
+sys.path.append(str(config.get_config_dir() / "modules"))
