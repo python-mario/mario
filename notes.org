@@ -3,9 +3,8 @@
 - Is it possible to avoid collecting items into a list for =apply every_other= or =mean= e.g. with =run_sync_in_worker_thread()=
 - Aliases that inject stages at the first and last position, such as wrapping user cli commands in `json.loads <cli commands> json.dumps`.
 - Edit files in place using a temp file.
-- TODO Add a command that unwraps a single-line list into one element per line
 - Add `if ___ then ___ else ___` command
-- Add tests for the config aliases in the docs
-- Make a mario-plugins repo that allows users to provide shared .tomls and .pys.
-  - Make two kinds of base_exec_before. Ones that are only executed when a run a command defined in the same file; ones that are always executed.
-  - Or, Just use modules/*.py
+- Provide type signatures for each stage
+- Provide load/dump or read/write or from/to for each of csv/json/jsonl/yaml/toml/xml/.
+  - read csv --no-header write json --some-json-option
+  - each format needs to be a subcommand of read and a subcommand of write

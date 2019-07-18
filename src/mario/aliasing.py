@@ -92,7 +92,7 @@ class AliasStageSchema(marshmallow.Schema):
     command = fields.String()
     remap_params = fields.List(fields.Nested(RemapParamSchema), missing=list)
     arguments = fields.List(fields.String(), missing=list)
-    options = fields.Dict(missing=list)
+    options = fields.Dict(missing=dict)
 
     @marshmallow.post_load()
     def make(self, validated, partial, many):
@@ -126,6 +126,7 @@ class Alias:
     stages: t.List[AliasStage]
     inject_values: t.List[str]
     test_specs: t.List[AliasTestSpec]
+    section: str
 
 
 class AliasSchema(marshmallow.Schema):
@@ -139,7 +140,34 @@ class AliasSchema(marshmallow.Schema):
     test_specs = fields.List(
         fields.Nested(AliasTestSpecSchema), missing=list, data_key="test_spec"
     )
+    section = fields.String(missing=None)
 
     @marshmallow.post_load()
     def make(self, validated, partial, many):
         return Alias(**validated)
+
+
+@attr.dataclass
+class AliasGroup:
+    name: str
+    short_help: t.Optional[str]
+    help: t.Optional[str]
+    commands: t.List[click.Command]
+    options: t.List[click.Option]
+    inject_values: t.List[str]
+
+
+class AliasGroupSchema(marshmallow.Schema):
+    name = fields.String()
+    help = fields.String(default=None, missing=None)
+    short_help = fields.String(default=None, missing=None)
+    commands = fields.List(
+        fields.Nested(AliasSchema), missing=list, data_key="subcommand"
+    )
+    options = fields.List(fields.Nested(OptionSchema), missing=list)
+    stages = fields.List(fields.Nested(AliasStageSchema), data_key="stage")
+    inject_values = fields.List(fields.String(), missing=list)
+
+    @marshmallow.post_load()
+    def make(self, validated, partial, many):
+        return AliasGroup(**validated)
