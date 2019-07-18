@@ -2,6 +2,7 @@ import importlib
 import importlib.util
 import inspect
 import pathlib
+import sys
 import types
 import typing as t
 from typing import Any
@@ -213,3 +214,5 @@ def make_config_aliases_registry():
 
 
 global_registry = make_global_registry()
+
+sys.path.append(str(config.get_config_dir() / "modules"))
