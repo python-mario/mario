@@ -28,7 +28,7 @@ Installation
 ============
 
 Mario
-======
+-------------
 
 
 Get Mario with pip:
@@ -52,7 +52,7 @@ or for more flexibility and safety, use `pipx <https://github.com/pipxproject/pi
 
 
 Mario addons
-=============
+-----------------
 
 The ``mario-addons`` package provides a number of useful commands not found in the base collection.
 
