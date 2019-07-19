@@ -442,7 +442,7 @@ The new command ``jsonl`` can be used in pipelines as well. To get the maximum v
    5
 
 More command examples
-____________________
+______________________
 
 
 Convert yaml to json
