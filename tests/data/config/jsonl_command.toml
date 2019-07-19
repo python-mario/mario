@@ -1,9 +1,9 @@
-[[alias]]
+[[command]]
 
 name = "jsonl"
 short_help = "Load jsonlines into python objects"
 
-[[alias.stage]]
+[[command.stage]]
 
 command = "map"
 options = {code="json.loads"}

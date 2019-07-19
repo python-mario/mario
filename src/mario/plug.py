@@ -15,9 +15,9 @@ import attr
 import pkg_resources
 import toml
 
-from mario import aliasing
 from mario import asynch
 from mario import config
+from mario import declarative
 from mario import interpret
 from mario import utils
 
@@ -31,7 +31,7 @@ class PluginObject:
 
 
 @attr.dataclass
-class AliasStage:
+class CommandStage:
     name: str
 
     options: List[str]
@@ -40,9 +40,9 @@ class AliasStage:
 
 
 @attr.dataclass
-class AliasCommand:
+class CommandCommand:
     name: str
-    components: List[AliasStage]
+    components: List[CommandStage]
     short_help: str
     options: t.Dict = attr.ib(factory=dict)
     arguments: t.Dict = attr.ib(factory=dict)
@@ -63,7 +63,7 @@ class Registry:
     traversals: Dict[str, PluginObject] = attr.ib(factory=dict)
     global_options: Dict[str, GlobalOption] = attr.ib(factory=dict)
     cli_functions: Dict[str, Any] = attr.ib(factory=dict)
-    aliases: Dict[str, AliasCommand] = attr.ib(factory=dict)
+    commands: Dict[str, CommandCommand] = attr.ib(factory=dict)
 
     def register(self, name=None, params=None):
         def wrap(function):
@@ -131,13 +131,13 @@ def combine_registries(registries):
     global_options = {}
     traversals = {}
     cli_functions = {}
-    aliases = {}
+    commands = {}
     for registry in registries:
         traversals.update(registry.traversals)
         global_options.update(registry.global_options)
         cli_functions.update(registry.cli_functions)
-        aliases.update(registry.aliases)
-    return Registry(traversals, global_options, cli_functions, aliases)
+        commands.update(registry.commands)
+    return Registry(traversals, global_options, cli_functions, commands)
 
 
 def make_plugin_registry():
@@ -177,16 +177,16 @@ def make_global_registry():
         [
             make_plugin_registry(),
             make_config_registry(),
-            make_config_aliases_registry(),
-            make_plugin_aliases_registry(),
+            make_config_commands_registry(),
+            make_plugin_commands_registry(),
         ]
     )
 
 
 def make_synthetic_command(cmd,):
-    aliasing.AliasSchema()
+    declarative.CommandSchema()
     components = [
-        AliasStage(
+        CommandStage(
             d["command"],
             d.get("options", []),
             d.get("arguments", []),
@@ -194,7 +194,7 @@ def make_synthetic_command(cmd,):
         )
         for d in cmd["stage"]
     ]
-    return AliasCommand(
+    return CommandCommand(
         cmd["name"],
         components,
         cmd["short_help"],
@@ -203,22 +203,22 @@ def make_synthetic_command(cmd,):
     )
 
 
-def make_aliases(conf):
+def make_commands(conf):
     synth_commands = []
 
-    aliases = aliasing.AliasSchema(many=True).load(conf.get("alias", []))
+    commands = declarative.CommandSchema(many=True).load(conf.get("command", []))
 
-    return aliases
+    return commands
 
 
-def make_config_aliases_registry():
+def make_config_commands_registry():
     conf = config.load_config()
 
-    commands = make_aliases(conf)
-    return Registry(aliases={c.name: c for c in commands})
+    commands = make_commands(conf)
+    return Registry(commands={c.name: c for c in commands})
 
 
-def make_plugin_aliases_registry(package="mario.plugins"):
+def make_plugin_commands_registry(package="mario.plugins"):
     plugin_tomls = [
         filename
         for filename in importlib.resources.contents(package)
@@ -229,9 +229,9 @@ def make_plugin_aliases_registry(package="mario.plugins"):
         for filename in plugin_tomls
     ]
 
-    conf_alias_groups = [make_aliases(conf) for conf in confs]
+    conf_command_groups = [make_commands(conf) for conf in confs]
     registries = [
-        Registry(aliases={c.name: c for c in commands})
-        for commands in conf_alias_groups
+        Registry(commands={c.name: c for c in commands})
+        for commands in conf_command_groups
     ]
     return combine_registries(registries)

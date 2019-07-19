@@ -11,10 +11,10 @@ Subpackages
 Submodules
 ----------
 
-mario.aliasing module
+mario.declarative module
 ---------------------
 
-.. automodule:: mario.aliasing
+.. automodule:: mario.declarative
    :members:
    :undoc-members:
    :show-inheritance:

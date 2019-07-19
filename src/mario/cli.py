@@ -6,9 +6,9 @@ import click
 
 import mario
 
-from . import aliasing
 from . import app
 from . import config
+from . import declarative
 from . import plug
 from . import utils
 
@@ -143,7 +143,7 @@ SECTIONS = {
     ],
 }
 basics = SectionedGroup(commands=app.global_registry.cli_functions, sections=SECTIONS)
-ALIASES = app.global_registry.aliases
+ALIASES = app.global_registry.commands
 
 
 def show(x):
@@ -169,11 +169,11 @@ def version_option(ctx, param, value):
     sys.exit()
 
 
-def build_stages(alias):
+def build_stages(command):
     def run(ctx, **cli_params):
         out = []
 
-        for stage in alias.stages:
+        for stage in command.stages:
 
             mapped_stage_params = {
                 remap.old.lstrip("-"): cli_params[remap.new.lstrip("-")]
@@ -181,7 +181,7 @@ def build_stages(alias):
             }
             mapped_stage_params.update(stage.options)
             inject_namespace = {
-                k: v for k, v in cli_params.items() if k in alias.inject_values
+                k: v for k, v in cli_params.items() if k in command.inject_values
             }
             cmd = cli.get_command(ctx, stage.command)
             out.extend(
@@ -189,17 +189,17 @@ def build_stages(alias):
             )
         return out
 
-    params = alias.arguments + alias.options
+    params = command.arguments + command.options
 
-    if alias.section:
-        SECTIONS.setdefault(alias.section, []).append(alias.name)
+    if command.section:
+        SECTIONS.setdefault(command.section, []).append(command.name)
 
     return click.Command(
-        name=alias.name,
+        name=command.name,
         params=params,
         callback=click.pass_context(run),
-        short_help=alias.short_help,
-        help=alias.help,
+        short_help=command.short_help,
+        help=command.help,
     )
 
 
