@@ -205,10 +205,10 @@ def make_synthetic_command(cmd,):
 
 def make_aliases(conf):
     synth_commands = []
-    if "alias" not in conf:
 
-        return []
-    return aliasing.AliasSchema(many=True).load(conf["alias"])
+    aliases = aliasing.AliasSchema(many=True).load(conf.get("alias", []))
+
+    return aliases
 
 
 def make_config_aliases_registry():

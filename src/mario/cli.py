@@ -172,6 +172,7 @@ def version_option(ctx, param, value):
 def build_stages(alias):
     def run(ctx, **cli_params):
         out = []
+
         for stage in alias.stages:
 
             mapped_stage_params = {
@@ -189,6 +190,10 @@ def build_stages(alias):
         return out
 
     params = alias.arguments + alias.options
+
+    if alias.section:
+        SECTIONS.setdefault(alias.section, []).append(alias.name)
+
     return click.Command(
         name=alias.name,
         params=params,
@@ -200,6 +205,7 @@ def build_stages(alias):
 
 COMMANDS = app.global_registry.cli_functions
 for k, v in ALIASES.items():
+
     COMMANDS[k] = build_stages(v)
 
 
