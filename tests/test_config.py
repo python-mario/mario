@@ -24,9 +24,9 @@ def test_base_exec_before(tmp_path):
     assert output == """value is ab\nvalue is cd\n"""
 
 
-def test_config_jsonl_alias(tmp_path):
+def test_config_jsonl_command(tmp_path):
 
-    config_body = (helpers.TESTS_DIR / "data/config/jsonl_alias.toml").read_text()
+    config_body = (helpers.TESTS_DIR / "data/config/jsonl_command.toml").read_text()
     config_file_path = tmp_path / "config.toml"
 
     config_file_path.write_text(config_body)

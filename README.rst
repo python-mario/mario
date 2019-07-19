@@ -407,19 +407,19 @@ then just use ``mario`` as normal.
 
 
 
-Aliases
+Custom commands
 -----------------------------------
 
-Define new commands in your config file which provide aliases to other commands. For example, this config adds a ``jsonl`` command for reading jsonlines streams into Python objects, by calling calling out to the ``map`` traversal.
+Define new commands in your config file which provide commands to other commands. For example, this config adds a ``jsonl`` command for reading jsonlines streams into Python objects, by calling calling out to the ``map`` traversal.
 
 .. code-block:: toml
 
-   [[alias]]
+   [[command]]
 
    name = "jsonl"
    help = "Load jsonlines into python objects."
 
-   [[alias.stage]]
+   [[command.stage]]
 
    command = "map"
    options = {code="json.loads"}
@@ -441,7 +441,7 @@ The new command ``jsonl`` can be used in pipelines as well. To get the maximum v
    $ mario jsonl map 'x["a"]' apply max <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
    5
 
-More alias examples
+More command examples
 ____________________
 
 
@@ -457,12 +457,12 @@ Convenient for removing trailing commas.
 
 .. code-block:: toml
 
-    [[alias]]
+    [[command]]
 
         name = "yml2json"
         help = "Convert yaml to json"
 
-        [[alias.stage]]
+        [[command.stage]]
 
         command = "stack"
         options = {code="yaml.safe_load ! json.dumps"}
@@ -494,17 +494,17 @@ Pull text out of xml documents.
 
 .. code-block:: toml
 
-    [[alias]]
+    [[command]]
         name="xpath"
         help = "Find xml elements matching xpath query."
         arguments = [{name="query", type="str"}]
         inject_values=["query"]
 
-        [[alias.stage]]
+        [[command.stage]]
         command = "stack"
         options= {code="x.encode() ! io.BytesIO ! lxml.etree.parse ! x.findall(query) ! list" }
 
-        [[alias.stage]]
+        [[command.stage]]
         command="chain"
 
 
@@ -519,7 +519,7 @@ Generate json objects
 
 .. code-block:: toml
 
-    [[alias]]
+    [[command]]
 
 
         name="jo"
@@ -527,26 +527,26 @@ Generate json objects
         arguments=[{name="pairs", type="str"}]
         inject_values=["pairs"]
 
-        [[alias.stage]]
+        [[command.stage]]
         command = "eval"
         options = {code="pairs"}
 
-        [[alias.stage]]
+        [[command.stage]]
         command = "map"
         options = {code="shlex.split(x, posix=False)"}
 
-        [[alias.stage]]
+        [[command.stage]]
         command = "chain"
 
-        [[alias.stage]]
+        [[command.stage]]
         command = "map"
         options = {code="x.partition('=') ! [x[0], ast.literal_eval(re.sub(r'^(?P<value>[A-Za-z]+)$', r'\"\\g<value>\"', x[2]))]"}
 
-        [[alias.stage]]
+        [[command.stage]]
         command = "apply"
         options = {"code"="dict"}
 
-        [[alias.stage]]
+        [[command.stage]]
         command = "map"
         options = {code="json.dumps"}
 
@@ -602,29 +602,29 @@ try:
 
 
 
-    [[alias]]
+    [[command]]
         name = "csv"
         help = "Load csv rows into python dicts. With --no-header, keys will be numbered from 0."
         inject_values=["delimiter", "header"]
 
-        [[alias.options]]
+        [[command.options]]
         name = "--delimiter"
         default = ","
         help = "field delimiter character"
 
-        [[alias.options]]
+        [[command.options]]
         name = "--header/--no-header"
         default=true
         help = "Treat the first row as a header?"
 
-        [[alias.stage]]
+        [[command.stage]]
         command = "apply"
         options = {code="read_csv(x, header=header, delimiter=delimiter)"}
 
-        [[alias.stage]]
+        [[command.stage]]
         command = "chain"
 
-        [[alias.stage]]
+        [[command.stage]]
         command = "map"
         options = {code="dict(x)"}
 

@@ -81,14 +81,14 @@ class RemapParamSchema(marshmallow.Schema):
 
 
 @attr.dataclass
-class AliasStage:
+class CommandStage:
     command: str
     remap_params: t.List[RemapParam]
     options: t.Dict[str, str]
     arguments: t.List[str]
 
 
-class AliasStageSchema(marshmallow.Schema):
+class CommandStageSchema(marshmallow.Schema):
     command = fields.String()
     remap_params = fields.List(fields.Nested(RemapParamSchema), missing=list)
     arguments = fields.List(fields.String(), missing=list)
@@ -96,52 +96,52 @@ class AliasStageSchema(marshmallow.Schema):
 
     @marshmallow.post_load()
     def make(self, validated, partial, many):
-        return AliasStage(**validated)
+        return CommandStage(**validated)
 
 
 @attr.dataclass
-class AliasTestSpec:
+class CommandTestSpec:
     invocation: t.List[str]
     input: str
     output: str
 
 
-class AliasTestSpecSchema(marshmallow.Schema):
+class CommandTestSpecSchema(marshmallow.Schema):
     invocation = fields.List(fields.String())
     input = fields.String()
     output = fields.String()
 
     @marshmallow.post_load()
     def make(self, validated, partial, many):
-        return AliasTestSpec(**validated)
+        return CommandTestSpec(**validated)
 
 
 @attr.dataclass
-class Alias:
+class Command:
     name: str
     short_help: t.Optional[str]
     help: t.Optional[str]
     arguments: t.List[click.Argument]
     options: t.List[click.Option]
-    stages: t.List[AliasStage]
+    stages: t.List[CommandStage]
     inject_values: t.List[str]
-    test_specs: t.List[AliasTestSpec]
+    test_specs: t.List[CommandTestSpec]
     section: str
 
 
-class AliasSchema(marshmallow.Schema):
+class CommandSchema(marshmallow.Schema):
     name = fields.String()
     help = fields.String(default=None, missing=None)
     short_help = fields.String(default=None, missing=None)
     arguments = fields.List(fields.Nested(ArgumentSchema), missing=list)
     options = fields.List(fields.Nested(OptionSchema), missing=list)
-    stages = fields.List(fields.Nested(AliasStageSchema), data_key="stage")
+    stages = fields.List(fields.Nested(CommandStageSchema), data_key="stage")
     inject_values = fields.List(fields.String(), missing=list)
     test_specs = fields.List(
-        fields.Nested(AliasTestSpecSchema), missing=list, data_key="test"
+        fields.Nested(CommandTestSpecSchema), missing=list, data_key="test"
     )
     section = fields.String(missing=None)
 
     @marshmallow.post_load()
     def make(self, validated, partial, many):
-        return Alias(**validated)
+        return Command(**validated)
