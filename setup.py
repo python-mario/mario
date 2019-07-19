@@ -9,7 +9,7 @@ PROJECT_ROOT = pathlib.Path(__file__).parent
 with open(PROJECT_ROOT / "requirements.in") as f:
     INSTALL_REQUIRES = f.read().splitlines()
 
-with open(PROJECT_ROOT / "dev-requirements.in") as f:
+with open(PROJECT_ROOT / "dev-requirements.txt") as f:
     DEV_INSTALL_REQUIRES = f.read().splitlines()
 
 setuptools.setup(
