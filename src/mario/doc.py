@@ -6,6 +6,7 @@ import docutils.nodes
 import docutils.parsers.rst
 import docutils.utils
 import sphinx.builders.text
+import sphinx.events
 import sphinx.util.osutil
 import sphinx.writers.text
 
@@ -35,6 +36,7 @@ def format_text(document: docutils.nodes.document) -> str:
             text_secnumber_suffix=".",
         ),
         tags=set(),
+        events=sphinx.events.EventManager(),
         registry=types.SimpleNamespace(
             create_translator=lambda self, something, new_builder: sphinx.writers.text.TextTranslator(
                 document, new_builder

@@ -5,6 +5,7 @@ import attr
 import click
 
 import mario
+import mario.doc
 
 from . import app
 from . import config
@@ -18,6 +19,20 @@ config.DEFAULTS.update(
         dir_path=os.environ.get(f"{utils.NAME}_CONFIG_DIR".upper(), None)
     )
 )
+
+
+class ReSTCommand(click.Command):
+    """Parse help as rst."""
+
+    def format_help_text(self, ctx, formatter):
+
+        if self.help:
+            self.help = mario.doc.rst2text(self.help)
+
+        original_wrap_text = click.formatting.wrap_text
+        click.formatting.wrap_text = lambda x, *a, **kw: x
+        super().format_help_text(ctx, formatter)
+        click.formatting.wrap_text = original_wrap_text
 
 
 class SectionedFormatter(click.formatting.HelpFormatter):
@@ -194,7 +209,7 @@ def build_stages(command):
     if command.section:
         SECTIONS.setdefault(command.section, []).append(command.name)
 
-    return click.Command(
+    return ReSTCommand(
         name=command.name,
         params=params,
         callback=click.pass_context(run),
