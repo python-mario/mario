@@ -190,7 +190,7 @@ def build_stages(alias):
         return out
 
     params = alias.arguments + alias.options
-    print(alias)
+
     if alias.section:
         SECTIONS.setdefault(alias.section, []).append(alias.name)
 
