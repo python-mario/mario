@@ -138,7 +138,7 @@ class AliasSchema(marshmallow.Schema):
     stages = fields.List(fields.Nested(AliasStageSchema), data_key="stage")
     inject_values = fields.List(fields.String(), missing=list)
     test_specs = fields.List(
-        fields.Nested(AliasTestSpecSchema), missing=list, data_key="test_spec"
+        fields.Nested(AliasTestSpecSchema), missing=list, data_key="test"
     )
     section = fields.String(missing=None)
 
