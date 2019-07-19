@@ -145,29 +145,3 @@ class AliasSchema(marshmallow.Schema):
     @marshmallow.post_load()
     def make(self, validated, partial, many):
         return Alias(**validated)
-
-
-@attr.dataclass
-class AliasGroup:
-    name: str
-    short_help: t.Optional[str]
-    help: t.Optional[str]
-    commands: t.List[click.Command]
-    options: t.List[click.Option]
-    inject_values: t.List[str]
-
-
-class AliasGroupSchema(marshmallow.Schema):
-    name = fields.String()
-    help = fields.String(default=None, missing=None)
-    short_help = fields.String(default=None, missing=None)
-    commands = fields.List(
-        fields.Nested(AliasSchema), missing=list, data_key="subcommand"
-    )
-    options = fields.List(fields.Nested(OptionSchema), missing=list)
-    stages = fields.List(fields.Nested(AliasStageSchema), data_key="stage")
-    inject_values = fields.List(fields.String(), missing=list)
-
-    @marshmallow.post_load()
-    def make(self, validated, partial, many):
-        return AliasGroup(**validated)

@@ -207,10 +207,8 @@ def make_aliases(conf):
     synth_commands = []
 
     aliases = aliasing.AliasSchema(many=True).load(conf.get("alias", []))
-    alias_groups = aliasing.AliasGroupSchema(many=True).load(
-        conf.get("alias_group", [])
-    )
-    return aliases + alias_groups
+
+    return aliases
 
 
 def make_config_aliases_registry():

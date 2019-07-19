@@ -189,33 +189,18 @@ def build_stages(alias):
             )
         return out
 
-    if isinstance(alias, aliasing.Alias):
+    params = alias.arguments + alias.options
+    print(alias)
+    if alias.section:
+        SECTIONS.setdefault(alias.section, []).append(alias.name)
 
-        params = alias.arguments + alias.options
-        print(alias)
-        if alias.section:
-            SECTIONS.setdefault(alias.section, []).append(alias.name)
-
-        return click.Command(
-            name=alias.name,
-            params=params,
-            callback=click.pass_context(run),
-            short_help=alias.short_help,
-            help=alias.help,
-        )
-
-    if isinstance(alias, aliasing.AliasGroup):
-
-        return click.Group(
-            name=alias.name,
-            params=alias.options,
-            commands={c.name: build_stages(c) for c in alias.commands},
-            short_help=alias.short_help,
-            help=alias.help,
-            chain=False,
-        )
-
-    raise TypeError(alias)
+    return click.Command(
+        name=alias.name,
+        params=params,
+        callback=click.pass_context(run),
+        short_help=alias.short_help,
+        help=alias.help,
+    )
 
 
 COMMANDS = app.global_registry.cli_functions
