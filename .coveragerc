@@ -9,6 +9,8 @@ source =
     mario
     tests
 parallel = true
+omit =
+     src/mario/sphinx_click.py
 
 [report]
 show_missing = true
