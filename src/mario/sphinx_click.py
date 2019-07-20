@@ -1,3 +1,4 @@
+import itertools
 import traceback
 
 import click
@@ -190,6 +191,7 @@ def _format_envvars(ctx):
 
 def _format_subcommand(command):
     """Format a sub-command of a `click.Command` or `click.Group`."""
+
     yield ".. object:: {}".format(command.name)
 
     # click 7.0 stopped setting short_help by default
@@ -348,6 +350,23 @@ class ClickDirective(rst.Directive):
             )
         return parser
 
+    def _sort_commands(self, command, commands):
+        if not hasattr(command, "sections"):
+            return commands
+
+        subcommand_to_section = {}
+        for help_section_name, help_section in command.sections.items():
+            for subcommand_name in help_section.entries:
+                subcommand_to_section[subcommand_name] = (
+                    help_section.priority,
+                    help_section_name,
+                )
+
+        def get_section(cmd):
+            return subcommand_to_section.get(cmd.name, (float("inf"), None))
+
+        return sorted(commands, key=get_section)
+
     def _generate_nodes(
         self, name, command, parent=None, show_nested=False, commands=None
     ):
@@ -390,6 +409,9 @@ class ClickDirective(rst.Directive):
 
         if show_nested:
             commands = _filter_commands(ctx, commands)
+            commands = self._sort_commands(command, commands)
+            print(repr(section))
+
             for command in commands:
                 section.extend(
                     self._generate_nodes(command.name, command, ctx, show_nested)

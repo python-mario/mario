@@ -1,5 +1,6 @@
 import os
 import sys
+import typing as t
 
 import attr
 import click
@@ -50,9 +51,10 @@ class SectionedFormatter(click.formatting.HelpFormatter):
     def write_dl(self, rows, *args, **kwargs):
 
         cmd_to_section = {}
-        for section, commands in self.sections.items():
-            for command in commands:
-                cmd_to_section[command] = section
+        for section_name, help_section in self.sections.items():
+
+            for command in help_section.entries:
+                cmd_to_section[command] = section_name
 
         sections = {}
         for subcommand, help in rows:
@@ -154,15 +156,28 @@ Configuration:
   Python modules: {config.get_config_dir() / 'modules/*.py'}
 
 """
+
+
+@attr.dataclass(frozen=True)
+class HelpSection:
+    priority: int
+    entries: t.List[str]
+
+
 SECTIONS = {
-    "Traversals": ["map", "filter", "apply", "stack", "eval", "reduce", "chain"],
-    "Async traversals": [
-        "async-map",
-        "async-apply",
-        "async-filter",
-        "async-chain",
-        "async-map-unordered",
-    ],
+    "Traversals": HelpSection(
+        0, ["map", "filter", "apply", "stack", "eval", "reduce", "chain"]
+    ),
+    "Async traversals": HelpSection(
+        1,
+        [
+            "async-map",
+            "async-apply",
+            "async-filter",
+            "async-chain",
+            "async-map-unordered",
+        ],
+    ),
 }
 basics = SectionedGroup(commands=app.global_registry.cli_functions, sections=SECTIONS)
 ALIASES = app.global_registry.commands
