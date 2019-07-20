@@ -8,4 +8,4 @@
 - Provide load/dump or read/write or from/to for each of csv/json/jsonl/yaml/toml/xml/.
   - read csv --no-header write json --some-json-option
   - each format needs to be a subcommand of read and a subcommand of write
-- Rename alias options to parameters?
+- Be consistent about singular vs. plural in config
