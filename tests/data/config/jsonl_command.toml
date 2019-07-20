@@ -6,4 +6,4 @@ short_help = "Load jsonlines into python objects"
 [[command.stage]]
 
 command = "map"
-options = {code="json.loads"}
+params = {code="json.loads"}

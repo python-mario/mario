@@ -84,15 +84,15 @@ class RemapParamSchema(marshmallow.Schema):
 class CommandStage:
     command: str
     remap_params: t.List[RemapParam]
-    options: t.Dict[str, str]
+    params: t.Dict[str, str]
     arguments: t.List[str]
 
 
 class CommandStageSchema(marshmallow.Schema):
     command = fields.String()
     remap_params = fields.List(fields.Nested(RemapParamSchema), missing=list)
-    arguments = fields.List(fields.String(), missing=list)
-    options = fields.Dict(missing=dict)
+    # arguments = fields.List(fields.String(), missing=list)
+    params = fields.Dict(missing=dict)
 
     @marshmallow.post_load()
     def make(self, validated, partial, many):
@@ -117,7 +117,7 @@ class CommandTestSpecSchema(marshmallow.Schema):
 
 
 @attr.dataclass
-class Command:
+class CommandSpec:
     name: str
     short_help: t.Optional[str]
     help: t.Optional[str]
@@ -129,7 +129,7 @@ class Command:
     section: str
 
 
-class CommandSchema(marshmallow.Schema):
+class CommandSpecSchema(marshmallow.Schema):
     name = fields.String()
     help = fields.String(default=None, missing=None)
     short_help = fields.String(default=None, missing=None)
@@ -144,4 +144,4 @@ class CommandSchema(marshmallow.Schema):
 
     @marshmallow.post_load()
     def make(self, validated, partial, many):
-        return Command(**validated)
+        return CommandSpec(**validated)

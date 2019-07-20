@@ -216,7 +216,7 @@ def build_stages(command):
                 remap.old.lstrip("-"): cli_params[remap.new.lstrip("-")]
                 for remap in stage.remap_params
             }
-            mapped_stage_params.update(stage.options)
+            mapped_stage_params.update(stage.params)
             inject_namespace = {
                 k: v for k, v in cli_params.items() if k in command.inject_values
             }
