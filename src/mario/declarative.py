@@ -85,13 +85,11 @@ class CommandStage:
     command: str
     remap_params: t.List[RemapParam]
     params: t.Dict[str, str]
-    arguments: t.List[str]
 
 
 class CommandStageSchema(marshmallow.Schema):
     command = fields.String()
     remap_params = fields.List(fields.Nested(RemapParamSchema), missing=list)
-    # arguments = fields.List(fields.String(), missing=list)
     params = fields.Dict(missing=dict)
 
     @marshmallow.post_load()
