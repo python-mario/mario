@@ -9,3 +9,4 @@
   - read csv --no-header write json --some-json-option
   - each format needs to be a subcommand of read and a subcommand of write
 - Be consistent about singular vs. plural in config
+- Document the config file format
