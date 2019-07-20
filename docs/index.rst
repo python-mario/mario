@@ -7,7 +7,8 @@ Contents
 
 
    readme
-   reference/index
+   cli_reference
+   api_reference/index
    contributing
    authors
    changelog

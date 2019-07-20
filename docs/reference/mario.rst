@@ -11,14 +11,6 @@ Subpackages
 Submodules
 ----------
 
-mario.declarative module
----------------------
-
-.. automodule:: mario.declarative
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 mario.app module
 ----------------
 
@@ -47,6 +39,22 @@ mario.config module
 -------------------
 
 .. automodule:: mario.config
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mario.declarative module
+------------------------
+
+.. automodule:: mario.declarative
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mario.doc module
+----------------
+
+.. automodule:: mario.doc
    :members:
    :undoc-members:
    :show-inheritance:
