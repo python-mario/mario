@@ -1,10 +1,12 @@
 import os
 import sys
+import typing as t
 
 import attr
 import click
 
 import mario
+import mario.doc
 
 from . import app
 from . import config
@@ -20,6 +22,27 @@ config.DEFAULTS.update(
 )
 
 
+class ReSTCommand(click.Command):
+    """Parse help as rst."""
+
+    def format_help_text(self, ctx, formatter):
+
+        if self.help:
+            self.help = mario.doc.rst2text(self.help)
+            original_wrap_text = click.formatting.wrap_text
+            click.formatting.wrap_text = lambda x, *a, **kw: x
+            super().format_help_text(ctx, formatter)
+            click.formatting.wrap_text = original_wrap_text
+            return
+
+        if self.short_help:
+            original_help = self.help
+            self.help = self.short_help
+            super().format_help_text(ctx, formatter)
+            self.help = original_help
+            return
+
+
 class SectionedFormatter(click.formatting.HelpFormatter):
     def __init__(self, *args, sections, **kwargs):
         self.sections = sections
@@ -28,9 +51,10 @@ class SectionedFormatter(click.formatting.HelpFormatter):
     def write_dl(self, rows, *args, **kwargs):
 
         cmd_to_section = {}
-        for section, commands in self.sections.items():
-            for command in commands:
-                cmd_to_section[command] = section
+        for section_name, help_section in self.sections.items():
+
+            for command in help_section.entries:
+                cmd_to_section[command] = section_name
 
         sections = {}
         for subcommand, help in rows:
@@ -132,15 +156,28 @@ Configuration:
   Python modules: {config.get_config_dir() / 'modules/*.py'}
 
 """
+
+
+@attr.dataclass(frozen=True)
+class HelpSection:
+    priority: int
+    entries: t.List[str]
+
+
 SECTIONS = {
-    "Traversals": ["map", "filter", "apply", "stack", "eval", "reduce", "chain"],
-    "Async traversals": [
-        "async-map",
-        "async-apply",
-        "async-filter",
-        "async-chain",
-        "async-map-unordered",
-    ],
+    "Traversals": HelpSection(
+        0, ["map", "filter", "apply", "stack", "eval", "reduce", "chain"]
+    ),
+    "Async traversals": HelpSection(
+        1,
+        [
+            "async-map",
+            "async-apply",
+            "async-filter",
+            "async-chain",
+            "async-map-unordered",
+        ],
+    ),
 }
 basics = SectionedGroup(commands=app.global_registry.cli_functions, sections=SECTIONS)
 ALIASES = app.global_registry.commands
@@ -194,7 +231,7 @@ def build_stages(command):
     if command.section:
         SECTIONS.setdefault(command.section, []).append(command.name)
 
-    return click.Command(
+    return ReSTCommand(
         name=command.name,
         params=params,
         callback=click.pass_context(run),

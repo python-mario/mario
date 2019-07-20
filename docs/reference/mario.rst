@@ -11,14 +11,6 @@ Subpackages
 Submodules
 ----------
 
-mario.declarative module
----------------------
-
-.. automodule:: mario.declarative
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 mario.app module
 ----------------
 
@@ -51,6 +43,30 @@ mario.config module
    :undoc-members:
    :show-inheritance:
 
+mario.declarative module
+------------------------
+
+.. automodule:: mario.declarative
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mario.doc module
+----------------
+
+.. automodule:: mario.doc
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mario.flycheck\_sphinx\_click module
+------------------------------------
+
+.. automodule:: mario.flycheck_sphinx_click
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 mario.interfaces module
 -----------------------
 
@@ -71,6 +87,14 @@ mario.plug module
 -----------------
 
 .. automodule:: mario.plug
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mario.sphinx\_click module
+--------------------------
+
+.. automodule:: mario.sphinx_click
    :members:
    :undoc-members:
    :show-inheritance:

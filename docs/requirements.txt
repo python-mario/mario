@@ -1,4 +1,5 @@
 sphinx>=1.3
 sphinx-rtd-theme
 sphinx-autodoc-typehints
+sphinx-click
 -e .
