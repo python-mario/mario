@@ -232,7 +232,11 @@ def build_stages(command):
     if command.section:
         sections.setdefault(command.section, []).append(command.name)
     for k, entries in sections.items():
-        SECTIONS[k] = HelpSection(100, entries)
+        if k in SECTIONS.keys():
+            existing = SECTIONS[k]
+            SECTIONS[k] = attr.evolve(existing, entries=existing.entries + entries)
+        else:
+            SECTIONS[k] = HelpSection(100, entries)
 
     return ReSTCommand(
         name=command.name,
