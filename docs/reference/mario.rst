@@ -83,6 +83,14 @@ mario.plug module
    :undoc-members:
    :show-inheritance:
 
+mario.sphinx\_click module
+--------------------------
+
+.. automodule:: mario.sphinx_click
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 mario.traversals module
 -----------------------
 
