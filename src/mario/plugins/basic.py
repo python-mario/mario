@@ -170,10 +170,6 @@ subcommands = [
         "async-map-unordered",
         short_help="Call <code> on each line of input, ignoring order of input items.",
     ),
-    click.Command(
-        "dropwhile",
-        short_help="Evaluate <predicate> on function and drop values until first falsy.",
-    ),
     click.Command("eval", short_help="Evaluate a python expression <code>"),
 ]
 

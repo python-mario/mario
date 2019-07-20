@@ -384,6 +384,9 @@ class ClickDirective(rst.Directive):
         """
         ctx = click.Context(command, info_name=name, parent=parent)
 
+        if CLICK_VERSION >= (7, 0) and command.hidden:
+            return []
+
         # Title
 
         section = nodes.section(
@@ -399,6 +402,7 @@ class ClickDirective(rst.Directive):
         result = statemachine.ViewList()
 
         lines = _format_command(ctx, show_nested, commands)
+
         for line in lines:
             LOG.debug(line)
             result.append(line, source_name)
@@ -412,6 +416,7 @@ class ClickDirective(rst.Directive):
             commands = self._sort_commands(command, commands)
 
             for command in commands:
+
                 section.extend(
                     self._generate_nodes(command.name, command, ctx, show_nested)
                 )
