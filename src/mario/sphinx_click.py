@@ -350,9 +350,9 @@ class ClickDirective(rst.Directive):
             )
         return parser
 
-    def _sort_commands(self, command, commands):
+    def _sort_commands(self, command, subcommands):
         if not hasattr(command, "sections"):
-            return commands
+            return subcommands
 
         subcommand_to_section = {}
         for help_section_name, help_section in command.sections.items():
@@ -365,7 +365,7 @@ class ClickDirective(rst.Directive):
         def get_section(cmd):
             return subcommand_to_section.get(cmd.name, (float("inf"), None))
 
-        return sorted(commands, key=get_section)
+        return sorted(subcommands, key=get_section)
 
     def _generate_nodes(
         self, name, command, parent=None, show_nested=False, commands=None
@@ -410,7 +410,6 @@ class ClickDirective(rst.Directive):
         if show_nested:
             commands = _filter_commands(ctx, commands)
             commands = self._sort_commands(command, commands)
-            print(repr(section))
 
             for command in commands:
                 section.extend(
