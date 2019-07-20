@@ -179,7 +179,7 @@ SECTIONS = {
         ],
     ),
 }
-basics = SectionedGroup(commands=app.global_registry.cli_functions, sections=SECTIONS)
+
 ALIASES = app.global_registry.commands
 
 
@@ -228,8 +228,11 @@ def build_stages(command):
 
     params = command.arguments + command.options
 
+    sections = {}
     if command.section:
-        SECTIONS.setdefault(command.section, []).append(command.name)
+        sections.setdefault(command.section, []).append(command.name)
+    for k, entries in sections.items():
+        SECTIONS[k] = HelpSection(100, entries)
 
     return ReSTCommand(
         name=command.name,

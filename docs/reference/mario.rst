@@ -59,14 +59,6 @@ mario.doc module
    :undoc-members:
    :show-inheritance:
 
-mario.flycheck\_sphinx\_click module
-------------------------------------
-
-.. automodule:: mario.flycheck_sphinx_click
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 mario.interfaces module
 -----------------------
 
