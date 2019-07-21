@@ -159,7 +159,7 @@ class CommandStageSchema(marshmallow.Schema):
     params = fields.Dict(
         missing=dict,
         metadata={
-            "description": "Mapping from base command param name (str) to value (str)."
+            "description": "Mapping from new command param name (str) to value (any json type)."
         },
     )
 
