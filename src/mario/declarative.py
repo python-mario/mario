@@ -169,13 +169,13 @@ class CommandStageSchema(marshmallow.Schema):
 
 
 @attr.dataclass
-class CommandTestSpec:
+class CommandTest:
     invocation: t.List[str]
     input: str
     output: str
 
 
-class CommandTestSpecSchema(marshmallow.Schema):
+class CommandTestSchema(marshmallow.Schema):
     """A test of a new command."""
 
     invocation = fields.List(
@@ -193,7 +193,7 @@ class CommandTestSpecSchema(marshmallow.Schema):
 
     @marshmallow.post_load()
     def make(self, validated, partial, many):
-        return CommandTestSpec(**validated)
+        return CommandTest(**validated)
 
 
 @attr.dataclass
@@ -205,7 +205,7 @@ class CommandSpec:
     options: t.List[click.Option]
     stages: t.List[CommandStage]
     inject_values: t.List[str]
-    test_specs: t.List[CommandTestSpec]
+    tests: t.List[CommandTest]
     section: str
 
 
@@ -237,7 +237,6 @@ class CommandSpecSchema(marshmallow.Schema):
     )
     stages = fields.List(
         fields.Nested(CommandStageSchema),
-        data_key="stage",
         metadata={
             "description": "List of pipeline command stages that input will go through."
         },
@@ -251,10 +250,10 @@ class CommandSpecSchema(marshmallow.Schema):
             )
         },
     )
-    test_specs = fields.List(
-        fields.Nested(CommandTestSpecSchema),
+    tests = fields.List(
+        fields.Nested(CommandTestSchema),
         missing=list,
-        data_key="test",
+        data_key="tests",
         metadata={"description": "List of specifications to test the new command."},
     )
     section = fields.String(

@@ -3,7 +3,7 @@
 name = "jsonl"
 short_help = "Load jsonlines into python objects"
 
-[[command.stage]]
+[[command.stages]]
 
 command = "map"
 params = {code="json.loads"}
