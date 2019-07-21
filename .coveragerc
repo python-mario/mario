@@ -11,6 +11,8 @@ source =
 parallel = true
 omit =
      src/mario/sphinx_click.py
+     src/mario/sphinx_marshmallow.py
+     src/mario/sphinx_jsonschema.py
 
 [report]
 show_missing = true
