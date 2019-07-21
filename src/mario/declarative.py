@@ -22,6 +22,9 @@ class TypeField(marshmallow.fields.Field):
                 raise
             return self.default
 
+    def _jsonschema_type_mapping(self):
+        return {"type": "string"}
+
 
 class OptionNameField(marshmallow.fields.Field):
     def _deserialize(self, value, attr, data, **kwargs):
@@ -32,10 +35,21 @@ class OptionNameField(marshmallow.fields.Field):
             )
         return [value]
 
+    def _jsonschema_type_mapping(self):
+        return {"type": "string"}
+
 
 class ArgumentNameField(marshmallow.fields.Field):
     def _deserialize(self, value, attr, data, **kwargs):
         return [value]
+
+    def _jsonschema_type_mapping(self):
+        return {"type": "string"}
+
+
+class AnyField(marshmallow.fields.Field):
+    def _jsonschema_type_mapping(self):
+        return {}
 
 
 class OptionSchema(marshmallow.Schema):
@@ -47,7 +61,7 @@ class OptionSchema(marshmallow.Schema):
     required = fields.Boolean(default=False)
     nargs = fields.Integer()
     multiple = fields.Boolean()
-    default = fields.Field(default=None)
+    default = AnyField(default=None)
 
     @marshmallow.post_load()
     def make_option(self, validated, partial, many):

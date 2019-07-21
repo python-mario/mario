@@ -12,6 +12,7 @@ Contents
    contributing
    authors
    changelog
+   config_schema
 
 Indices and tables
 ==================

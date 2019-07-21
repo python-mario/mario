@@ -17,6 +17,8 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
     "mario.sphinx_click",
+    "mario.sphinx_marshmallow",
+    "sphinx-jsonschema",
 ]
 if os.getenv("SPELLCHECK"):
     extensions += ("sphinxcontrib.spelling",)
