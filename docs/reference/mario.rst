@@ -91,6 +91,14 @@ mario.sphinx\_click module
    :undoc-members:
    :show-inheritance:
 
+mario.sphinx\_jsonschema module
+-------------------------------
+
+.. automodule:: mario.sphinx_jsonschema
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 mario.sphinx\_marshmallow module
 --------------------------------
 

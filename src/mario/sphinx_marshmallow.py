@@ -164,6 +164,11 @@ class Marshmallow3JSONSchema(marshmallow_jsonschema.JSONSchema):
 
         return required or marshmallow.missing
 
+    definition = marshmallow.fields.Method("get_definition")
+
+    def get_definition(self, obj):
+        return {obj.__doc__: []}
+
 
 class SchemaDirective(docutils.parsers.rst.Directive):
 

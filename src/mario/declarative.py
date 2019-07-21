@@ -63,6 +63,8 @@ class AnyField(marshmallow.fields.Field):
 
 
 class OptionSchema(marshmallow.Schema):
+    """A command line named option for a new command."""
+
     param_decls = OptionNameField(
         data_key="name",
         metadata={"description": "Name of the option. Usually prefixed with - or --."},
@@ -97,6 +99,8 @@ class OptionSchema(marshmallow.Schema):
 
 
 class ArgumentSchema(marshmallow.Schema):
+    """A command-line positional argument for a new command."""
+
     param_decls = ArgumentNameField(
         data_key="name", metadata={"description": "Name of the argument."}
     )
@@ -124,6 +128,8 @@ class RemapParam:
 
 
 class RemapParamSchema(marshmallow.Schema):
+    """Translation between the name of a base command's parameter and the name of the new command's parameter."""
+
     new = fields.String(metadata={"description": "New name of the parameter."})
     old = fields.String(metadata={"description": "Old name of the parameter."})
 
@@ -140,6 +146,8 @@ class CommandStage:
 
 
 class CommandStageSchema(marshmallow.Schema):
+    """A single stage of a new command pipeline."""
+
     command = fields.String(metadata={"description": "Name of the base command"})
     remap_params = fields.List(
         fields.Nested(RemapParamSchema),
@@ -168,6 +176,8 @@ class CommandTestSpec:
 
 
 class CommandTestSpecSchema(marshmallow.Schema):
+    """A test of a new command."""
+
     invocation = fields.List(
         fields.String(),
         metadata={
@@ -200,6 +210,8 @@ class CommandSpec:
 
 
 class CommandSpecSchema(marshmallow.Schema):
+    """A new command."""
+
     name = fields.String(metadata={"description": "Name of the new command."})
     help = fields.String(
         default=None,

@@ -19,7 +19,7 @@ extensions = [
     "sphinx.ext.autosectionlabel",
     "mario.sphinx_click",
     "mario.sphinx_marshmallow",
-    "sphinx-jsonschema",
+    "mario.sphinx_jsonschema",
 ]
 if os.getenv("SPELLCHECK"):
     extensions += ("sphinxcontrib.spelling",)
