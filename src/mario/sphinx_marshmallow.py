@@ -252,14 +252,7 @@ class SchemaDirective(docutils.parsers.rst.Directive):
         if "prog" not in self.options:
             raise self.error(":prog: must be specified")
 
-        prog_name = self.options.get("prog")
-        show_nested = "show-nested" in self.options
-        commands = self.options.get("commands")
-
-        section = self._build_section(schema())
-        print(len(section))
-        print(section)
-        return section
+        return self._build_section(schema())
 
 
 def setup(app):
