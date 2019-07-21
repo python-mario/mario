@@ -222,13 +222,11 @@ class SchemaDirective(docutils.parsers.rst.Directive):
 
         file = tempfile.NamedTemporaryFile(mode="wt", delete=False)
 
-        # with open(file, "w") as f:
         json.dump(mm_json, file, indent=4)
         file.close()
 
         lines = []
         lines += [f".. jsonschema:: {file.name}\n"]
-        # lines += [textwrap.indent(json.dumps(mm_json, indent=4), " " * 4)]
 
         for line in lines:
             result.append(line, source_name)
@@ -239,14 +237,11 @@ class SchemaDirective(docutils.parsers.rst.Directive):
         for field_name in schema.fields:
             field = schema.declared_fields[field_name]
             inner = self._get_inner(field)
-            print(inner)
+
             if isinstance(inner, type) and issubclass(inner, marshmallow.Schema):
                 subsections += self._build_section(inner())
 
         return [section] + subsections
-
-        # paragraph_node = docutils.nodes.paragraph(text="Hello World!")
-        # return paragraph_node
 
     def run(self):
 
