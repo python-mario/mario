@@ -9,6 +9,20 @@ from marshmallow import fields
 TYPES = {t.__name__: t for t in [int, str, bool, float]}
 
 
+def get_jsonschema_type_mapping(type_):
+    def _jsonschema_type_mapping(self):
+        d = {"type": type_}
+
+        if "description" in self.metadata.keys():
+            d["description"] = self.metadata["description"]
+        else:
+            d["description"] = self.metadata["metadata"]["description"]
+
+        return d
+
+    return _jsonschema_type_mapping
+
+
 class TypeField(marshmallow.fields.Field):
     def __init__(self, *args, **kwargs):
         self.default = kwargs.get("default", marshmallow.missing)
@@ -22,12 +36,7 @@ class TypeField(marshmallow.fields.Field):
                 raise
             return self.default
 
-    def _jsonschema_type_mapping(self):
-        d = {"type": "abcd"}
-
-        if "description" in self.metadata.keys():
-            d["description"] = self.metadata["description"]
-        return d
+    _jsonschema_type_mapping = get_jsonschema_type_mapping("string")
 
 
 class OptionNameField(marshmallow.fields.Field):
@@ -39,21 +48,18 @@ class OptionNameField(marshmallow.fields.Field):
             )
         return [value]
 
-    def _jsonschema_type_mapping(self):
-        return {"type": "string"}
+    _jsonschema_type_mapping = get_jsonschema_type_mapping("string")
 
 
 class ArgumentNameField(marshmallow.fields.Field):
     def _deserialize(self, value, attr, data, **kwargs):
         return [value]
 
-    def _jsonschema_type_mapping(self):
-        return {"type": "string"}
+    _jsonschema_type_mapping = get_jsonschema_type_mapping("string")
 
 
 class AnyField(marshmallow.fields.Field):
-    def _jsonschema_type_mapping(self):
-        return {}
+    _jsonschema_type_mapping = get_jsonschema_type_mapping("string")
 
 
 class OptionSchema(marshmallow.Schema):
@@ -61,7 +67,7 @@ class OptionSchema(marshmallow.Schema):
         data_key="name",
         metadata={"description": "Name of the option. Usually prefixed with - or --."},
     )
-    typex = TypeField(
+    type = TypeField(
         metadata={"description": f'Name of the type. {", ".join(TYPES)} accepted.'}
     )
     is_flag = fields.Boolean(

@@ -117,7 +117,7 @@ class Marshmallow3JSONSchema(marshmallow_jsonschema.JSONSchema):
 
     def _from_python_type(self, obj, field, pytype):
         """Get schema definition from python type."""
-        json_schema = {"title": field.attribute or field.name}
+        json_schema = {"title": field.attribute or field.data_key or field.name}
 
         for key, val in marshmallow_jsonschema.base.TYPE_MAP[pytype].items():
             json_schema[key] = val
@@ -143,6 +143,26 @@ class Marshmallow3JSONSchema(marshmallow_jsonschema.JSONSchema):
         if isinstance(field, marshmallow.fields.List):
             json_schema["items"] = self._get_schema_for_field(obj, field.inner)
         return json_schema
+
+    def get_properties(self, obj):
+        """Fill out properties field."""
+        properties = {}
+
+        for field_name, field in sorted(obj.fields.items()):
+            schema = self._get_schema_for_field(obj, field)
+            properties[field.data_key or field.name] = schema
+
+        return properties
+
+    def get_required(self, obj):
+        """Fill out required field."""
+        required = []
+
+        for field_name, field in sorted(obj.fields.items()):
+            if field.required:
+                required.append(field.data_key or field.name)
+
+        return required or marshmallow.missing
 
 
 class SchemaDirective(docutils.parsers.rst.Directive):
@@ -224,7 +244,7 @@ class SchemaDirective(docutils.parsers.rst.Directive):
         source_name = type(schema).__name__
         result = docutils.statemachine.ViewList()
 
-        file = tempfile.NamedTemporaryFile(mode="wt", delete=False)
+        file = tempfile.NamedTemporaryFile(mode="wt", delete=False, prefix="sphinx")
 
         json.dump(mm_json, file, indent=4)
         file.close()
