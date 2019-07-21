@@ -16,7 +16,10 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
+    "sphinx.ext.autosectionlabel",
     "mario.sphinx_click",
+    "mario.sphinx_marshmallow",
+    "mario.sphinx_jsonschema",
 ]
 if os.getenv("SPELLCHECK"):
     extensions += ("sphinxcontrib.spelling",)
@@ -56,3 +59,5 @@ napoleon_use_param = True
 autoapi_dirs = ["../src/mario"]
 
 html_theme_options = {"navigation_depth": 5}
+
+autosectionlabel_prefix_document = True
