@@ -23,7 +23,11 @@ class TypeField(marshmallow.fields.Field):
             return self.default
 
     def _jsonschema_type_mapping(self):
-        return {"type": "string"}
+        d = {"type": "abcd"}
+
+        if "description" in self.metadata.keys():
+            d["description"] = self.metadata["description"]
+        return d
 
 
 class OptionNameField(marshmallow.fields.Field):
@@ -53,15 +57,33 @@ class AnyField(marshmallow.fields.Field):
 
 
 class OptionSchema(marshmallow.Schema):
-    param_decls = OptionNameField(data_key="name")
-    type = TypeField()
-    is_flag = fields.Boolean(default=False)
-    help = fields.String(default=None)
-    hidden = fields.Boolean(default=False)
-    required = fields.Boolean(default=False)
-    nargs = fields.Integer()
-    multiple = fields.Boolean()
-    default = AnyField(default=None)
+    param_decls = OptionNameField(
+        data_key="name",
+        metadata={"description": "Name of the option. Usually prefixed with - or --."},
+    )
+    typex = TypeField(
+        metadata={"description": f'Name of the type. {", ".join(TYPES)} accepted.'}
+    )
+    is_flag = fields.Boolean(
+        default=False, metadata={"description": "Whether the option is a boolean flag."}
+    )
+    help = fields.String(
+        default=None, metadata={"description": "Documentation for the option."}
+    )
+    hidden = fields.Boolean(
+        default=False,
+        metadata={"description": "Whether the option is hidden from help."},
+    )
+    required = fields.Boolean(
+        default=False, metadata={"description": "Whether the option is required."}
+    )
+    nargs = fields.Integer(
+        metadata={"description": "Number of instances expected. Pass -1 for variadic."}
+    )
+    multiple = fields.Boolean(
+        metadata={"description": "Whether multiple values can be passed."}
+    )
+    default = AnyField(default=None, metadata={"description": "Default value."})
 
     @marshmallow.post_load()
     def make_option(self, validated, partial, many):
@@ -69,10 +91,20 @@ class OptionSchema(marshmallow.Schema):
 
 
 class ArgumentSchema(marshmallow.Schema):
-    param_decls = ArgumentNameField(data_key="name")
-    type = TypeField()
-    required = fields.Boolean()
-    nargs = fields.Integer()
+    param_decls = ArgumentNameField(
+        data_key="name", metadata={"description": "Name of the argument."}
+    )
+    type = TypeField(
+        default=str,
+        metadata={"description": f'Name of the type. {", ".join(TYPES)} accepted.'},
+    )
+    required = fields.Boolean(
+        default=True, metadata={"description": "Whether the argument is required."}
+    )
+    nargs = fields.Integer(
+        default=None,
+        metadata={"description": "Number of instances expected. Pass -1 for variadic."},
+    )
 
     @marshmallow.post_load()
     def make_argument(self, validated, partial, many):
@@ -86,8 +118,8 @@ class RemapParam:
 
 
 class RemapParamSchema(marshmallow.Schema):
-    new = fields.String()
-    old = fields.String()
+    new = fields.String(metadata={"description": "New name of the parameter."})
+    old = fields.String(metadata={"description": "Old name of the parameter."})
 
     @marshmallow.post_load()
     def make_remap(self, validated, partial, many):
@@ -102,9 +134,20 @@ class CommandStage:
 
 
 class CommandStageSchema(marshmallow.Schema):
-    command = fields.String()
-    remap_params = fields.List(fields.Nested(RemapParamSchema), missing=list)
-    params = fields.Dict(missing=dict)
+    command = fields.String(metadata={"description": "Name of the base command"})
+    remap_params = fields.List(
+        fields.Nested(RemapParamSchema),
+        missing=list,
+        metadata={
+            "description": "Provide new names for the parameters, different from the base command parameters' names"
+        },
+    )
+    params = fields.Dict(
+        missing=dict,
+        metadata={
+            "description": "Mapping from base command param name (str) to value (str)."
+        },
+    )
 
     @marshmallow.post_load()
     def make(self, validated, partial, many):
@@ -119,9 +162,18 @@ class CommandTestSpec:
 
 
 class CommandTestSpecSchema(marshmallow.Schema):
-    invocation = fields.List(fields.String())
-    input = fields.String()
-    output = fields.String()
+    invocation = fields.List(
+        fields.String(),
+        metadata={
+            "description": "Command line arguments to mario. (Don't include `mario`.)"
+        },
+    )
+    input = fields.String(
+        metadata={"description": "String passed on stdin to the program."}
+    )
+    output = fields.String(
+        metadata={"description": "Expected string output from the program."}
+    )
 
     @marshmallow.post_load()
     def make(self, validated, partial, many):
@@ -142,17 +194,57 @@ class CommandSpec:
 
 
 class CommandSpecSchema(marshmallow.Schema):
-    name = fields.String()
-    help = fields.String(default=None, missing=None)
-    short_help = fields.String(default=None, missing=None)
-    arguments = fields.List(fields.Nested(ArgumentSchema), missing=list)
-    options = fields.List(fields.Nested(OptionSchema), missing=list)
-    stages = fields.List(fields.Nested(CommandStageSchema), data_key="stage")
-    inject_values = fields.List(fields.String(), missing=list)
-    test_specs = fields.List(
-        fields.Nested(CommandTestSpecSchema), missing=list, data_key="test"
+    name = fields.String(metadata={"description": "Name of the new command."})
+    help = fields.String(
+        default=None,
+        missing=None,
+        metadata={
+            "description": "Long-form documentation of the command. Will be interpreted as ReStructuredText markup."
+        },
     )
-    section = fields.String(missing=None)
+    short_help = fields.String(
+        default=None,
+        missing=None,
+        metadata={"description": "Single-line CLI description."},
+    )
+    arguments = fields.List(
+        fields.Nested(ArgumentSchema),
+        missing=list,
+        metadata={"description": "Arguments accepted by the new command."},
+    )
+    options = fields.List(
+        fields.Nested(OptionSchema),
+        missing=list,
+        metadata={"description": "Options accepted by the new command."},
+    )
+    stages = fields.List(
+        fields.Nested(CommandStageSchema),
+        data_key="stage",
+        metadata={
+            "description": "List of pipeline command stages that input will go through."
+        },
+    )
+    inject_values = fields.List(
+        fields.String(),
+        missing=list,
+        metadata={
+            "description": (
+                "CLI parameters to be injected into the local namespace, accessible by the executing commands."
+            )
+        },
+    )
+    test_specs = fields.List(
+        fields.Nested(CommandTestSpecSchema),
+        missing=list,
+        data_key="test",
+        metadata={"description": "List of specifications to test the new command."},
+    )
+    section = fields.String(
+        missing=None,
+        metadata={
+            "description": "Name of the documentation section in which the new command should appear."
+        },
+    )
 
     @marshmallow.post_load()
     def make(self, validated, partial, many):

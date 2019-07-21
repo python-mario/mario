@@ -347,9 +347,11 @@ For example, the ``3 seconds`` item is ready before the preceding ``4 seconds`` 
     3 seconds    | 297 bytes
 
 
-===============
-Configuration
-===============
+.. _config-intro:
+
+=======================
+Configuration basics
+=======================
 
 The config file location follows the `freedesktop.org standard <https://www.freedesktop.org/wiki/Software/xdg-user-dirs/>`_. Check the location on your system by running ``mario --help``:
 

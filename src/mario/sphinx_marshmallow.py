@@ -110,6 +110,7 @@ def build_schema_spec(schema: marshmallow.Schema) -> SchemaSpec:
 
 class Marshmallow3JSONSchema(marshmallow_jsonschema.JSONSchema):
     # This class fixes incompatibilities between the parent class and Marshmallow 3.
+    # It also adds the `description` field.
 
     def wrap(self, *args, many, **kwargs):
         return super().wrap(*args, **kwargs)
@@ -120,6 +121,9 @@ class Marshmallow3JSONSchema(marshmallow_jsonschema.JSONSchema):
 
         for key, val in marshmallow_jsonschema.base.TYPE_MAP[pytype].items():
             json_schema[key] = val
+
+        if "description" in field.metadata:
+            json_schema["description"] = field.metadata["description"]
 
         if field.dump_only:
             json_schema["readonly"] = True
@@ -249,13 +253,8 @@ class SchemaDirective(docutils.parsers.rst.Directive):
 
         schema = self._get_schema(self.arguments[0])
 
-        if "prog" not in self.options:
-            raise self.error(":prog: must be specified")
-
         return self._build_section(schema())
 
 
 def setup(app):
     app.add_directive("marshmallow", SchemaDirective)
-
-    return {"version": "0.1", "parallel_read_safe": True, "parallel_write_safe": True}
