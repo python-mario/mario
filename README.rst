@@ -353,6 +353,8 @@ For example, the ``3 seconds`` item is ready before the preceding ``4 seconds`` 
 Configuration basics
 =======================
 
+
+
 The config file location follows the `freedesktop.org standard <https://www.freedesktop.org/wiki/Software/xdg-user-dirs/>`_. Check the location on your system by running ``mario --help``:
 
 
@@ -372,7 +374,7 @@ The config file location follows the `freedesktop.org standard <https://www.free
 
 
 
-For example on Ubuntu we use ``~/.config/mario/config.toml`` for declarative configuration. Add code and settings into your config.
+For example on Ubuntu we use ``~/.config/mario/config.toml`` for declarative configuration. See :ref:`config-reference` for the format specification.
 
 
 
