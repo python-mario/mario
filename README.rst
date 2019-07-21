@@ -374,7 +374,7 @@ The config file location follows the `freedesktop.org standard <https://www.free
 
 
 
-For example on Ubuntu we use ``~/.config/mario/config.toml`` for declarative configuration. See :ref:`config-reference` for the format specification.
+For example on Ubuntu we use ``~/.config/mario/config.toml`` for declarative configuration. See Configuration Reference for the format specification.
 
 
 
