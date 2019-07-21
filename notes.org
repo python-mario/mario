@@ -9,3 +9,4 @@
   - read csv --no-header write json --some-json-option
   - each format needs to be a subcommand of read and a subcommand of write
 - Be consistent about singular vs. plural in config. I think it's better to use plural for array values.
+- Does each version of mario-addons need to specify each version of mario that it's compatible with?
