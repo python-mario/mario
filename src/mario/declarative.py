@@ -92,9 +92,17 @@ class OptionSchema(marshmallow.Schema):
         metadata={"description": "Whether multiple values can be passed."}
     )
     default = AnyField(default=None, metadata={"description": "Default value."})
+    choices = fields.List(
+        fields.String(),
+        metadata={"description": "List of allowed string values."},
+        default=None,
+    )
 
     @marshmallow.post_load()
     def make_option(self, validated, partial, many):
+        choices = validated.pop("choices", None)
+        if choices:
+            validated["type"] = click.Choice(choices)
         return click.Option(**validated)
 
 
@@ -115,9 +123,17 @@ class ArgumentSchema(marshmallow.Schema):
         default=None,
         metadata={"description": "Number of instances expected. Pass -1 for variadic."},
     )
+    choices = fields.List(
+        fields.String(),
+        metadata={"description": "List of allowed string values."},
+        default=None,
+    )
 
     @marshmallow.post_load()
     def make_argument(self, validated, partial, many):
+        choices = validated.pop("choices", None)
+        if choices:
+            validated["type"] = click.Choice(choices)
         return click.Argument(**validated)
 
 
