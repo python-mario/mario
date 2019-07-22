@@ -169,7 +169,7 @@ disable=print-statement,
         too-few-public-methods,
         too-many-arguments,
         too-many-branches,
-        too-many-locals,
+
 
 
 
