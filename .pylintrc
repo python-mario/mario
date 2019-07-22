@@ -170,7 +170,7 @@ disable=print-statement,
         too-many-arguments,
         too-many-branches,
         too-many-locals,
-        undefined-loop-variable,
+
 
 
 
