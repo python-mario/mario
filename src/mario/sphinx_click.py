@@ -8,6 +8,8 @@ from docutils.parsers import rst
 from docutils.parsers.rst import directives
 from sphinx.util import logging
 
+from mario import doc
+
 
 LOG = logging.getLogger(__name__)
 CLICK_VERSION = tuple(int(x) for x in click.__version__.split("."))
@@ -355,15 +357,14 @@ class ClickDirective(rst.Directive):
             return subcommands
 
         subcommand_to_section = {}
-        for help_section_name, help_section in command.sections.items():
+        for help_section in command.sections.values():
             for subcommand_name in help_section.entries:
-                subcommand_to_section[subcommand_name] = (
-                    help_section.priority,
-                    help_section_name,
-                )
+                subcommand_to_section[subcommand_name] = help_section
 
         def get_section(cmd):
-            return subcommand_to_section.get(cmd.name, (float("inf"), None))
+            return subcommand_to_section.get(
+                cmd.name, doc.HelpSection(float("inf"), None)
+            )
 
         return sorted(subcommands, key=get_section)
 
@@ -372,15 +373,14 @@ class ClickDirective(rst.Directive):
             return subcommands
 
         subcommand_to_section = {}
-        for help_section_name, help_section in command.sections.items():
+        for help_section in command.sections.values():
             for subcommand_name in help_section.entries:
-                subcommand_to_section[subcommand_name] = (
-                    help_section.priority,
-                    help_section_name,
-                )
+                subcommand_to_section[subcommand_name] = help_section
 
         def get_section(cmd):
-            return subcommand_to_section.get(cmd.name, (float("inf"), None))
+            return subcommand_to_section.get(
+                cmd.name, doc.HelpSection(float("inf"), None)
+            )
 
         return itertools.groupby(subcommands, key=get_section)
 
@@ -434,10 +434,8 @@ class ClickDirective(rst.Directive):
         commands = _filter_commands(ctx, commands)
         commands = self._sort_commands(command, commands)
 
-        for (_group_priority, group_name), subcommands in self._group_commands(
-            command, commands
-        ):
-            group_name = group_name or "Custom"
+        for help_section, subcommands in self._group_commands(command, commands):
+            group_name = help_section.name or "Custom"
 
             group_item = nodes.section(
                 "",
@@ -447,6 +445,10 @@ class ClickDirective(rst.Directive):
             )
 
             group_list = statemachine.ViewList()
+
+            # XXX This is supposed to add documentation lines to each group, but it doesn't seem to work.
+            for line in help_section.doc.splitlines():
+                group_list.append(line, group_name)
 
             for subcommand in subcommands:
                 group_item.extend(
