@@ -142,6 +142,7 @@ disable=print-statement,
         comprehension-escape,
 	bad-continuation, # Bug in pylint. https://github.com/PyCQA/pylint/issues/741
         len-as-condition,
+        ungrouped-imports,
 
 # TODO: Remove these as they get fixed.
 
@@ -170,7 +171,7 @@ disable=print-statement,
         too-many-branches,
         too-many-locals,
         undefined-loop-variable,
-        ungrouped-imports,
+
 
 
 
