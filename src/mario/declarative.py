@@ -42,11 +42,6 @@ class TypeField(marshmallow.fields.Field):
 class OptionNameField(marshmallow.fields.Field):
     def _deserialize(self, value, attr, data, **kwargs):
         return [value]
-        if not value.startswith("-"):
-            raise marshmallow.ValidationError(
-                f'{value} is an option, so must start with "-".'
-            )
-        return [value]
 
     _jsonschema_type_mapping = get_jsonschema_type_mapping("string")
 

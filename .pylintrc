@@ -172,7 +172,7 @@ disable=print-statement,
         undefined-loop-variable,
         ungrouped-imports,
         unidiomatic-typecheck,
-        unreachable,
+
 
 
 

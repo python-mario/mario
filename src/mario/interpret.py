@@ -108,7 +108,6 @@ def make_autocall(expression, howcall):
             return expression
 
     return expression + howcall.value
-    raise ValueError(howcall)
 
 
 def build_source(components, howcall):
