@@ -352,18 +352,22 @@ class ClickDirective(rst.Directive):
             )
         return parser
 
-    def _sort_commands(self, command, subcommands):
-        if not hasattr(command, "sections"):
-            return subcommands
-
+    def _make_subcommand_to_section(self, command):
         subcommand_to_section = {}
         for help_section in command.sections.values():
             for subcommand_name in help_section.entries:
                 subcommand_to_section[subcommand_name] = help_section
+        return subcommand_to_section
+
+    def _sort_commands(self, command, subcommands):
+        if not hasattr(command, "sections"):
+            return subcommands
+
+        subcommand_to_section = self._make_subcommand_to_section(command)
 
         def get_section(cmd):
             return subcommand_to_section.get(
-                cmd.name, doc.HelpSection(float("inf"), None)
+                cmd.name, doc.HelpSection(float("inf"), [], name="Custom")
             )
 
         return sorted(subcommands, key=get_section)
@@ -371,15 +375,11 @@ class ClickDirective(rst.Directive):
     def _group_commands(self, command, subcommands):
         if not hasattr(command, "sections"):
             return subcommands
-
-        subcommand_to_section = {}
-        for help_section in command.sections.values():
-            for subcommand_name in help_section.entries:
-                subcommand_to_section[subcommand_name] = help_section
+        subcommand_to_section = self._make_subcommand_to_section(command)
 
         def get_section(cmd):
             return subcommand_to_section.get(
-                cmd.name, doc.HelpSection(float("inf"), None)
+                cmd.name, doc.HelpSection(float("inf"), [], name="Custom")
             )
 
         return itertools.groupby(subcommands, key=get_section)
@@ -435,7 +435,7 @@ class ClickDirective(rst.Directive):
         commands = self._sort_commands(command, commands)
 
         for help_section, subcommands in self._group_commands(command, commands):
-            group_name = help_section.name or "Custom"
+            group_name = help_section.name or "CustomFOO"
 
             group_item = nodes.section(
                 "",
