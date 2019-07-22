@@ -1,8 +1,6 @@
 import os
 import textwrap
 
-import toml
-
 from mario import utils
 
 from . import helpers

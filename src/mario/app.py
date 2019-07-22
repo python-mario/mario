@@ -12,7 +12,6 @@ from typing import List
 
 import async_exit_stack
 import attr
-import pyrsistent
 import trio
 
 from . import asynch
@@ -20,7 +19,6 @@ from . import config
 from . import interfaces
 from . import interpret
 from . import plug
-from . import utils
 
 
 async def call_traversal(

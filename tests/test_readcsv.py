@@ -1,12 +1,6 @@
 import csv
-import io
 import subprocess
 import sys
-from typing import Dict
-from typing import Generator
-from typing import Iterable
-
-import pytest
 
 
 def make_reader():

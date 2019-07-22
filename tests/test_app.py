@@ -2,26 +2,16 @@
 
 from __future__ import generator_stop
 
-import collections
 import os
-import string
-import subprocess
-import sys
 import textwrap
-import time
-import urllib
 
-import click.testing
 import hypothesis
-import hypothesis.strategies as st
 import pytest
-from tests import config
 from tests import helpers
 
 import mario
 import mario.app
 import mario.cli
-from mario import interpret
 from mario import utils
 
 

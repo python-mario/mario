@@ -1,6 +1,5 @@
 import os
 import sys
-import typing as t
 
 import attr
 import click
@@ -10,8 +9,6 @@ import mario.doc
 
 from . import app
 from . import config
-from . import declarative
-from . import plug
 from . import utils
 
 

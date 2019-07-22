@@ -3,7 +3,6 @@ import importlib.resources
 import importlib.util
 import inspect
 import pathlib
-import sys
 import types
 import typing as t
 from typing import Any
@@ -15,10 +14,8 @@ import attr
 import pkg_resources
 import toml
 
-from mario import asynch
 from mario import config
 from mario import declarative
-from mario import interpret
 from mario import utils
 
 

@@ -14,7 +14,6 @@ import types
 
 import attr
 import parso
-import toolz
 
 
 SYMBOL = "x"

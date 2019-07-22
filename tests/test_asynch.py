@@ -1,5 +1,3 @@
-import json
-import string
 import subprocess
 import sys
 import time
@@ -7,7 +5,6 @@ import time
 import pytest
 import requests
 
-from . import config
 from . import helpers
 
 

@@ -3,7 +3,6 @@ from __future__ import generator_stop
 
 import functools
 import itertools
-import threading
 import types
 import typing as t
 from typing import AsyncIterable
@@ -14,7 +13,6 @@ from typing import Iterable
 
 import async_generator
 import trio
-import trio_typing
 
 
 T = t.TypeVar("T")
