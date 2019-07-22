@@ -25,6 +25,7 @@ hypothesis.settings.load_profile(os.getenv("HYPOTHESIS_PROFILE", "default"))
 
 
 def assert_exception_equal(e1, e2):
+    # pylint: disable=unidiomatic-typecheck
     assert type(e1) == type(e2)
     assert e1.args == e2.args
 
