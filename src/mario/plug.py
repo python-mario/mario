@@ -206,7 +206,6 @@ def make_synthetic_command(cmd,):
 
 
 def make_commands(conf):
-    synth_commands = []
 
     commands = declarative.CommandSpecSchema(many=True).load(conf.get("command", []))
 

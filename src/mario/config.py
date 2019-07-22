@@ -33,6 +33,6 @@ def load_config(dir_path=None):
     try:
         with open(config_path) as f:
             return toml.load(f)
-    except OSError as e:
+    except OSError:
 
         return {}

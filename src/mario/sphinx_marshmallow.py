@@ -101,7 +101,7 @@ class Marshmallow3JSONSchema(marshmallow_jsonschema.JSONSchema):
         """Fill out properties field."""
         properties = {}
 
-        for field_name, field in sorted(obj.fields.items()):
+        for _field_name, field in sorted(obj.fields.items()):
             schema = self._get_schema_for_field(obj, field)
             properties[field.data_key or field.name] = schema
 
@@ -111,7 +111,7 @@ class Marshmallow3JSONSchema(marshmallow_jsonschema.JSONSchema):
         """Fill out required field."""
         required = []
 
-        for field_name, field in sorted(obj.fields.items()):
+        for _field_name, field in sorted(obj.fields.items()):
             if field.required:
                 required.append(field.data_key or field.name)
 
