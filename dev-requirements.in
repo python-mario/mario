@@ -24,4 +24,5 @@ pytest-sugar
 lxml
 docshtest
 pygments>=2.4
+marshmallow-jsonschema
 -r requirements.in
