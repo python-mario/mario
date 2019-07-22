@@ -173,7 +173,7 @@ disable=print-statement,
         ungrouped-imports,
         unidiomatic-typecheck,
         unreachable,
-        unsubscriptable-object,
+
 
 
 

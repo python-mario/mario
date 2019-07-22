@@ -92,6 +92,7 @@ async def async_main(basic_traversals, **kwargs):
                     global_context.global_options, global_namespace=traversal_namespace
                 ),
             )
+            # pylint: disable=unsubscriptable-object
             traversal = interfaces.Traversal(
                 global_invocation_options=traversal_context,
                 specific_invocation_params=d,
