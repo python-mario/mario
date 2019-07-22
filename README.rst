@@ -413,7 +413,7 @@ Define new commands in your config file which provide commands to other commands
    name = "jsonl"
    help = "Load jsonlines into python objects."
 
-   [[command.stage]]
+   [[command.stages]]
 
    command = "map"
    params = {code="json.loads"}
@@ -455,10 +455,10 @@ Convenient for removing trailing commas.
     name = "yml2json"
     help = "Convert yaml to json"
 
-    [[command.stage]]
+    [[command.stages]]
     command = "read-text"
 
-    [[command.stage]]
+    [[command.stages]]
     command = "map"
     params = {code="yaml.safe_load ! json.dumps"}
 
@@ -495,14 +495,14 @@ Pull text out of xml documents.
         arguments = [{name="query", type="str"}]
         inject_values=["query"]
 
-        [[command.stage]]
+        [[command.stages]]
         command = "map"
 
-        [[command.stage]]
+        [[command.stages]]
         command = "map"
         params = {code="x.encode() ! io.BytesIO ! lxml.etree.parse ! x.findall(query) ! list" }
 
-        [[command.stage]]
+        [[command.stages]]
         command="chain"
 
 
@@ -525,26 +525,26 @@ Generate json objects
         arguments=[{name="pairs", type="str"}]
         inject_values=["pairs"]
 
-        [[command.stage]]
+        [[command.stages]]
         command = "eval"
         params = {code="pairs"}
 
-        [[command.stage]]
+        [[command.stages]]
         command = "map"
         params = {code="shlex.split(x, posix=False)"}
 
         [[command.stage]]
         command = "chain"
 
-        [[command.stage]]
+        [[command.stages]]
         command = "map"
         params = {code="x.partition('=') ! [x[0], ast.literal_eval(re.sub(r'^(?P<value>[A-Za-z]+)$', r'\"\\g<value>\"', x[2]))]"}
 
-        [[command.stage]]
+        [[command.stages]]
         command = "apply"
         params = {"code"="dict"}
 
-        [[command.stage]]
+        [[command.stages]]
         command = "map"
         params = {code="json.dumps"}
 
@@ -615,14 +615,14 @@ try:
         default=true
         help = "Treat the first row as a header?"
 
-        [[command.stage]]
+        [[command.stages]]
         command = "apply"
         params = {code="read_csv(x, header=header, delimiter=delimiter)"}
 
-        [[command.stage]]
+        [[command.stages]]
         command = "chain"
 
-        [[command.stage]]
+        [[command.stages]]
         command = "map"
         params = {code="dict(x)"}
 
