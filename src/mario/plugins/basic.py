@@ -149,28 +149,27 @@ async def async_chain(items, exit_stack):
 
 
 subcommands = [
-    click.Command("map", short_help="Call <code> on each line of input."),
-    click.Command("async-map", short_help="Call <code> on each line of input."),
-    click.Command("apply", short_help="Call <code> on input as a sequence."),
+    click.Command("map", short_help="Call code on each line of input."),
+    click.Command("async-map", short_help="Call code on each line of input."),
+    click.Command("apply", short_help="Call code on input as a sequence."),
     click.Command(
-        "async-apply", short_help="Call <code> asynchronously on input as a sequence."
+        "async-apply", short_help="Call code asynchronously on input as a sequence."
     ),
     click.Command(
-        "filter",
-        short_help="Call <code> on each line of input and exclude false values.",
+        "filter", short_help="Call code on each line of input and exclude false values."
     ),
     click.Command(
         "async-filter",
-        short_help="Async call <code> on each line of input and exclude false values.",
+        short_help="Async call code on each line of input and exclude false values.",
     ),
     click.Command(
-        "stack", short_help="Call <code> on input as a single concatenated string."
+        "stack", short_help="Call code on input as a single concatenated string."
     ),
     click.Command(
         "async-map-unordered",
-        short_help="Call <code> on each line of input, ignoring order of input items.",
+        short_help="Call code on each line of input, ignoring order of input items.",
     ),
-    click.Command("eval", short_help="Evaluate a python expression <code>"),
+    click.Command("eval", short_help="Evaluate a python expression code"),
 ]
 
 
@@ -211,7 +210,7 @@ for subcommand in subcommands:
 
 @registry.add_cli(name="reduce")
 @click.command(
-    "reduce", short_help="Reduce a sequence with a <function>. e.g. `operator.mul`."
+    "reduce", short_help="Reduce a sequence with a function. e.g. `operator.mul`."
 )
 @option_exec_before
 @click.argument("function_name")
