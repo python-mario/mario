@@ -62,21 +62,6 @@ def test_chain():
     assert result == expected, (result, expected)
 
 
-def test_exec_before():
-    args = [
-        sys.executable,
-        "-m",
-        "mario",
-        "--exec-before",
-        "from collections import Counter as c",
-        "stack",
-        "c(x)",
-    ]
-    stdin = "1\n2\n".encode()
-    output = subprocess.check_output(args, input=stdin).decode()
-    assert output.startswith("Counter")
-
-
 def test_cli_version(runner):
     args = ["--version"]
     result = helpers.run(args).decode()
