@@ -107,13 +107,6 @@ async def eval(function):
     return traversals.AsyncIterableWrapper([await function(None)])
 
 
-@registry.add_traversal("stack", calculate_more_params=calculate_function)
-async def stack(function, items):
-    return traversals.AsyncIterableWrapper(
-        [await function("".join([x + "\n" async for x in items]))]
-    )
-
-
 @registry.add_traversal("reduce", calculate_more_params=calculate_reduce)
 async def reduce(function, items, exit_stack, max_concurrent):
     return await exit_stack.enter_async_context(
@@ -161,9 +154,6 @@ subcommands = [
     click.Command(
         "async-filter",
         short_help="Async call code on each line of input and exclude false values.",
-    ),
-    click.Command(
-        "stack", short_help="Call code on input as a single concatenated string."
     ),
     click.Command(
         "async-map-unordered",

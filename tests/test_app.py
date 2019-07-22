@@ -56,16 +56,9 @@ def test_eval_cli():
     assert helpers.run(["eval", "1+1"]).decode() == "2\n"
 
 
-def test_stack():
-    args = [sys.executable, "-m", "mario", "stack", "len(x)"]
-    stdin = "1\n2\n".encode()
-    output = subprocess.check_output(args, input=stdin).decode()
-    assert output == "4\n"
-
-
 def test_chain():
-    expected = "1\n1\n1\n1\n"
-    result = helpers.run(["stack", "x", "chain", "map", "len"], input=b"abc\n").decode()
+    expected = "[1, 2]\n"
+    result = helpers.run(["eval", "[[1, 2]]", "chain"]).decode()
     assert result == expected, (result, expected)
 
 
@@ -99,7 +92,7 @@ def test_config_file(tmp_path):
 
     config_file_path.write_text(config_body)
 
-    args = ["stack", "C(x)"]
+    args = ["apply", "C(x)"]
     stdin = "1\n2\n".encode()
     env = dict(os.environ)
     env.update({f"{utils.NAME}_CONFIG_DIR".upper().encode(): str(tmp_path).encode()})

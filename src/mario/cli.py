@@ -165,9 +165,7 @@ class HelpSection:
 
 
 SECTIONS = {
-    "Traversals": HelpSection(
-        0, ["map", "filter", "apply", "stack", "eval", "reduce", "chain"]
-    ),
+    "Traversals": HelpSection(0, ["map", "filter", "apply", "eval", "reduce", "chain"]),
     "Async traversals": HelpSection(
         1,
         [
