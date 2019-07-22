@@ -1,7 +1,9 @@
 import sys
 import textwrap
 import types
+import typing as t
 
+import attr
 import docutils.nodes
 import docutils.parsers.rst
 import docutils.utils
@@ -54,3 +56,11 @@ def format_text(document: docutils.nodes.document) -> str:
 def rst2text(source: str) -> str:
     document = parse_rst(source)
     return format_text(document)
+
+
+@attr.dataclass(frozen=True)
+class HelpSection:
+    priority: int
+    entries: t.List[str]
+    doc: str = ""
+    name: t.Optional[str] = None

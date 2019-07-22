@@ -158,15 +158,14 @@ Configuration:
 """
 
 
-@attr.dataclass(frozen=True)
-class HelpSection:
-    priority: int
-    entries: t.List[str]
-
-
 SECTIONS = {
-    "Traversals": HelpSection(0, ["map", "filter", "apply", "eval", "reduce", "chain"]),
-    "Async traversals": HelpSection(
+    "Traversals": mario.doc.HelpSection(
+        0,
+        ["map", "filter", "apply", "eval", "reduce", "chain"],
+        doc="Basic commands for calling functions on data.",
+        name="Traversals",
+    ),
+    "Async traversals": mario.doc.HelpSection(
         1,
         [
             "async-map",
@@ -175,6 +174,8 @@ SECTIONS = {
             "async-chain",
             "async-map-unordered",
         ],
+        doc="Commands for asynchronously calling functions on data.",
+        name="Async traversals",
     ),
 }
 
