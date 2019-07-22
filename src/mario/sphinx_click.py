@@ -367,6 +367,23 @@ class ClickDirective(rst.Directive):
 
         return sorted(subcommands, key=get_section)
 
+    def _group_commands(self, command, subcommands):
+        if not hasattr(command, "sections"):
+            return subcommands
+
+        subcommand_to_section = {}
+        for help_section_name, help_section in command.sections.items():
+            for subcommand_name in help_section.entries:
+                subcommand_to_section[subcommand_name] = (
+                    help_section.priority,
+                    help_section_name,
+                )
+
+        def get_section(cmd):
+            return subcommand_to_section.get(cmd.name, (float("inf"), None))
+
+        return itertools.groupby(subcommands, key=get_section)
+
     def _generate_nodes(
         self, name, command, parent=None, show_nested=False, commands=None
     ):
@@ -389,7 +406,7 @@ class ClickDirective(rst.Directive):
 
         # Title
 
-        section = nodes.section(
+        item = nodes.section(
             "",
             nodes.title(text=name),
             ids=[nodes.make_id(ctx.command_path)],
@@ -407,21 +424,24 @@ class ClickDirective(rst.Directive):
             LOG.debug(line)
             result.append(line, source_name)
 
-        self.state.nested_parse(result, 0, section)
+        self.state.nested_parse(result, 0, item)
 
         # Subcommands
 
-        if show_nested:
-            commands = _filter_commands(ctx, commands)
-            commands = self._sort_commands(command, commands)
+        if not show_nested:
+            return [item]
 
-            for command in commands:
+        commands = _filter_commands(ctx, commands)
+        commands = self._sort_commands(command, commands)
 
-                section.extend(
-                    self._generate_nodes(command.name, command, ctx, show_nested)
+        for group_name, subcommands in self._group_commands(command, commands):
+
+            for subcommand in subcommands:
+                item.extend(
+                    self._generate_nodes(subcommand.name, subcommand, ctx, show_nested)
                 )
 
-        return [section]
+        return [item]
 
     def run(self):
         self.env = self.state.document.settings.env
