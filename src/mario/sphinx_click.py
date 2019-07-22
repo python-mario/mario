@@ -434,12 +434,28 @@ class ClickDirective(rst.Directive):
         commands = _filter_commands(ctx, commands)
         commands = self._sort_commands(command, commands)
 
-        for group_name, subcommands in self._group_commands(command, commands):
+        for (_group_priority, group_name), subcommands in self._group_commands(
+            command, commands
+        ):
+            group_name = group_name or "Custom"
+
+            group_item = nodes.section(
+                "",
+                nodes.title(text=group_name),
+                ids=[nodes.make_id(group_name)],
+                names=[nodes.fully_normalize_name(group_name)],
+            )
+
+            group_list = statemachine.ViewList()
 
             for subcommand in subcommands:
-                item.extend(
+                group_item.extend(
                     self._generate_nodes(subcommand.name, subcommand, ctx, show_nested)
                 )
+
+            self.state.nested_parse(group_list, 0, group_item)
+
+            item += group_item
 
         return [item]
 
