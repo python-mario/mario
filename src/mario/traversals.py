@@ -73,9 +73,6 @@ class IterableToAsyncIterable:
             raise StopAsyncIteration
 
 
-T = t.TypeVar("T")
-
-
 def _pull_values_from_async_iterator(
     in_trio: trio.BlockingTrioPortal,
     ait: t.AsyncIterator[T],
@@ -115,9 +112,7 @@ def _threaded_sync_apply(
         in_trio.run(send_to_trio.aclose)
 
 
-async def sync_apply(
-    sync_function: t.Callable[[t.Iterable[T]], t.Any], data: t.AsyncIterable[T]
-):
+async def sync_apply(sync_function, data):
     """Apply a sync Callable[Iterable] to an async iterable by pulling values in a
     thread.
     """
@@ -209,7 +204,7 @@ async def async_chain(iterable: AsyncIterable[AsyncIterable], **kwargs):
 
 @async_generator.asynccontextmanager
 async def sync_filter(
-    function: Callable[[T], Awaitable[U]], iterable: AsyncIterable[T], max_concurrent
+    function: Callable, iterable: AsyncIterable, max_concurrent
 ) -> AsyncIterator[AsyncIterable[U]]:
     yield (item async for item in iterable if await function(item))
 
@@ -220,7 +215,7 @@ async def async_map_unordered(
 ) -> AsyncIterator[AsyncIterable[U]]:
     send_result, receive_result = trio.open_memory_channel[U](0)
     limiter = trio.CapacityLimiter(max_concurrent)
-    remaining_tasks: Set[int] = set()
+    remaining_tasks: t.Set[int] = set()
 
     async def wrapper(task_id: int, item: T) -> None:
         async with limiter:
@@ -285,7 +280,7 @@ SENTINEL = object()
 
 @async_generator.asynccontextmanager
 async def async_reduce(
-    function: Callable[[T], Awaitable[U]],
+    function: Callable[[T, U], Awaitable[U]],
     iterable: AsyncIterable[T],
     max_concurrent,
     initializer=SENTINEL,

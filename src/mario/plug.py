@@ -48,14 +48,20 @@ class CommandCommand:
     arguments: t.Dict = attr.ib(factory=dict)
 
 
-NO_DEFAULT = attr.make_class("NO_DEFAULT", [])()
+@attr.s(repr=False)
+class _NoDefaultType:
+    def __repr__(self):
+        return "NO_DEFAULT"
+
+
+NO_DEFAULT = _NoDefaultType()
 
 
 @attr.dataclass
 class GlobalOption:
     name: str
-    type: type
-    default: type(NO_DEFAULT)
+    type: t.Type
+    default: _NoDefaultType
 
 
 @attr.s
