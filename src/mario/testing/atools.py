@@ -1,3 +1,6 @@
+import functools
+
+
 async def async_drop_falsy(items):
     async for x in items:
         if x:
@@ -41,9 +44,6 @@ def my_max(items):
 
 def gen_max(items):
     yield from [my_max(items)]
-
-
-import functools
 
 
 def wrap_sync_fold(function):
