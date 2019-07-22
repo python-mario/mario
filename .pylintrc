@@ -174,7 +174,7 @@ disable=print-statement,
         unidiomatic-typecheck,
         unreachable,
         unsubscriptable-object,
-        unsupported-assignment-operation,
+
 
 
 

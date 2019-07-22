@@ -75,6 +75,7 @@ class Registry:
             else:
                 registered_name = name
 
+            # pylint: disable=unsupported-assignment-operation
             self.traversals[registered_name] = PluginObject(
                 registered_name, function, params
             )
@@ -91,7 +92,10 @@ class Registry:
                 registered_name = name
 
             params = [param for param in inspect.signature(function).parameters.keys()]
-            self.traversals[registered_name] = PluginObject(
+            # pylint: disable=unsupported-assignment-operation
+            self.traversals[
+                registered_name
+            ] = PluginObject(  # pylint: disable=unsupported-assignment-operation
                 registered_name, function, params, calculate_more_params
             )
             return function
@@ -104,7 +108,7 @@ class Registry:
                 registered_name = function.__name__
             else:
                 registered_name = name
-
+            # pylint: disable=unsupported-assignment-operation
             self.cli_functions[registered_name] = function
 
             return function

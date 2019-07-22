@@ -243,6 +243,7 @@ def build_stages(command):
     )
 
 
+# pylint: disable=unsupported-assignment-operation
 COMMANDS = app.global_registry.cli_functions
 for k, v in ALIASES.items():
 
