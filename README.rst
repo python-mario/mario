@@ -129,9 +129,9 @@ Automatically import modules you need:
 
 .. code-block:: bash
 
-   $ mario stack 'itertools.repeat(x, 2) ! "".join' <<<hello,world!
-   hello,world!
-   hello,world!
+    $ mario map 'collections.Counter ! dict' <<<mississippi
+    {'m': 1, 'i': 4, 's': 4, 'p': 2}
+
 
 
 Autocall
@@ -205,16 +205,6 @@ Use ``apply`` to act on the sequence of items.
     $ mario apply 'len(x)' <<<$'a\nbb'
     2
 
-
-``stack``
-_________
-
-Use ``stack`` to treat the input as a single string, including newlines.
-
-.. code-block:: bash
-
-    $  mario stack 'len(x)' <<<$'a\nbb'
-    5
 
 
 ``reduce``
@@ -462,14 +452,15 @@ Convenient for removing trailing commas.
 .. code-block:: toml
 
     [[command]]
+    name = "yml2json"
+    help = "Convert yaml to json"
 
-        name = "yml2json"
-        help = "Convert yaml to json"
+    [[command.stage]]
+    command = "read-text"
 
-        [[command.stage]]
-
-        command = "stack"
-        params = {code="yaml.safe_load ! json.dumps"}
+    [[command.stage]]
+    command = "map"
+    params = {code="yaml.safe_load ! json.dumps"}
 
 Search for xpath elements with xpath
 +++++++++++++++++++++++++++++++++++++++++
@@ -505,7 +496,10 @@ Pull text out of xml documents.
         inject_values=["query"]
 
         [[command.stage]]
-        command = "stack"
+        command = "map"
+
+        [[command.stage]]
+        command = "map"
         params = {code="x.encode() ! io.BytesIO ! lxml.etree.parse ! x.findall(query) ! list" }
 
         [[command.stage]]

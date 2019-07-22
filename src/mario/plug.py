@@ -109,10 +109,6 @@ class Registry:
         return wrap
 
 
-# Currently, mario reserves `function`, `command`, `stack`, `items`, `global_namespace`.
-# These could all be provided in a namespace object.
-
-
 def plugin_module_paths() -> List[str]:
     return [
         entry_point.module_name + "." + entry_point.name
