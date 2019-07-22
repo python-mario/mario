@@ -1,6 +1,5 @@
 import collections
 import os.path
-import textwrap
 import urllib.parse
 
 import lxml.etree

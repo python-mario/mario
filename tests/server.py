@@ -12,7 +12,7 @@ from aiohttp import web
 
 START_TIME = None
 counter = itertools.count()
-ID = contextvars.ContextVar("id")
+ID: contextvars.ContextVar[int] = contextvars.ContextVar("id")
 
 
 @attr.s

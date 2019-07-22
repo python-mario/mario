@@ -7,8 +7,6 @@ import functools
 import itertools
 import typing
 
-import async_exit_stack
-import toolz
 import trio
 
 

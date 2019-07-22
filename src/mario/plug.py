@@ -3,7 +3,6 @@ import importlib.resources
 import importlib.util
 import inspect
 import pathlib
-import sys
 import types
 import typing as t
 from typing import Any
@@ -15,10 +14,8 @@ import attr
 import pkg_resources
 import toml
 
-from mario import asynch
 from mario import config
 from mario import declarative
-from mario import interpret
 from mario import utils
 
 
@@ -48,14 +45,20 @@ class CommandCommand:
     arguments: t.Dict = attr.ib(factory=dict)
 
 
-NO_DEFAULT = attr.make_class("NO_DEFAULT", [])()
+@attr.s(repr=False)
+class _NoDefaultType:
+    def __repr__(self):
+        return "NO_DEFAULT"
+
+
+NO_DEFAULT = _NoDefaultType()
 
 
 @attr.dataclass
 class GlobalOption:
     name: str
-    type: type
-    default: type(NO_DEFAULT)
+    type: t.Type
+    default: _NoDefaultType
 
 
 @attr.s
@@ -200,7 +203,6 @@ def make_synthetic_command(cmd,):
 
 
 def make_commands(conf):
-    synth_commands = []
 
     commands = declarative.CommandSpecSchema(many=True).load(conf.get("command", []))
 

@@ -99,7 +99,7 @@ class OptionSchema(marshmallow.Schema):
     )
 
     @marshmallow.post_load()
-    def make_option(self, validated, partial, many):
+    def make_option(self, validated, partial, many):  # pylint: disable=unused-argument
         choices = validated.pop("choices", None)
         if choices:
             validated["type"] = click.Choice(choices)
@@ -130,7 +130,9 @@ class ArgumentSchema(marshmallow.Schema):
     )
 
     @marshmallow.post_load()
-    def make_argument(self, validated, partial, many):
+    def make_argument(
+        self, validated, partial, many
+    ):  # pylint: disable=unused-argument
         choices = validated.pop("choices", None)
         if choices:
             validated["type"] = click.Choice(choices)
@@ -150,7 +152,7 @@ class RemapParamSchema(marshmallow.Schema):
     old = fields.String(metadata={"description": "Old name of the parameter."})
 
     @marshmallow.post_load()
-    def make_remap(self, validated, partial, many):
+    def make_remap(self, validated, partial, many):  # pylint: disable=unused-argument
         return RemapParam(**validated)
 
 
@@ -180,7 +182,7 @@ class CommandStageSchema(marshmallow.Schema):
     )
 
     @marshmallow.post_load()
-    def make(self, validated, partial, many):
+    def make(self, validated, partial, many):  # pylint: disable=unused-argument
         return CommandStage(**validated)
 
 
@@ -208,7 +210,7 @@ class CommandTestSchema(marshmallow.Schema):
     )
 
     @marshmallow.post_load()
-    def make(self, validated, partial, many):
+    def make(self, validated, partial, many):  # pylint: disable=unused-argument
         return CommandTest(**validated)
 
 
@@ -280,5 +282,5 @@ class CommandSpecSchema(marshmallow.Schema):
     )
 
     @marshmallow.post_load()
-    def make(self, validated, partial, many):
+    def make(self, validated, partial, many):  # pylint: disable=unused-argument
         return CommandSpec(**validated)

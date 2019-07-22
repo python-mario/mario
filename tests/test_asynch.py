@@ -1,5 +1,5 @@
-import json
-import string
+# pylint: disable=unused-argument
+
 import subprocess
 import sys
 import time
@@ -7,7 +7,6 @@ import time
 import pytest
 import requests
 
-from . import config
 from . import helpers
 
 

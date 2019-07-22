@@ -4,7 +4,7 @@ import importlib
 sphinx_jsonschema = importlib.import_module("sphinx-jsonschema")
 
 
-class DefinitionWideFormat(sphinx_jsonschema.wide_format.WideFormat):
+class DefinitionWideFormat(sphinx_jsonschema.wide_format.WideFormat):  # type: ignore
     """Add definition field."""
 
     def _objecttype(self, schema):
@@ -67,7 +67,7 @@ class DefinitionWideFormat(sphinx_jsonschema.wide_format.WideFormat):
         return rows
 
 
-class DefinitionJsonSchema(sphinx_jsonschema.JsonSchema):
+class DefinitionJsonSchema(sphinx_jsonschema.JsonSchema):  # type: ignore
     def run(self):
         format = DefinitionWideFormat(
             self.state, self.lineno, sphinx_jsonschema._glob_app

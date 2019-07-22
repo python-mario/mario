@@ -1,11 +1,7 @@
 from __future__ import annotations
 
-import csv
-import importlib
-import io
 import json
 import tempfile
-import textwrap
 import traceback
 import typing as t
 
@@ -61,58 +57,11 @@ def quote(s):
     return '"' + s + '"'
 
 
-def format_table(table: Table) -> str:
-    sio = io.StringIO()
-    writer = csv.writer(sio)
-    writer.writerows(table.body)
-    body = sio.getvalue()
-
-    header = ":header: " + ", ".join(quote(entry) for entry in table.header) + "\n"
-
-    contents = header + body
-    contents = textwrap.indent(contents, " " * 3)
-
-    return f".. table:: {table.title}\n" + contents
-
-
-def build_table(spec: SchemaSpec) -> CSVTable:
-
-    return CSVTable(
-        title=spec.name,
-        header=[x.name for x in attr.fields(Field)],
-        body=[list(attr.astuple(field)) for field in spec.fields],
-    )
-
-
-def build_field_spec(field: marshmallow.fields.Field) -> Field:
-    pytype = FIELD_MAPPING[type(field)]
-    if pytype in [bool, str, float, int]:
-        field_type = pytype
-    else:
-        field_type = type(None)
-
-    return Field(
-        name=field.data_key or field.name,
-        type=field_type.__name__,
-        required=field.required,
-        default=field.default,
-    )
-
-
-def build_schema_spec(schema: marshmallow.Schema) -> SchemaSpec:
-    schema_instance = schema()
-    fields = [
-        build_field_spec(schema_instance.declared_fields[field])
-        for field in schema_instance.fields
-    ]
-    return SchemaSpec(name=schema.__name__, fields=fields)
-
-
 class Marshmallow3JSONSchema(marshmallow_jsonschema.JSONSchema):
     # This class fixes incompatibilities between the parent class and Marshmallow 3.
     # It also adds the `description` field.
 
-    def wrap(self, *args, many, **kwargs):
+    def wrap(self, *args, many, **kwargs):  # pylint: disable=unused-argument
         return super().wrap(*args, **kwargs)
 
     def _from_python_type(self, obj, field, pytype):
@@ -148,7 +97,7 @@ class Marshmallow3JSONSchema(marshmallow_jsonschema.JSONSchema):
         """Fill out properties field."""
         properties = {}
 
-        for field_name, field in sorted(obj.fields.items()):
+        for _field_name, field in sorted(obj.fields.items()):
             schema = self._get_schema_for_field(obj, field)
             properties[field.data_key or field.name] = schema
 
@@ -158,7 +107,7 @@ class Marshmallow3JSONSchema(marshmallow_jsonschema.JSONSchema):
         """Fill out required field."""
         required = []
 
-        for field_name, field in sorted(obj.fields.items()):
+        for _field_name, field in sorted(obj.fields.items()):
             if field.required:
                 required.append(field.data_key or field.name)
 

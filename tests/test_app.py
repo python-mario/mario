@@ -1,27 +1,18 @@
 # pylint: disable=protected-access
+# pylint: disable=unused-argument
 
 from __future__ import generator_stop
 
-import collections
 import os
-import string
-import subprocess
-import sys
 import textwrap
-import time
-import urllib
 
-import click.testing
 import hypothesis
-import hypothesis.strategies as st
 import pytest
-from tests import config
 from tests import helpers
 
 import mario
 import mario.app
 import mario.cli
-from mario import interpret
 from mario import utils
 
 
@@ -60,21 +51,6 @@ def test_chain():
     expected = "[1, 2]\n"
     result = helpers.run(["eval", "[[1, 2]]", "chain"]).decode()
     assert result == expected, (result, expected)
-
-
-def test_exec_before():
-    args = [
-        sys.executable,
-        "-m",
-        "mario",
-        "--exec-before",
-        "from collections import Counter as c",
-        "stack",
-        "c(x)",
-    ]
-    stdin = "1\n2\n".encode()
-    output = subprocess.check_output(args, input=stdin).decode()
-    assert output.startswith("Counter")
 
 
 def test_cli_version(runner):
