@@ -232,7 +232,7 @@ def build_stages(command):
             existing = SECTIONS[k]
             SECTIONS[k] = attr.evolve(existing, entries=existing.entries + entries)
         else:
-            SECTIONS[k] = mario.doc.HelpSection(100, entries)
+            SECTIONS[k] = mario.doc.HelpSection(100, entries, name=command.section)
 
     return ReSTCommand(
         name=command.name,
