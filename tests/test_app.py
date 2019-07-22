@@ -1,4 +1,5 @@
 # pylint: disable=protected-access
+# pylint: disable=unused-argument
 
 from __future__ import generator_stop
 

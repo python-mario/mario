@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument
+
 import subprocess
 import sys
 import time

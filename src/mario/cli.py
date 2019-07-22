@@ -65,7 +65,7 @@ class SectionedFormatter(click.formatting.HelpFormatter):
                 super().write_dl(rows)
             else:
                 with super().section(section_name):
-                    super().write_dl(rows)
+                    super().write_dl(rows, *args, **kwargs)
 
 
 class SectionedContext(click.Context):
@@ -195,7 +195,7 @@ def cli_main(pairs, **kwargs):
     app.main(pairs, **kwargs)
 
 
-def version_option(ctx, param, value):
+def version_option(ctx, param, value):  # pylint: disable=unused-argument
     if not value:
         return
     click.echo("mario, version " + mario.__version__)
