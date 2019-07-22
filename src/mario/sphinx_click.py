@@ -231,6 +231,7 @@ def _filter_commands(ctx, commands=None):
     return [lookup[name] for name in names if name in lookup]
 
 
+# pylint: disable=too-many-branches
 def _format_command(ctx, show_nested, commands=None):
     """Format the output of `click.Command`."""
     # the hidden attribute is part of click 7.x only hence use of getattr
