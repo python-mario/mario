@@ -165,6 +165,7 @@ async def async_map(
 
     async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
 
+        # pylint: disable=not-async-context-manager
         async with limiter:
             result = await function(item)
 
@@ -226,6 +227,7 @@ async def async_map_unordered(
     remaining_tasks: t.Set[int] = set()
 
     async def wrapper(task_id: int, item: T) -> None:
+        # pylint: disable=not-async-context-manager
         async with limiter:
             result = await function(item)
 
@@ -259,7 +261,7 @@ async def async_filter(
     limiter = trio.CapacityLimiter(max_concurrent)
 
     async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
-
+        # pylint: disable=not-async-context-manager
         async with limiter:
             result = await function(item)
 
@@ -311,7 +313,7 @@ async def async_reduce(
 
         else:
 
-            async with limiter:
+            async with limiter:  # pylint: disable=not-async-context-manager
                 collected_result = await function(collected_result, input_item)
 
         await prev_done.wait()
