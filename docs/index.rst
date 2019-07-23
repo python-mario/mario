@@ -3,10 +3,10 @@ Contents
 ========
 
 .. toctree::
-   :numbered:
 
 
    readme
+   async
    cli_reference
    config_schema
    api_reference/index

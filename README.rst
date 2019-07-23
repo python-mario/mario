@@ -133,10 +133,6 @@ Automatically import modules you need:
     {'m': 1, 'i': 4, 's': 4, 'p': 2}
 
 
-
-Autocall
------------------------------------
-
 You don't need to explicitly call the function with ``some_function(x)``; just use the function's name ``some_function``. For example, instead of
 
 .. code-block:: bash
@@ -154,7 +150,7 @@ try
 
 
 
-Commands
+More commands
 -----------------------------------
 
 
@@ -236,7 +232,10 @@ For example, after calculating a several rows of items,
 .. code-block:: bash
 
 
-    $ mario  map 'x*2 ! [x[i:i+2] for i in range(len(x))]'   <<<$'ab\nce'
+    $ mario  map 'x*2 ! [x[i:i+2] for i in range(len(x))]'   <<EOF
+    ab
+    ce
+    EOF
     ['ab', 'ba', 'ab', 'b']
     ['ce', 'ec', 'ce', 'e']
 
@@ -245,7 +244,10 @@ use ``chain`` to put each item on its own row:
 
 .. code-block:: bash
 
-    $ mario  map 'x*2 ! [x[i:i+2] for i in range(len(x))]' chain  <<<$'ab\nce'
+    $ mario  map 'x*2 ! [x[i:i+2] for i in range(len(x))]' chain  <<EOF
+    ab
+    ce
+    EOF
     ab
     ba
     ab
@@ -255,11 +257,14 @@ use ``chain`` to put each item on its own row:
     ce
     e
 
-Then subsequent commands will act on these new rows, as normal. Here we get the length of each row.
+Then subsequent commands will act on these new rows. Here we get the length of each row.
 
 .. code-block:: bash
 
-    $ mario  map 'x*2 ! [x[i:i+2] for i in range(len(x))]' chain map len <<<$'ab\nce'
+    $ mario  map 'x*2 ! [x[i:i+2] for i in range(len(x))]' chain map len <<EOF
+    ab
+    ce
+    EOF
     2
     2
     2
@@ -273,6 +278,9 @@ Then subsequent commands will act on these new rows, as normal. Here we get the 
 
 Async
 -----------------------------------
+
+..
+    async-inclusion-start
 
 Making sequential requests is slow. These requests take 20 seconds to complete.
 
@@ -310,324 +318,17 @@ Concurrent requests can go much faster. The same requests now take only 6 second
    0.08s system
    5.897 total
 
-
-Async streaming
------------------------------------
-
-``async-map`` and ``async-filter`` values are handled in streaming fashion, while retaining the order of the input items in the output. The order of function calls is not constrained -- if you need the function to be **called** with items in a specific order, use the synchronous version.
-
-Making concurrent requests, each response is printed one at a time, as soon as (1) it is ready and (2) all of the preceding requests have already been handled.
-
-For example, the ``3 seconds`` item is ready before the preceding ``4 seconds`` item, but it is held until the ``4 seconds`` is ready because ``4 seconds`` was started first, so the ordering of the input items is maintained in the output.
-
-
-
-.. code-block:: bash
-
-    % time mario --exec-before 'import datetime; now=datetime.datetime.utcnow; START_TIME=now(); print("Elapsed time | Response size")' map 'await asks.get !  f"{(now() - START_TIME).seconds} seconds    | {len(x.content)} bytes"'  <<EOF
-    http://httpbin.org/delay/1
-    http://httpbin.org/delay/2
-    http://httpbin.org/delay/4
-    http://httpbin.org/delay/3
-    EOF
-    Elapsed time | Response size
-    1 seconds    | 297 bytes
-    2 seconds    | 297 bytes
-    4 seconds    | 297 bytes
-    3 seconds    | 297 bytes
-
+..
+    async-inclusion-end
 
 .. _config-intro:
 
 =======================
-Configuration basics
+Configuration
 =======================
 
 
-
-The config file location follows the `freedesktop.org standard <https://www.freedesktop.org/wiki/Software/xdg-user-dirs/>`_. Check the location on your system by running ``mario --help``:
-
-
-.. code-block:: bash
-
-    % mario --help
-    Usage: mario [OPTIONS] COMMAND1 [ARGS]... [COMMAND2 [ARGS]...]...
-
-      Mario: Python pipelines for your shell.
-
-      GitHub: https://github.com/python-mario/mario
-
-      Configuration:
-        Declarative config: /home/user/.config/mario/config.toml
-        Python modules: /home/user/.config/mario/modules/*.py
-
-
-
-
-For example on Ubuntu we use ``~/.config/mario/config.toml`` for declarative configuration. See Configuration Reference for the format specification.
-
-
-
-You can set any of the ``mario`` options in your config. For example, to set a different default value for the concurrency maximum ``mario --max-concurrent``, add ``max_concurrent`` to your config file. Note the configuration file uses underscores as word separators, not hyphens.
-
-.. code-block:: toml
-
-    # ~/.config/mario/config.toml
-
-    max_concurrent = 10
-
-then just use ``mario`` as normal.
-
-The ``base_exec_before`` option allows you to define any Python code you want to execute before your commands run. Your commands can reference names defined in the ``base_exec_before``. This option can be supplemented by using the ``--exec-before`` option on the command line to run additional code before your commands.
-
-
-.. code-block:: toml
-
-  # ~/.config/mario/config.toml
-
-  base_exec_before = """
-
-  from itertools import *
-  from collections import Counter
-
-  """
-
-Then you can directly use the imported objects without referencing the module.
-
-.. code-block:: bash
-
-
-    % mario map 'Counter ! json.dumps' <<<$'hello\nworld'
-    {"h": 1, "e": 1, "l": 2, "o": 1}
-    {"w": 1, "o": 1, "r": 1, "l": 1, "d": 1}
-
-
-
-
-Custom commands
------------------------------------
-
-Define new commands in your config file which provide commands to other commands. For example, this config adds a ``jsonl`` command for reading jsonlines streams into Python objects, by calling calling out to the ``map`` traversal.
-
-.. code-block:: toml
-
-   [[command]]
-
-   name = "jsonl"
-   help = "Load jsonlines into python objects."
-
-   [[command.stages]]
-
-   command = "map"
-   params = {code="json.loads"}
-
-
-Now we can use it like a regular command:
-
-.. code-block:: bash
-
-    % mario jsonl  <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
-    {'a': 1, 'b': 2}
-    {'a': 5, 'b': 9}
-
-
-The new command ``jsonl`` can be used in pipelines as well. To get the maximum value in a sequence of jsonlines objects:
-
-.. code-block:: bash
-
-   $ mario jsonl map 'x["a"]' apply max <<< $'{"a":1, "b":2}\n{"a": 5, "b":9}'
-   5
-
-More command examples
-______________________
-
-
-Convert yaml to json
-++++++++++++++++++++++++
-
-Convenient for removing trailing commas.
-
-.. code-block:: bash
-
-    % mario yml2json <<<'{"x": 1,}'
-    {"x": 1}
-
-.. code-block:: toml
-
-    [[command]]
-    name = "yml2json"
-    help = "Convert yaml to json"
-
-    [[command.stages]]
-    command = "read-text"
-
-    [[command.stages]]
-    command = "map"
-    params = {code="yaml.safe_load ! json.dumps"}
-
-Search for xml elements with xpath
-+++++++++++++++++++++++++++++++++++++++++
-
-Pull text out of xml documents.
-
-.. code-block:: bash
-
-
-    % mario xpath '//'  map 'x.text' <<EOF
-          <slide type="all">
-            <title>Overview</title>
-              <item>Anything <em>can be</em> in here</item>
-              <item>Or <em>also</em> in here</item>
-          </slide>
-    EOF
-
-    Overview
-    Anything
-    can be
-    Or
-    also
-
-
-
-
-.. code-block:: toml
-
-    [[command]]
-        name="xpath"
-        help = "Find xml elements matching xpath query."
-        arguments = [{name="query", type="str"}]
-        inject_values=["query"]
-
-        [[command.stages]]
-        command = "map"
-
-        [[command.stages]]
-        command = "map"
-        params = {code="x.encode() ! io.BytesIO ! lxml.etree.parse ! x.findall(query) ! list" }
-
-        [[command.stages]]
-        command="chain"
-
-
-Generate json objects
-++++++++++++++++++++++
-
-.. code-block:: bash
-
-    % mario jo 'name=Alice age=21 hobbies=["running"]'
-    {"name": "Alice", "age": 21, "hobbies": ["running"]}
-
-
-.. code-block:: toml
-
-    [[command]]
-
-
-        name="jo"
-        help="Make json objects"
-        arguments=[{name="pairs", type="str"}]
-        inject_values=["pairs"]
-
-        [[command.stages]]
-        command = "eval"
-        params = {code="pairs"}
-
-        [[command.stages]]
-        command = "map"
-        params = {code="shlex.split(x, posix=False)"}
-
-        [[command.stage]]
-        command = "chain"
-
-        [[command.stages]]
-        command = "map"
-        params = {code="x.partition('=') ! [x[0], ast.literal_eval(re.sub(r'^(?P<value>[A-Za-z]+)$', r'\"\\g<value>\"', x[2]))]"}
-
-        [[command.stages]]
-        command = "apply"
-        params = {"code"="dict"}
-
-        [[command.stages]]
-        command = "map"
-        params = {code="json.dumps"}
-
-
-
-Read csv file
-+++++++++++++
-
-Read a csv file into Python dicts. Given a csv like this:
-
-
-.. code-block:: bash
-
-    % cat names.csv
-    name,age
-    Alice,21
-    Bob,25
-
-try:
-
-.. code-block:: bash
-
-    % mario csv < names.csv
-    {'name': 'Alice', 'age': '21'}
-    {'name': 'Bob', 'age': '25'}
-
-
-.. code-block:: toml
-
-    base_exec_before = '''
-    import csv
-    import typing as t
-
-
-    def read_csv(
-        file, header: bool, **kwargs
-    ) -> t.Iterable[t.Dict[t.Union[str, int], str]]:
-        "Read csv rows into an iterable of dicts."
-
-        rows = list(file)
-
-        first_row = next(csv.reader(rows))
-        if header:
-            fieldnames = first_row
-            reader = csv.DictReader(rows, fieldnames=fieldnames, **kwargs)
-            return list(reader)[1:]
-
-        fieldnames = range(len(first_row))
-        return csv.DictReader(rows, fieldnames=fieldnames, **kwargs)
-
-    '''
-
-
-
-
-    [[command]]
-        name = "csv"
-        help = "Load csv rows into python dicts. With --no-header, keys will be numbered from 0."
-        inject_values=["delimiter", "header"]
-
-        [[command.options]]
-        name = "--delimiter"
-        default = ","
-        help = "field delimiter character"
-
-        [[command.options]]
-        name = "--header/--no-header"
-        default=true
-        help = "Treat the first row as a header?"
-
-        [[command.stages]]
-        command = "apply"
-        params = {code="read_csv(x, header=header, delimiter=delimiter)"}
-
-        [[command.stages]]
-        command = "chain"
-
-        [[command.stages]]
-        command = "map"
-        params = {code="dict(x)"}
+Define new commands and set default options. See :ref:`Configuration reference <config-reference>` for details.
 
 
 =========
@@ -649,8 +350,8 @@ Q & A
 What's the status of this package?
 --------------------------------------
 
-* Check the `issues page <https://www.github.com/python-mario/mario/issues>`_ for open tickets.
 * This package is experimental and is subject to change without notice.
+* Check the `issues page <https://www.github.com/python-mario/mario/issues>`_ for open tickets.
 
 
 Why another package?
