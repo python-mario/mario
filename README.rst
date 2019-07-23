@@ -368,6 +368,19 @@ For example on Ubuntu we use ``~/.config/mario/config.toml`` for declarative con
 
 
 
+You can set any of the ``mario`` options in your config. For example, to set a different default value for the concurrency maximum ``mario --max-concurrent``, add ``max_concurrent`` to your config file. Note the configuration file uses underscores as word separators, not hyphens.
+
+.. code-block:: toml
+
+    # ~/.config/mario/config.toml
+
+    max_concurrent = 10
+
+then just use ``mario`` as normal.
+
+The ``base_exec_before`` option allows you to define any Python code you want to execute before your commands run. Your commands can reference names defined in the ``base_exec_before``. This option can be supplemented by using the ``--exec-before`` option on the command line to run additional code before your commands.
+
+
 .. code-block:: toml
 
   # ~/.config/mario/config.toml
@@ -388,16 +401,6 @@ Then you can directly use the imported objects without referencing the module.
     {"h": 1, "e": 1, "l": 2, "o": 1}
     {"w": 1, "o": 1, "r": 1, "l": 1, "d": 1}
 
-
-You can set any of the ``mario`` options in your config. For example, to set a different default value for the concurrency maximum ``mario --max-concurrent``, add ``max_concurrent`` to your config file (note the underscore):
-
-.. code-block:: toml
-
-    # ~/.config/mario/config.toml
-
-    max_concurrent = 10
-
-then just use ``mario`` as normal.
 
 
 
