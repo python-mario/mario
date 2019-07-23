@@ -198,7 +198,7 @@ for subcommand in subcommands:
             is_flag=True,
             default=True,
             help='Automatically call the function if "x" does not appear in the expression. '
-            "Allows `map len` instead of `map len(x)`.",
+            "Allows ``map len`` instead of ``map len(x)``.",
         ),
         click.Argument(["code"]),
     ]
