@@ -249,6 +249,8 @@ def build_stages(command):
 
 # pylint: disable=unsupported-assignment-operation
 COMMANDS = app.global_registry.cli_functions
+
+# pylint: disable=no-member
 for k, v in ALIASES.items():
 
     COMMANDS[k] = build_stages(v)

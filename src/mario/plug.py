@@ -186,26 +186,6 @@ def make_global_registry():
     )
 
 
-def make_synthetic_command(cmd,):
-    declarative.CommandSchema()
-    components = [
-        CommandStage(
-            d["command"],
-            d.get("options", []),
-            d.get("arguments", []),
-            remap_params=d.get("remap_params", []),
-        )
-        for d in cmd["stage"]
-    ]
-    return CommandCommand(
-        cmd["name"],
-        components,
-        cmd["short_help"],
-        options=cmd.get("options", {}),
-        arguments=cmd.get("arguments", []),
-    )
-
-
 def make_commands(conf):
 
     commands = declarative.CommandSpecSchema(many=True).load(conf.get("command", []))

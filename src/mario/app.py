@@ -63,6 +63,7 @@ async def async_main(basic_traversals, **kwargs):
     receiver = asynch.TerminatedFrameReceiver(stream, b"\n")
     items = (item.decode() async for item in receiver)
 
+    # pylint: disable=no-member
     global_context = interfaces.Context(global_registry.global_options.copy())
     global_context.global_options.update(config.DEFAULTS)
     global_context.global_options.update(kwargs)

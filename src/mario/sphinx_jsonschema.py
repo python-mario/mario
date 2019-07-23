@@ -20,6 +20,7 @@ class DefinitionWideFormat(sphinx_jsonschema.wide_format.WideFormat):  # type: i
     def _dispatch(self, schema, label=None):
         # Main driver of the recursive schema traversal.
         rows = []
+        # pylint: disable=no-member
         self.nesting += 1
 
         if "type" in schema:
@@ -63,6 +64,7 @@ class DefinitionWideFormat(sphinx_jsonschema.wide_format.WideFormat):  # type: i
             # prepend label column if required
             rows = self._prepend(label, rows)
 
+        # pylint: disable=no-member
         self.nesting -= 1
         return rows
 
