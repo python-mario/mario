@@ -35,6 +35,14 @@ mario.cli module
    :undoc-members:
    :show-inheritance:
 
+mario.cli\_tools module
+-----------------------
+
+.. automodule:: mario.cli_tools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 mario.config module
 -------------------
 

@@ -8,6 +8,7 @@ import mario
 import mario.doc
 
 from . import app
+from . import cli_tools
 from . import config
 from . import utils
 
@@ -40,6 +41,10 @@ class ReSTCommand(click.Command):
             return
 
 
+class DocumentedCommand(ReSTCommand, cli_tools.CommandInSection):
+    pass
+
+
 class SectionedFormatter(click.formatting.HelpFormatter):
     def __init__(self, *args, sections, **kwargs):
         self.sections = sections
@@ -48,26 +53,23 @@ class SectionedFormatter(click.formatting.HelpFormatter):
     # pylint: disable=arguments-differ
     def write_dl(self, rows, *args, **kwargs):
 
-        cmd_to_section = {}
-        for section_name, help_section in self.sections.items():
+        if len(rows[0]) == 2:
+            super().write_dl(rows)
+            return
 
-            for command in help_section.entries:
-                cmd_to_section[command] = section_name
-
-        sections = {}
-
+        section_name_to_commands = {}
         # pylint: disable=redefined-builtin
-        for subcommand, help in rows:
-            sections.setdefault(
-                cmd_to_section.get(subcommand, "Custom commands"), []
+        for _formatted_name, subcommand, help in rows:
+            section_name_to_commands.setdefault(
+                getattr(subcommand, "section", "Custom"), []
             ).append((subcommand, help))
+        for section in sorted(self.sections, key=lambda s: s.priority):
 
-        for section_name, section_rows in sections.items():
-            if section_rows[0][0][0] == "-":
-                super().write_dl(section_rows)
-            else:
-                with super().section(section_name):
-                    super().write_dl(section_rows, *args, **kwargs)
+            with super().section(section.name):
+                commands = section_name_to_commands[section.name]
+
+                section_rows = [(pair[0].name, pair[1]) for pair in commands]
+                super().write_dl(section_rows, *args, **kwargs)
 
 
 class SectionedContext(click.Context):
@@ -121,9 +123,7 @@ class SectionedGroup(click.Group):
         """
         commands = []
 
-        for subcommand in sorted(
-            self.commands, key=lambda c: c[-1] if isinstance(c, tuple) else c
-        ):
+        for subcommand in self.list_commands(ctx):
             cmd = self.get_command(ctx, subcommand)
             # What is this, the tool lied about a command.  Ignore it
             if cmd is None:
@@ -131,19 +131,18 @@ class SectionedGroup(click.Group):
             if cmd.hidden:
                 continue
 
-            commands.append(
-                (subcommand[-1] if isinstance(subcommand, tuple) else subcommand, cmd)
-            )
+            commands.append((subcommand, cmd))
 
         # allow for 3 times the default spacing
         if len(commands):
             limit = formatter.width - 6 - max(len(cmd[0]) for cmd in commands)
 
             rows = []
-            for subcommand, cmd in commands:
+            for formatted_name, subcommand in commands:
+
                 # pylint: disable=redefined-builtin
-                help = cmd.get_short_help_str(limit)
-                rows.append((subcommand, help))
+                help = subcommand.get_short_help_str(limit)
+                rows.append((formatted_name, subcommand, help))
 
             if rows:
                 formatter.write_dl(rows)
@@ -163,30 +162,6 @@ Configuration:
 
 """
 
-
-SECTIONS = {
-    "Traversals": mario.doc.HelpSection(
-        0,
-        ["map", "filter", "apply", "eval", "reduce", "chain"],
-        doc="Basic commands for calling functions on data.",
-        name="Traversals",
-    ),
-    "Async traversals": mario.doc.HelpSection(
-        1,
-        [
-            "async-map",
-            "async-apply",
-            "async-filter",
-            "async-chain",
-            "async-map-unordered",
-        ],
-        doc="Commands for asynchronously calling functions on data.",
-        name="Async traversals",
-    ),
-    "More": mario.doc.HelpSection(
-        1, ["meta"], doc="Commands about using mario", name="More"
-    ),
-}
 
 ALIASES = app.global_registry.commands
 
@@ -236,22 +211,13 @@ def build_stages(command):
 
     params = command.arguments + command.options
 
-    sections = {}
-    if command.section:
-        sections.setdefault(command.section, []).append(command.name)
-    for key, entries in sections.items():
-        if key in SECTIONS.keys():
-            existing = SECTIONS[key]
-            SECTIONS[key] = attr.evolve(existing, entries=existing.entries + entries)
-        else:
-            SECTIONS[key] = mario.doc.HelpSection(100, entries, name=command.section)
-
-    return ReSTCommand(
+    return DocumentedCommand(
         name=command.name,
         params=params,
         callback=click.pass_context(run),
         short_help=command.short_help,
         help=command.help,
+        section=getattr(command, "section", None),
     )
 
 
@@ -291,5 +257,5 @@ cli = SectionedGroup(
     ],
     help=doc,
     commands=COMMANDS,
-    sections=SECTIONS,
+    sections=mario.doc.SECTION_SPECS,
 )

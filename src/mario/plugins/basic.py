@@ -1,8 +1,6 @@
-import subprocess
-import sys
-
 import click
 
+from mario import cli_tools
 from mario import interpret
 from mario import plug
 from mario import traversals
@@ -149,24 +147,40 @@ async def async_chain(items, exit_stack):
 
 
 subcommands = [
-    click.Command("map", short_help="Call code on each line of input."),
-    click.Command("async-map", short_help="Call code on each line of input."),
-    click.Command("apply", short_help="Call code on input as a sequence."),
-    click.Command(
-        "async-apply", short_help="Call code asynchronously on input as a sequence."
+    cli_tools.CommandInSection(
+        "map", short_help="Call code on each line of input.", section="Traversals"
     ),
-    click.Command(
-        "filter", short_help="Call code on each line of input and exclude false values."
+    cli_tools.CommandInSection(
+        "async-map",
+        short_help="Call code on each line of input.",
+        section="Async traversals",
     ),
-    click.Command(
+    cli_tools.CommandInSection(
+        "apply", short_help="Call code on input as a sequence.", section="Traversals"
+    ),
+    cli_tools.CommandInSection(
+        "async-apply",
+        short_help="Call code asynchronously on input as a sequence.",
+        section="Async traversals",
+    ),
+    cli_tools.CommandInSection(
+        "filter",
+        short_help="Call code on each line of input and exclude false values.",
+        section="Traversals",
+    ),
+    cli_tools.CommandInSection(
         "async-filter",
         short_help="Async call code on each line of input and exclude false values.",
+        section="Async traversals",
     ),
-    click.Command(
+    cli_tools.CommandInSection(
         "async-map-unordered",
         short_help="Call code on each line of input, ignoring order of input items.",
+        section="Async traversals",
     ),
-    click.Command("eval", short_help="Evaluate a python expression code"),
+    cli_tools.CommandInSection(
+        "eval", short_help="Evaluate a python expression code", section="Traversals"
+    ),
 ]
 
 
@@ -211,11 +225,14 @@ for subcommand in subcommands:
     # TODO: add_cli and add_traversal should be the non-decorator form
     registry.add_cli(name=subcommand.name)(subcommand)
 
+# type: ignore
+reduce_command_decorator = click.command(  # type: ignore
+    "reduce", cls=cli_tools.CommandInSection, section="Traversals"  # type: ignore
+)  # type: ignore
+
 
 @registry.add_cli(name="reduce")
-@click.command(
-    "reduce", short_help="Reduce a sequence with a function. e.g. `operator.mul`."
-)
+@reduce_command_decorator
 @option_exec_before
 @click.argument("function_name")
 def _reduce(function_name, **parameters):
@@ -237,31 +254,37 @@ def _reduce(function_name, **parameters):
 
 
 more_commands = [
-    click.Command(
+    cli_tools.CommandInSection(
         "chain",
         callback=lambda **kw: [{"name": "chain", "parameters": kw}],
         short_help="Expand iterable of iterables of items into an iterable of items.",
+        section="Traversals",
     ),
-    click.Command(
+    cli_tools.CommandInSection(
         "async-chain",
         callback=lambda **kw: [{"name": "async-chain", "parameters": kw}],
         short_help="Expand iterable of async iterables into an iterable of items.",
+        section="Async traversals",
     ),
 ]
 for cmd in more_commands:
     registry.add_cli(name=cmd.name)(cmd)
 
 
-meta = click.Group("meta")
+# meta = click.Group("meta")
 
 
-@meta.command(context_settings=dict(ignore_unknown_options=True))
-@click.argument("pip_args", nargs=-1, type=click.UNPROCESSED)
-@click.pass_context
-def pip(ctx, pip_args):
-    """Run pip in the environment that mario is installed into."""
-    cli_args = [sys.executable, "-m", "pip"] + list(pip_args)
-    ctx.exit(subprocess.run(cli_args).returncode)
+# @meta.command(
+#     context_settings=dict(ignore_unknown_options=True),
+#     cls=cli_tools.CommandInSection,
+#     section="Meta",
+# )
+# @click.argument("pip_args", nargs=-1, type=click.UNPROCESSED)
+# @click.pass_context
+# def pip(ctx, pip_args):
+#     """Run pip in the environment that mario is installed into."""
+#     cli_args = [sys.executable, "-m", "pip"] + list(pip_args)
+#     ctx.exit(subprocess.run(cli_args).returncode)
 
 
-registry.add_cli(name="meta")(meta)
+# registry.add_cli(name="meta")(meta)

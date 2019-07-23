@@ -62,3 +62,30 @@ class HelpSection:
     entries: t.List[str]
     doc: str = ""
     name: t.Optional[str] = None
+
+
+@attr.dataclass(frozen=True)
+class HelpSectionSpec:
+    priority: int
+    doc: str = ""
+    name: str = ""
+
+
+SECTION_SPECS = {
+    HelpSectionSpec(
+        name="Traversals", doc="Commands for calling code on data.", priority=0
+    ),
+    HelpSectionSpec(
+        name="Async traversals",
+        doc="Commands for asynchronously calling code on data.",
+        priority=1,
+    ),
+}
+
+SECTION_NAME_TO_SECTION_SPEC = {s.name: s for s in SECTION_SPECS}
+
+DEFAULT_SECTION_PRIORITY = 500
+
+NULL_SECTION = HelpSectionSpec(
+    priority=1000, name="Custom", doc="Custom defined commands"
+)
