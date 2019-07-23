@@ -153,8 +153,6 @@ disable=print-statement,
         duplicate-code,
         exec-used,
         fixme,
-        function,
-
 
 
         invalid-name,
