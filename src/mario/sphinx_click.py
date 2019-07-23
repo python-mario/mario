@@ -467,6 +467,7 @@ class ClickDirective(rst.Directive):
         return [item]
 
     def run(self):
+        # pylint: disable=attribute-defined-outside-init
         self.env = self.state.document.settings.env
 
         command = self._load_module(self.arguments[0])

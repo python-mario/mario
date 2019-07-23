@@ -221,7 +221,7 @@ class SchemaDirective(docutils.parsers.rst.Directive):
         return [section] + subsections
 
     def run(self):
-
+        # pylint: disable=attribute-defined-outside-init
         self.env = self.state.document.settings.env
 
         schema = self._get_schema(self.arguments[0])
