@@ -13,7 +13,6 @@ import marshmallow
 import marshmallow.fields
 import marshmallow_jsonschema
 import typing_extensions as te
-from docutils.parsers import rst
 
 
 T = t.TypeVar("T")
@@ -124,9 +123,9 @@ class SchemaDirective(docutils.parsers.rst.Directive):
     has_content = False
     required_arguments = 1
     option_spec = {
-        "prog": rst.directives.unchanged_required,
-        "show-nested": rst.directives.flag,
-        "commands": rst.directives.unchanged,
+        "prog": docutils.parsers.rst.directives.unchanged_required,
+        "show-nested": docutils.parsers.rst.directives.flag,
+        "commands": docutils.parsers.rst.directives.unchanged,
     }
 
     def _get_schema(self, module_path):
