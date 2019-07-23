@@ -144,6 +144,7 @@ disable=print-statement,
         len-as-condition,
         ungrouped-imports,
         too-few-public-methods,
+        no-self-use,
 
 # TODO: Remove these as they get fixed.
 
@@ -159,7 +160,7 @@ disable=print-statement,
         line-too-long,
         missing-docstring,
         no-member,
-        no-self-use,
+
 
 
 
