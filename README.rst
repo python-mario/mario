@@ -48,7 +48,7 @@ If you're not inside a virtualenv, you might get a ``PermissionsError``. In that
 
     python3.7 -m pip install --user mario
 
-or for more flexibility and safety, use `pipx <https://github.com/pipxproject/pipx/>`_:
+or for more isolation, use `pipx <https://github.com/pipxproject/pipx/>`_:
 
 .. code-block:: bash
 
@@ -74,11 +74,13 @@ If you're not inside a virtualenv, you might get a ``PermissionsError``. In that
 
     python3.7 -m pip install --user mario-addons
 
-or for more flexibility and safety, use `pipx <https://github.com/pipxproject/pipx/>`_:
+or for more isolation, use `pipx <https://github.com/pipxproject/pipx/>`_:
 
 .. code-block:: bash
 
-     pipx install --python python3.7 mario-addons
+     pipx install --python python3.7 mario
+     pipx inject mario mario-addons
+
 
 
 ..
