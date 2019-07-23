@@ -193,7 +193,13 @@ option_exec_before = click.option(
 for subcommand in subcommands:
 
     subcommand.params = [
-        click.Option(["--autocall/--no-autocall"], is_flag=True, default=True),
+        click.Option(
+            ["--autocall/--no-autocall"],
+            is_flag=True,
+            default=True,
+            help='Automatically call the function if "x" does not appear in the expression. '
+            "Allows `map len` instead of `map len(x)`.",
+        ),
         click.Argument(["code"]),
     ]
     subcommand.callback = build_callback(subcommand)
