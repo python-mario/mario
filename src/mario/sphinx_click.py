@@ -20,7 +20,7 @@ def _indent(text, level=1):
 
     def prefixed_lines():
         for line in text.splitlines(True):
-            yield (prefix + line if line.strip() else line)
+            yield prefix + line if line.strip() else line
 
     return "".join(prefixed_lines())
 

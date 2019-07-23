@@ -166,7 +166,7 @@ disable=print-statement,
         redefined-builtin,
         redefined-outer-name,
         reimported,
-        superfluous-parens,
+
 
 
 
