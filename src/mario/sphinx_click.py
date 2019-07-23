@@ -386,6 +386,7 @@ class ClickDirective(rst.Directive):
         return itertools.groupby(subcommands, key=get_section)
 
     # pylint: disable=too-many-locals
+    # pylint: disable=too-many-arguments
     def _generate_nodes(
         self, name, command, parent=None, show_nested=False, commands=None
     ):

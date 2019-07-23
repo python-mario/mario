@@ -90,6 +90,7 @@ def _pull_values_from_async_iterator(
             break
 
 
+# pylint: disable=too-many-arguments
 def _threaded_sync_apply(
     in_trio: trio.BlockingTrioPortal,
     function: t.Callable[[t.Iterable[T]], t.Any],  # pylint: disable=unused-argument
