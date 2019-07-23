@@ -104,6 +104,7 @@ class SectionedGroup(click.Group):
         :param extra: extra keyword arguments forwarded to the context
                       constructor.
         """
+        # pylint: disable=protected-access
         for key, value in click._compat.iteritems(self.context_settings):
             if key not in extra:
                 extra[key] = value
