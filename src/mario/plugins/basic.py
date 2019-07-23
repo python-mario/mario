@@ -1,3 +1,6 @@
+import subprocess
+import sys
+
 import click
 
 from mario import interpret
@@ -247,3 +250,18 @@ more_commands = [
 ]
 for cmd in more_commands:
     registry.add_cli(name=cmd.name)(cmd)
+
+
+meta = click.Group("meta")
+
+
+@meta.command(context_settings=dict(ignore_unknown_options=True))
+@click.argument("pip_args", nargs=-1, type=click.UNPROCESSED)
+@click.pass_context
+def pip(ctx, pip_args):
+    """Run pip in the environment that mario is installed into."""
+    cli_args = [sys.executable, "-m", "pip"] + list(pip_args)
+    ctx.exit(subprocess.run(cli_args).returncode)
+
+
+registry.add_cli(name="meta")(meta)

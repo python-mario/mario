@@ -120,7 +120,10 @@ class SectionedGroup(click.Group):
         after the options.
         """
         commands = []
-        for subcommand in self.list_commands(ctx):
+
+        for subcommand in sorted(
+            self.commands, key=lambda c: c[-1] if isinstance(c, tuple) else c
+        ):
             cmd = self.get_command(ctx, subcommand)
             # What is this, the tool lied about a command.  Ignore it
             if cmd is None:
@@ -128,7 +131,9 @@ class SectionedGroup(click.Group):
             if cmd.hidden:
                 continue
 
-            commands.append((subcommand, cmd))
+            commands.append(
+                (subcommand[-1] if isinstance(subcommand, tuple) else subcommand, cmd)
+            )
 
         # allow for 3 times the default spacing
         if len(commands):
@@ -177,6 +182,9 @@ SECTIONS = {
         ],
         doc="Commands for asynchronously calling functions on data.",
         name="Async traversals",
+    ),
+    "More": mario.doc.HelpSection(
+        1, ["meta"], doc="Commands about using mario", name="More"
     ),
 }
 
