@@ -19,10 +19,71 @@ The configuration file is in `toml format <https://github.com/toml-lang/toml>`__
 
       Configuration:
         Declarative config: /home/user/.config/mario/config.toml
-        Python modules: /home/user/.config/mario/modules/*.py
+        Python modules: /home/user/.config/mario/m/
 
 
-Any ``.py`` files in your ``mario/modules/`` directory will be usable from your commands. For example, if you write ``def read_csv(rows): ...`` in ``mario/modules/tools.py`` your commands will be able to use ``tools.read_csv()``.
+Config modules
+===============
+
+Mario will make the ``m`` package available at startup. Define any functions you want for your commands in a file in the ``m/`` directory. For example, if you define a file called ``m/code.py`` in your config directory,
+
+
+.. code-block:: python
+
+    # m/code.py
+
+
+    def increment(number):
+        return number + 1
+
+you can use ``m.code.increment`` in your commands, like this:
+
+.. code-block:: bash
+
+
+    % mario map 'int ! m.code.increment' <<EOF
+    1
+    2
+    3
+    EOF
+    2
+    3
+    4
+
+
+Any code that needs to run at startup, such as defining a new command, can be placed in ``m/__init__.py`` (or in the declarative config; see :ref:`Declarative configuration <declarative-config>`).
+
+You also can add functions directly to the ``m`` namespace by placing them in ``m/__init__.py``. For example, defining ``increment`` in ``m/__init__.py``
+
+
+.. code-block:: python
+
+   # m/__init__.py
+
+
+   def increment(number):
+       return number + 1
+
+allows invoking ``m.increment``, like this:
+
+.. code-block:: bash
+
+    % mario map 'int ! m.increment' <<EOF
+    1
+    2
+    3
+    EOF
+    2
+    3
+    4
+
+But note that Mario executes ``m/__init__.py`` at startup, so code placed in that file may affect startup time.
+
+
+.. _declarative-config:
+
+Declarative config
+====================
 
 The declarative configuration is in ``mario/mario.toml``. For example, on Ubuntu we use ``~/.config/mario/config.toml``.
 
@@ -72,7 +133,7 @@ Then you can directly use the imported objects without referencing the module.
 
 
 Custom commands
-=================
+--------------------
 
 Define new commands in your config file which provide commands to other commands. For example, this config adds a ``jsonl`` command for reading jsonlines streams into Python objects, by calling calling out to the ``map`` traversal.
 
@@ -305,7 +366,7 @@ try:
 .. _command-config-schema:
 
 Command configuration schema
-================================
+--------------------------------
 
 At the top level, add new commands with a ``[[command]]`` heading, documented as ``CommandSpecschema`` in the tables.
 

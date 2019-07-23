@@ -45,3 +45,39 @@ def test_config_jsonl_command(tmp_path):
     {'a': 3, 'b': 4}
     """
     )
+
+
+def test_m_namespace(tmp_path, tmp_env):
+    """The init file is available under the ``m`` namespace."""
+    file = tmp_path / "m" / "__init__.py"
+    file.parent.mkdir()
+    file.write_text("var = 1\n")
+    result = helpers.run(["eval", "m.var"], env=tmp_env).decode()
+    assert result == "1\n"
+
+
+def test_m_init_executed_at_startup(tmp_path, tmp_env):
+    """The init file is executed at startup time."""
+    file = tmp_path / "m" / "__init__.py"
+    file.parent.mkdir()
+    file.write_text("print('hello')")
+    result = helpers.run(["eval", '""'], env=tmp_env).decode()
+    assert result == "hello\n\n"
+
+
+def test_m_submodule(tmp_path, tmp_env):
+    """The submodule is available under the ``m`` namespace."""
+    file = tmp_path / "m" / "example.py"
+    file.parent.mkdir()
+    file.write_text("var = 1\n")
+    result = helpers.run(["eval", "m.example.var"], env=tmp_env).decode()
+    assert result == "1\n"
+
+
+def test_m_submodule_not_executed_at_startup(tmp_path, tmp_env):
+    """The submodule is *not* executed at startup."""
+    file = tmp_path / "m" / "example.py"
+    file.parent.mkdir()
+    file.write_text("print('hello')")
+    result = helpers.run(["eval", "''"], env=tmp_env).decode()
+    assert result == "\n"

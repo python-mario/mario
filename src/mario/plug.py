@@ -2,7 +2,7 @@ import importlib
 import importlib.resources
 import importlib.util
 import inspect
-import pathlib
+import sys
 import types
 import typing as t
 from typing import Any
@@ -151,28 +151,15 @@ def make_plugin_registry():
 
 
 def make_config_registry():
-    modules = import_config_dir_modules()
-    return combine_registries(module.registry for module in modules)
+    sys.path.append(str(config.get_config_dir()))
 
+    try:
+        # pylint: disable=import-error
+        import m
+    except ModuleNotFoundError:
+        return Registry()
 
-def load_module(path):
-    module_name = "user_config." + path.with_suffix("").name
-    spec = importlib.util.spec_from_file_location(module_name, str(path))
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-def import_config_dir_modules(user_config_dir=None):
-    if user_config_dir is None:
-        user_config_dir = config.get_config_dir()
-
-    modules = []
-    for path in (pathlib.Path(user_config_dir) / "modules").rglob("*.py"):
-        module = load_module(path)
-        modules.append(module)
-
-    return modules
+    return getattr(m, "registry", None) or Registry()
 
 
 def make_global_registry():

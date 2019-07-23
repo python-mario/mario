@@ -6,7 +6,6 @@ from __future__ import generator_stop
 import collections
 import functools
 import os
-import sys
 from typing import AsyncIterable
 from typing import List
 
@@ -114,5 +113,3 @@ def main(pairs, **kwargs):
 
 
 global_registry = plug.make_global_registry()
-
-sys.path.append(str(config.get_config_dir() / "modules"))
