@@ -45,6 +45,7 @@ class SectionedFormatter(click.formatting.HelpFormatter):
         self.sections = sections
         super().__init__(*args, **kwargs)
 
+    # pylint: disable=arguments-differ
     def write_dl(self, rows, *args, **kwargs):
 
         cmd_to_section = {}
@@ -54,18 +55,19 @@ class SectionedFormatter(click.formatting.HelpFormatter):
                 cmd_to_section[command] = section_name
 
         sections = {}
+
+        # pylint: disable=redefined-builtin
         for subcommand, help in rows:
             sections.setdefault(
                 cmd_to_section.get(subcommand, "Custom commands"), []
             ).append((subcommand, help))
 
-        for section_name, rows in sections.items():
-            if rows[0][0][0] == "-":
-                # with super().section('XXX'):
-                super().write_dl(rows)
+        for section_name, section_rows in sections.items():
+            if section_rows[0][0][0] == "-":
+                super().write_dl(section_rows)
             else:
                 with super().section(section_name):
-                    super().write_dl(rows, *args, **kwargs)
+                    super().write_dl(section_rows, *args, **kwargs)
 
 
 class SectionedContext(click.Context):
@@ -102,6 +104,7 @@ class SectionedGroup(click.Group):
         :param extra: extra keyword arguments forwarded to the context
                       constructor.
         """
+        # pylint: disable=protected-access
         for key, value in click._compat.iteritems(self.context_settings):
             if key not in extra:
                 extra[key] = value
@@ -133,6 +136,7 @@ class SectionedGroup(click.Group):
 
             rows = []
             for subcommand, cmd in commands:
+                # pylint: disable=redefined-builtin
                 help = cmd.get_short_help_str(limit)
                 rows.append((subcommand, help))
 
@@ -227,12 +231,12 @@ def build_stages(command):
     sections = {}
     if command.section:
         sections.setdefault(command.section, []).append(command.name)
-    for k, entries in sections.items():
-        if k in SECTIONS.keys():
-            existing = SECTIONS[k]
-            SECTIONS[k] = attr.evolve(existing, entries=existing.entries + entries)
+    for key, entries in sections.items():
+        if key in SECTIONS.keys():
+            existing = SECTIONS[key]
+            SECTIONS[key] = attr.evolve(existing, entries=existing.entries + entries)
         else:
-            SECTIONS[k] = mario.doc.HelpSection(100, entries, name=command.section)
+            SECTIONS[key] = mario.doc.HelpSection(100, entries, name=command.section)
 
     return ReSTCommand(
         name=command.name,
@@ -243,7 +247,10 @@ def build_stages(command):
     )
 
 
+# pylint: disable=unsupported-assignment-operation
 COMMANDS = app.global_registry.cli_functions
+
+# pylint: disable=no-member
 for k, v in ALIASES.items():
 
     COMMANDS[k] = build_stages(v)

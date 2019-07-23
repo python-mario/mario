@@ -58,10 +58,12 @@ async def program_runner(
 
 
 async def async_main(basic_traversals, **kwargs):
+    # pylint: disable=protected-access
     stream = trio._unix_pipes.PipeReceiveStream(os.dup(0))
     receiver = asynch.TerminatedFrameReceiver(stream, b"\n")
     items = (item.decode() async for item in receiver)
 
+    # pylint: disable=no-member
     global_context = interfaces.Context(global_registry.global_options.copy())
     global_context.global_options.update(config.DEFAULTS)
     global_context.global_options.update(kwargs)
@@ -80,7 +82,7 @@ async def async_main(basic_traversals, **kwargs):
     for bt in basic_traversals:
 
         for d in bt:
-
+            # pylint: disable=fixme
             # TODO Make classes or use pyrsistent.
             traversal_namespace = {
                 **global_context.global_options["global_namespace"],
@@ -92,6 +94,7 @@ async def async_main(basic_traversals, **kwargs):
                     global_context.global_options, global_namespace=traversal_namespace
                 ),
             )
+            # pylint: disable=unsubscriptable-object
             traversal = interfaces.Traversal(
                 global_invocation_options=traversal_context,
                 specific_invocation_params=d,

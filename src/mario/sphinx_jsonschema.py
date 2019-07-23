@@ -3,6 +3,8 @@ import importlib
 
 sphinx_jsonschema = importlib.import_module("sphinx-jsonschema")
 
+_glob_app = None
+
 
 class DefinitionWideFormat(sphinx_jsonschema.wide_format.WideFormat):  # type: ignore
     """Add definition field."""
@@ -20,6 +22,7 @@ class DefinitionWideFormat(sphinx_jsonschema.wide_format.WideFormat):  # type: i
     def _dispatch(self, schema, label=None):
         # Main driver of the recursive schema traversal.
         rows = []
+        # pylint: disable=no-member
         self.nesting += 1
 
         if "type" in schema:
@@ -63,12 +66,15 @@ class DefinitionWideFormat(sphinx_jsonschema.wide_format.WideFormat):  # type: i
             # prepend label column if required
             rows = self._prepend(label, rows)
 
+        # pylint: disable=no-member
         self.nesting -= 1
         return rows
 
 
 class DefinitionJsonSchema(sphinx_jsonschema.JsonSchema):  # type: ignore
     def run(self):
+        # pylint: disable=redefined-builtin
+        # pylint: disable=protected-access
         format = DefinitionWideFormat(
             self.state, self.lineno, sphinx_jsonschema._glob_app
         )
@@ -76,6 +82,7 @@ class DefinitionJsonSchema(sphinx_jsonschema.JsonSchema):  # type: ignore
 
 
 def setup(app):
-    global _glob_app
+
+    global _glob_app  # pylint: disable=global-statement
     _glob_app = app
     app.add_directive("jsonschema", DefinitionJsonSchema)

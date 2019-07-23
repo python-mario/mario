@@ -26,6 +26,7 @@ def my_max(items):
 
         if x > current_max:
             current_max = x
+    # pylint: disable=undefined-loop-variable
     return x
 
 

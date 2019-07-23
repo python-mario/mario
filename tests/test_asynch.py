@@ -4,6 +4,7 @@ import subprocess
 import sys
 import time
 
+import attr
 import pytest
 import requests
 
@@ -19,6 +20,7 @@ def _reactor():
 
 @pytest.fixture(name="server")
 def _server():
+    # pylint: disable=fixme
     # TODO Replace subprocess with reactor
     command = [sys.executable, "-m", "tests.server"]
     proc = subprocess.Popen(command, stderr=subprocess.PIPE)
@@ -31,7 +33,12 @@ def test_server(server):
     assert requests.get("http://localhost:8080/?delay=1")
 
 
+@attr.s
 class Timer:
+    start = attr.ib(default=None)
+    end = attr.ib(default=None)
+    elapsed = attr.ib(default=None)
+
     def __enter__(self):
         self.start = time.monotonic()
         return self

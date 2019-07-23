@@ -142,39 +142,35 @@ disable=print-statement,
         comprehension-escape,
 	bad-continuation, # Bug in pylint. https://github.com/PyCQA/pylint/issues/741
         len-as-condition,
+        ungrouped-imports,
+        too-few-public-methods,
+        no-self-use,
 
 # TODO: Remove these as they get fixed.
 
-        arguments-differ,
-        attribute-defined-outside-init,
         duplicate-code,
-        exec-used,
-        fixme,
-        function,
-        global-statement,
-        global-variable-undefined,
         invalid-name,
         line-too-long,
         missing-docstring,
-        no-member,
-        no-self-use,
-        not-async-context-manager,
-        protected-access,
-        redefined-argument-from-local,
-        redefined-builtin,
-        redefined-outer-name,
-        reimported,
-        superfluous-parens,
-        too-few-public-methods,
-        too-many-arguments,
-        too-many-branches,
-        too-many-locals,
-        undefined-loop-variable,
-        ungrouped-imports,
-        unidiomatic-typecheck,
-        unreachable,
-        unsubscriptable-object,
-        unsupported-assignment-operation,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

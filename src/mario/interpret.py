@@ -78,6 +78,7 @@ def _get_autoimport_module(fullname):
 
 
 def find_maybe_module_names(text):
+    # pylint: disable=fixme
     # TODO: Use a real parser.
     return re.findall(r"\b[^\d\W]\w*(?:\.[^\d\W]\w*)+\b", text)
 
@@ -108,7 +109,6 @@ def make_autocall(expression, howcall):
             return expression
 
     return expression + howcall.value
-    raise ValueError(howcall)
 
 
 def build_source(components, howcall):
@@ -144,6 +144,7 @@ def build_function(code, global_namespace, howcall):
     global_namespace = {**name_to_module, **global_namespace}
 
     source = build_source(split_pipestring(code), howcall)
+    # pylint: disable=exec-used
     exec(source, global_namespace)
     function = global_namespace["_mario_runner"]
     return Function(function, global_namespace, source)
@@ -153,6 +154,8 @@ def build_global_namespace(source):
     if source is None:
         return {}
     global_namespace = {}
+
+    # pylint: disable=exec-used
     exec(source, global_namespace)
 
     return global_namespace

@@ -20,7 +20,7 @@ def _indent(text, level=1):
 
     def prefixed_lines():
         for line in text.splitlines(True):
-            yield (prefix + line if line.strip() else line)
+            yield prefix + line if line.strip() else line
 
     return "".join(prefixed_lines())
 
@@ -54,6 +54,7 @@ def _get_help_record(opt):
     if opt.secondary_opts:
         rv.append(_write_opts(opt.secondary_opts))
 
+    # pylint: disable=redefined-builtin
     help = opt.help or ""
     extra = []
     if opt.default is not None and opt.show_default:
@@ -231,6 +232,7 @@ def _filter_commands(ctx, commands=None):
     return [lookup[name] for name in names if name in lookup]
 
 
+# pylint: disable=too-many-branches
 def _format_command(ctx, show_nested, commands=None):
     """Format the output of `click.Command`."""
     # the hidden attribute is part of click 7.x only hence use of getattr
@@ -384,6 +386,8 @@ class ClickDirective(rst.Directive):
 
         return itertools.groupby(subcommands, key=get_section)
 
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-arguments
     def _generate_nodes(
         self, name, command, parent=None, show_nested=False, commands=None
     ):
@@ -446,6 +450,7 @@ class ClickDirective(rst.Directive):
 
             group_list = statemachine.ViewList()
 
+            # pylint: disable=fixme
             # XXX This is supposed to add documentation lines to each group, but it doesn't seem to work.
             for line in help_section.doc.splitlines():
                 group_list.append(line, group_name)
@@ -462,6 +467,7 @@ class ClickDirective(rst.Directive):
         return [item]
 
     def run(self):
+        # pylint: disable=attribute-defined-outside-init
         self.env = self.state.document.settings.env
 
         command = self._load_module(self.arguments[0])

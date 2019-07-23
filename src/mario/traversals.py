@@ -74,7 +74,9 @@ class IterableToAsyncIterable:
 def _pull_values_from_async_iterator(
     in_trio: trio.BlockingTrioPortal,
     ait: t.AsyncIterator[T],
-    send_to_trio: trio.abc.SendChannel[T],  # pylint: disable=unused-argument
+    send_to_trio: trio.abc.SendChannel[
+        T
+    ],  # pylint: disable=unused-argument, unsubscriptable-object
 ):
     """Make a generator by asking Trio to async-iterate over the async iterable,
     then yield the results.
@@ -88,6 +90,7 @@ def _pull_values_from_async_iterator(
             break
 
 
+# pylint: disable=too-many-arguments
 def _threaded_sync_apply(
     in_trio: trio.BlockingTrioPortal,
     function: t.Callable[[t.Iterable[T]], t.Any],  # pylint: disable=unused-argument
@@ -115,6 +118,7 @@ async def sync_apply(sync_function, data):
     thread.
     """
     in_trio = trio.BlockingTrioPortal()
+    # pylint: disable=unsubscriptable-object
     send_to_trio, receive_from_thread = trio.open_memory_channel[t.Tuple[T, t.Any]](0)
 
     async with trio.open_nursery() as n:
@@ -155,11 +159,13 @@ async def async_apply(function, data):
 async def async_map(
     function: Callable[[T], Awaitable[U]], iterable: AsyncIterable[T], max_concurrent
 ) -> AsyncIterator[AsyncIterable[U]]:
+    # pylint: disable=unsubscriptable-object
     send_result, receive_result = trio.open_memory_channel[U](0)
     limiter = trio.CapacityLimiter(max_concurrent)
 
     async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
 
+        # pylint: disable=not-async-context-manager
         async with limiter:
             result = await function(item)
 
@@ -215,11 +221,13 @@ async def sync_filter(
 async def async_map_unordered(
     function: Callable[[T], Awaitable[U]], iterable: AsyncIterable[T], max_concurrent
 ) -> AsyncIterator[AsyncIterable[U]]:
+    # pylint: disable=unsubscriptable-object
     send_result, receive_result = trio.open_memory_channel[U](0)
     limiter = trio.CapacityLimiter(max_concurrent)
     remaining_tasks: t.Set[int] = set()
 
     async def wrapper(task_id: int, item: T) -> None:
+        # pylint: disable=not-async-context-manager
         async with limiter:
             result = await function(item)
 
@@ -247,12 +255,13 @@ async def async_map_unordered(
 async def async_filter(
     function: Callable[[T], Awaitable[T]], iterable: AsyncIterable[T], max_concurrent
 ) -> AsyncIterator[AsyncIterable[T]]:
+    # pylint: disable=unsubscriptable-object
     send_result, receive_result = trio.open_memory_channel[T](0)
 
     limiter = trio.CapacityLimiter(max_concurrent)
 
     async def wrapper(prev_done: trio.Event, self_done: trio.Event, item: T) -> None:
-
+        # pylint: disable=not-async-context-manager
         async with limiter:
             result = await function(item)
 
@@ -287,6 +296,7 @@ async def async_reduce(
     max_concurrent,
     initializer=SENTINEL,
 ) -> AsyncIterator[AsyncIterable[U]]:
+    # pylint: disable=unsubscriptable-object
     send_result, receive_result = trio.open_memory_channel[U](0)
     limiter = trio.CapacityLimiter(max_concurrent)
 
@@ -303,7 +313,7 @@ async def async_reduce(
 
         else:
 
-            async with limiter:
+            async with limiter:  # pylint: disable=not-async-context-manager
                 collected_result = await function(collected_result, input_item)
 
         await prev_done.wait()

@@ -18,6 +18,7 @@ ID: contextvars.ContextVar[int] = contextvars.ContextVar("id")
 @attr.s
 class Handler:
     async def handle(self, request):
+        # pylint: disable=global-statement
         global START_TIME
         if START_TIME is None:
             START_TIME = datetime.datetime.utcnow()

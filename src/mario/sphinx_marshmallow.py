@@ -13,7 +13,6 @@ import marshmallow
 import marshmallow.fields
 import marshmallow_jsonschema
 import typing_extensions as te
-from docutils.parsers import rst
 
 
 T = t.TypeVar("T")
@@ -61,7 +60,9 @@ class Marshmallow3JSONSchema(marshmallow_jsonschema.JSONSchema):
     # This class fixes incompatibilities between the parent class and Marshmallow 3.
     # It also adds the `description` field.
 
-    def wrap(self, *args, many, **kwargs):  # pylint: disable=unused-argument
+    # pylint: disable=unused-argument
+    # pylint: disable=arguments-differ
+    def wrap(self, *args, many, **kwargs):
         return super().wrap(*args, **kwargs)
 
     def _from_python_type(self, obj, field, pytype):
@@ -124,9 +125,9 @@ class SchemaDirective(docutils.parsers.rst.Directive):
     has_content = False
     required_arguments = 1
     option_spec = {
-        "prog": rst.directives.unchanged_required,
-        "show-nested": rst.directives.flag,
-        "commands": rst.directives.unchanged,
+        "prog": docutils.parsers.rst.directives.unchanged_required,
+        "show-nested": docutils.parsers.rst.directives.flag,
+        "commands": docutils.parsers.rst.directives.unchanged,
     }
 
     def _get_schema(self, module_path):
@@ -222,7 +223,7 @@ class SchemaDirective(docutils.parsers.rst.Directive):
         return [section] + subsections
 
     def run(self):
-
+        # pylint: disable=attribute-defined-outside-init
         self.env = self.state.document.settings.env
 
         schema = self._get_schema(self.arguments[0])
