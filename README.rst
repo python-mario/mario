@@ -462,7 +462,7 @@ Convenient for removing trailing commas.
     command = "map"
     params = {code="yaml.safe_load ! json.dumps"}
 
-Search for xpath elements with xpath
+Search for xml elements with xpath
 +++++++++++++++++++++++++++++++++++++++++
 
 Pull text out of xml documents.
