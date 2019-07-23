@@ -3,6 +3,8 @@ import importlib
 
 sphinx_jsonschema = importlib.import_module("sphinx-jsonschema")
 
+_glob_app = None
+
 
 class DefinitionWideFormat(sphinx_jsonschema.wide_format.WideFormat):  # type: ignore
     """Add definition field."""

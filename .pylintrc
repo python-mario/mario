@@ -155,7 +155,8 @@ disable=print-statement,
         fixme,
         function,
         global-statement,
-        global-variable-undefined,
+
+
         invalid-name,
         line-too-long,
         missing-docstring,
