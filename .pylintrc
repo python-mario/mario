@@ -143,6 +143,7 @@ disable=print-statement,
 	bad-continuation, # Bug in pylint. https://github.com/PyCQA/pylint/issues/741
         len-as-condition,
         ungrouped-imports,
+        too-few-public-methods,
 
 # TODO: Remove these as they get fixed.
 
@@ -166,7 +167,7 @@ disable=print-statement,
         redefined-outer-name,
         reimported,
         superfluous-parens,
-        too-few-public-methods,
+
 
 
 
