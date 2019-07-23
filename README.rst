@@ -1,6 +1,6 @@
-====================================
+``````````````````````````````````````````````````````
 Mario: Shell pipes in Python
-====================================
+``````````````````````````````````````````````````````
 
 Your favorite plumbing snake 🐍🔧 with your favorite pipes, right in your shell 🐢.
 
@@ -23,9 +23,14 @@ Your favorite plumbing snake 🐍🔧 with your favorite pipes, right in your sh
    :alt: Coverage
 
 
-============
+
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 Installation
-============
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+
+..
+    installation-inclusion-start
 
 Mario
 -------------
@@ -76,9 +81,12 @@ or for more flexibility and safety, use `pipx <https://github.com/pipxproject/pi
      pipx install --python python3.7 mario-addons
 
 
-=====
+..
+    installation-inclusion-end
+
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 Usage
-=====
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 Basics
 -----------------------------------
@@ -325,17 +333,17 @@ Concurrent requests can go much faster. The same requests now take only 6 second
 
 .. _config-intro:
 
-=======================
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 Configuration
-=======================
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 
 Define new commands and set default options. See `Configuration reference <config_reference.html>`_ for details.
 
 
-=========
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 Plugins
-=========
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 Add new commands like ``map`` and ``reduce`` by installing Mario plugins. You can try them out without installing by adding them to any ``.py`` file in your ``~/.config/mario/modules/``.
 
@@ -343,10 +351,14 @@ Share popular commands by installing the `mario-addons <https://mario-addons.rea
 
 
 
-
-======
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 Q & A
-======
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+
+..
+    Q&A-inclusion-start
+
 
 
 What's the status of this package?
@@ -366,3 +378,7 @@ A number of cool projects have pioneered in the Python-in-shell space. I wrote M
 * https://spy.readthedocs.io/en/latest/intro.html
 * https://github.com/ksamuel/Pyped
 * https://github.com/ircflagship2/pype
+
+
+..
+    Q&A-inclusion-end
