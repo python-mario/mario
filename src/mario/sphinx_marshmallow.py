@@ -60,7 +60,9 @@ class Marshmallow3JSONSchema(marshmallow_jsonschema.JSONSchema):
     # This class fixes incompatibilities between the parent class and Marshmallow 3.
     # It also adds the `description` field.
 
-    def wrap(self, *args, many, **kwargs):  # pylint: disable=unused-argument
+    # pylint: disable=unused-argument
+    # pylint: disable=arguments-differ
+    def wrap(self, *args, many, **kwargs):
         return super().wrap(*args, **kwargs)
 
     def _from_python_type(self, obj, field, pytype):

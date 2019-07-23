@@ -148,10 +148,6 @@ disable=print-statement,
 
 # TODO: Remove these as they get fixed.
 
-        arguments-differ,
-
-
-
         duplicate-code,
         invalid-name,
         line-too-long,

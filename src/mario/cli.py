@@ -45,6 +45,7 @@ class SectionedFormatter(click.formatting.HelpFormatter):
         self.sections = sections
         super().__init__(*args, **kwargs)
 
+    # pylint: disable=arguments-differ
     def write_dl(self, rows, *args, **kwargs):
 
         cmd_to_section = {}
