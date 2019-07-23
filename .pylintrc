@@ -162,7 +162,7 @@ disable=print-statement,
         no-self-use,
         not-async-context-manager,
         protected-access,
-        redefined-argument-from-local,
+
 
 
 

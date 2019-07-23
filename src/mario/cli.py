@@ -61,13 +61,13 @@ class SectionedFormatter(click.formatting.HelpFormatter):
                 cmd_to_section.get(subcommand, "Custom commands"), []
             ).append((subcommand, help))
 
-        for section_name, rows in sections.items():
-            if rows[0][0][0] == "-":
+        for section_name, section_rows in sections.items():
+            if section_rows[0][0][0] == "-":
                 # with super().section('XXX'):
-                super().write_dl(rows)
+                super().write_dl(section_rows)
             else:
                 with super().section(section_name):
-                    super().write_dl(rows, *args, **kwargs)
+                    super().write_dl(section_rows, *args, **kwargs)
 
 
 class SectionedContext(click.Context):
