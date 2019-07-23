@@ -152,7 +152,6 @@ disable=print-statement,
         attribute-defined-outside-init,
         duplicate-code,
         exec-used,
-        fixme,
 
 
         invalid-name,

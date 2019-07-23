@@ -450,6 +450,7 @@ class ClickDirective(rst.Directive):
 
             group_list = statemachine.ViewList()
 
+            # pylint: disable=fixme
             # XXX This is supposed to add documentation lines to each group, but it doesn't seem to work.
             for line in help_section.doc.splitlines():
                 group_list.append(line, group_name)

@@ -78,6 +78,7 @@ def _get_autoimport_module(fullname):
 
 
 def find_maybe_module_names(text):
+    # pylint: disable=fixme
     # TODO: Use a real parser.
     return re.findall(r"\b[^\d\W]\w*(?:\.[^\d\W]\w*)+\b", text)
 

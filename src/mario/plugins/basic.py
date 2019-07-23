@@ -198,6 +198,7 @@ for subcommand in subcommands:
     ]
     subcommand.callback = build_callback(subcommand)
     subcommand = option_exec_before(subcommand)
+    # pylint: disable=fixme
     # TODO: add_cli and add_traversal should be the non-decorator form
     registry.add_cli(name=subcommand.name)(subcommand)
 

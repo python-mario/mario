@@ -82,7 +82,7 @@ async def async_main(basic_traversals, **kwargs):
     for bt in basic_traversals:
 
         for d in bt:
-
+            # pylint: disable=fixme
             # TODO Make classes or use pyrsistent.
             traversal_namespace = {
                 **global_context.global_options["global_namespace"],

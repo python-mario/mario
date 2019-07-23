@@ -63,7 +63,6 @@ class SectionedFormatter(click.formatting.HelpFormatter):
 
         for section_name, section_rows in sections.items():
             if section_rows[0][0][0] == "-":
-                # with super().section('XXX'):
                 super().write_dl(section_rows)
             else:
                 with super().section(section_name):

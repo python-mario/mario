@@ -19,6 +19,7 @@ def _reactor():
 
 @pytest.fixture(name="server")
 def _server():
+    # pylint: disable=fixme
     # TODO Replace subprocess with reactor
     command = [sys.executable, "-m", "tests.server"]
     proc = subprocess.Popen(command, stderr=subprocess.PIPE)
