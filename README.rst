@@ -33,7 +33,7 @@ Installation
     installation-inclusion-start
 
 Mario
--------------
+***********************************************************
 
 
 Get Mario with pip:
@@ -57,7 +57,7 @@ or for more flexibility and safety, use `pipx <https://github.com/pipxproject/pi
 
 
 Mario addons
------------------
+***********************************************************
 
 The `mario-addons <https://mario-addons.readthedocs.io/>`__ package provides a number of useful commands not found in the base collection.
 
@@ -89,7 +89,7 @@ Usage
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 Basics
------------------------------------
+***********************************************************
 
 Invoke with  ``mario`` at the command line.
 
@@ -159,13 +159,13 @@ try
 
 
 More commands
------------------------------------
+***********************************************************
 
 Here are a few commands. See `Command reference <cli_reference.html>`__ for the complete set.
 
 
 ``eval``
-________
+----------------------------------------------------
 
 
 Use ``eval`` to evaluate a Python expression.
@@ -178,7 +178,7 @@ Use ``eval`` to evaluate a Python expression.
 
 
 ``map``
-_______
+----------------------------------------------------
 
 Use ``map`` to act on each input item.
 
@@ -189,7 +189,7 @@ Use ``map`` to act on each input item.
    bbbb
 
 ``filter``
-__________
+----------------------------------------------------
 
 
 Use ``filter`` to evaluate a condition on each line of input and exclude false values.
@@ -202,7 +202,7 @@ Use ``filter`` to evaluate a condition on each line of input and exclude false v
 
 
 ``apply``
-_________
+----------------------------------------------------
 
 Use ``apply`` to act on the sequence of items.
 
@@ -214,7 +214,7 @@ Use ``apply`` to act on the sequence of items.
 
 
 ``reduce``
-__________
+----------------------------------------------------
 
 Use ``reduce`` to evaluate a function of two arguments successively over a sequence, like `functools.reduce <https://docs.python.org/3/library/functools.html#functools.reduce>`_.
 
@@ -233,7 +233,7 @@ For example, to multiply all the values together, first convert each value to ``
    24
 
 ``chain``
-_________
+----------------------------------------------------
 
 Use ``chain`` to flatten an iterable of iterables of items into an iterable of items, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_.
 
@@ -286,8 +286,8 @@ Then subsequent commands will act on these new rows. Here we get the length of e
 
 
 
-Async
------------------------------------
+``async-map``
+----------------------------------------------------
 
 ..
     async-inclusion-start
@@ -362,14 +362,14 @@ Q & A
 
 
 What's the status of this package?
---------------------------------------
+***********************************************************
 
 * This package is experimental and is subject to change without notice.
 * Check the `issues page <https://www.github.com/python-mario/mario/issues>`_ for open tickets.
 
 
 Why another package?
------------------------------------
+***********************************************************
 
 A number of cool projects have pioneered in the Python-in-shell space. I wrote Mario because I didn't know these existed at the time, but now Mario has a bunch of features the others don't (user configuration, multi-stage pipelines, async, plugins, etc).
 
