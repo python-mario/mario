@@ -227,12 +227,12 @@ def build_stages(command):
     sections = {}
     if command.section:
         sections.setdefault(command.section, []).append(command.name)
-    for k, entries in sections.items():
-        if k in SECTIONS.keys():
-            existing = SECTIONS[k]
-            SECTIONS[k] = attr.evolve(existing, entries=existing.entries + entries)
+    for key, entries in sections.items():
+        if key in SECTIONS.keys():
+            existing = SECTIONS[key]
+            SECTIONS[key] = attr.evolve(existing, entries=existing.entries + entries)
         else:
-            SECTIONS[k] = mario.doc.HelpSection(100, entries, name=command.section)
+            SECTIONS[key] = mario.doc.HelpSection(100, entries, name=command.section)
 
     return ReSTCommand(
         name=command.name,

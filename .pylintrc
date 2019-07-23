@@ -164,7 +164,7 @@ disable=print-statement,
         protected-access,
         redefined-argument-from-local,
         redefined-builtin,
-        redefined-outer-name,
+
 
 
 

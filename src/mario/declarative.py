@@ -28,6 +28,7 @@ class TypeField(marshmallow.fields.Field):
         self.default = kwargs.get("default", marshmallow.missing)
         super().__init__(*args, **kwargs)
 
+    # pylint: disable=redefined-outer-name
     def _deserialize(self, value, attr, data, **kwargs):
         try:
             return TYPES[value]
@@ -40,6 +41,7 @@ class TypeField(marshmallow.fields.Field):
 
 
 class OptionNameField(marshmallow.fields.Field):
+    # pylint: disable=redefined-outer-name
     def _deserialize(self, value, attr, data, **kwargs):
         return [value]
 
@@ -47,6 +49,7 @@ class OptionNameField(marshmallow.fields.Field):
 
 
 class ArgumentNameField(marshmallow.fields.Field):
+    # pylint: disable=redefined-outer-name
     def _deserialize(self, value, attr, data, **kwargs):
         return [value]
 
