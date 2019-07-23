@@ -153,6 +153,8 @@ try
 More commands
 -----------------------------------
 
+Here are a few commands. See :ref:`Command reference <command-reference>` for the complete set.
+
 
 ``eval``
 ________
