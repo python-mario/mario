@@ -151,7 +151,6 @@ disable=print-statement,
         arguments-differ,
         attribute-defined-outside-init,
         duplicate-code,
-        exec-used,
 
 
         invalid-name,

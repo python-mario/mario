@@ -144,6 +144,7 @@ def build_function(code, global_namespace, howcall):
     global_namespace = {**name_to_module, **global_namespace}
 
     source = build_source(split_pipestring(code), howcall)
+    # pylint: disable=exec-used
     exec(source, global_namespace)
     function = global_namespace["_mario_runner"]
     return Function(function, global_namespace, source)
@@ -153,6 +154,8 @@ def build_global_namespace(source):
     if source is None:
         return {}
     global_namespace = {}
+
+    # pylint: disable=exec-used
     exec(source, global_namespace)
 
     return global_namespace
