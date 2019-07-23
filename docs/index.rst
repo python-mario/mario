@@ -8,7 +8,7 @@ Contents
    readme
    async
    cli_reference
-   config_schema
+   config_reference
    api_reference/index
    contributing
    authors

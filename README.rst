@@ -153,7 +153,7 @@ try
 More commands
 -----------------------------------
 
-Here are a few commands. See :ref:`Command reference <command-reference>` for the complete set.
+Here are a few commands. See `Command reference <cli_reference.html>`__ for the complete set.
 
 
 ``eval``
@@ -330,7 +330,7 @@ Configuration
 =======================
 
 
-Define new commands and set default options. See :ref:`Configuration reference <config-reference>` for details.
+Define new commands and set default options. See `Configuration reference <config_reference.html>`_ for details.
 
 
 =========
