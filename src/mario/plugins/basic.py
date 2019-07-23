@@ -50,7 +50,9 @@ def calculate_reduce(traversal):
 
 
 @registry.add_traversal("map", calculate_more_params=calculate_function)
-async def map(function, items, exit_stack, max_concurrent):
+async def map(
+    function, items, exit_stack, max_concurrent
+):  # pylint: disable=redefined-builtin
     return await exit_stack.enter_async_context(
         traversals.sync_map(function, items, max_concurrent)
     )
@@ -71,7 +73,9 @@ async def map_unordered(function, items, exit_stack, max_concurrent):
 
 
 @registry.add_traversal("filter", calculate_more_params=calculate_function)
-async def filter(function, items, exit_stack, max_concurrent):
+async def filter(
+    function, items, exit_stack, max_concurrent
+):  # pylint: disable=redefined-builtin
     return await exit_stack.enter_async_context(
         traversals.sync_filter(function, items, max_concurrent)
     )
@@ -96,6 +100,7 @@ async def async_apply(function, items):
     return await traversals.async_apply(function, items)
 
 
+# pylint: disable=redefined-builtin
 @registry.add_traversal(
     "eval",
     calculate_more_params=lambda x: calculate_function(

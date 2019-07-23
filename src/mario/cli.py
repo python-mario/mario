@@ -54,6 +54,8 @@ class SectionedFormatter(click.formatting.HelpFormatter):
                 cmd_to_section[command] = section_name
 
         sections = {}
+
+        # pylint: disable=redefined-builtin
         for subcommand, help in rows:
             sections.setdefault(
                 cmd_to_section.get(subcommand, "Custom commands"), []
@@ -133,6 +135,7 @@ class SectionedGroup(click.Group):
 
             rows = []
             for subcommand, cmd in commands:
+                # pylint: disable=redefined-builtin
                 help = cmd.get_short_help_str(limit)
                 rows.append((subcommand, help))
 

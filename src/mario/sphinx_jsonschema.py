@@ -69,6 +69,7 @@ class DefinitionWideFormat(sphinx_jsonschema.wide_format.WideFormat):  # type: i
 
 class DefinitionJsonSchema(sphinx_jsonschema.JsonSchema):  # type: ignore
     def run(self):
+        # pylint: disable=redefined-builtin
         format = DefinitionWideFormat(
             self.state, self.lineno, sphinx_jsonschema._glob_app
         )

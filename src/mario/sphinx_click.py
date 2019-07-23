@@ -54,6 +54,7 @@ def _get_help_record(opt):
     if opt.secondary_opts:
         rv.append(_write_opts(opt.secondary_opts))
 
+    # pylint: disable=redefined-builtin
     help = opt.help or ""
     extra = []
     if opt.default is not None and opt.show_default:
