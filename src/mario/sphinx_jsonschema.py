@@ -82,6 +82,7 @@ class DefinitionJsonSchema(sphinx_jsonschema.JsonSchema):  # type: ignore
 
 
 def setup(app):
-    global _glob_app
+
+    global _glob_app  # pylint: disable=global-statement
     _glob_app = app
     app.add_directive("jsonschema", DefinitionJsonSchema)

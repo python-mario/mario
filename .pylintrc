@@ -154,7 +154,7 @@ disable=print-statement,
         exec-used,
         fixme,
         function,
-        global-statement,
+
 
 
         invalid-name,
