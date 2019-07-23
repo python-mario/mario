@@ -2,7 +2,7 @@
 .. _config-reference:
 
 =============================
-Configuration reference
+Configuration
 =============================
 
 The configuration file is in `toml format <https://github.com/toml-lang/toml>`__. The file location follows the `freedesktop.org standard <https://www.freedesktop.org/wiki/Software/xdg-user-dirs/>`_. Check the location on your system by running ``mario --help``:
@@ -22,13 +22,18 @@ The configuration file is in `toml format <https://github.com/toml-lang/toml>`__
         Python modules: /home/user/.config/mario/modules/*.py
 
 
+Any ``.py`` files in your ``mario/modules/`` directory will be usable from your commands. For example, if you write ``def read_csv(rows): ...`` in ``mario/modules/tools.py`` your commands will be able to use ``tools.read_csv()``.
+
+The declarative configuration is in ``mario/mario.toml``. For example, on Ubuntu we use ``~/.config/mario/config.toml``.
+
+In the declarative configuration you can:
+
+* set default values for the ``mario`` command-line options, and
+* define your own mario commands, like ``map``, ``filter``, or ``read-csv``.  See :ref:`Command configuration schema<command-config-schema>` for the command format specification.
 
 
-For example on Ubuntu we use ``~/.config/mario/config.toml`` for declarative configuration. See Configuration Reference for the format specification.
 
-
-
-You can set any of the ``mario`` options in your config. For example, to set a different default value for the concurrency maximum ``mario --max-concurrent``, add ``max_concurrent`` to your config file. Note the configuration file uses underscores as word separators, not hyphens.
+You can set any of the ``mario`` command-line options in your config. For example, to set a different default value for the concurrency maximum ``mario --max-concurrent``, add ``max_concurrent`` to your config file. Note the configuration file uses underscores as word separators, not hyphens.
 
 .. code-block:: toml
 
@@ -37,6 +42,9 @@ You can set any of the ``mario`` options in your config. For example, to set a d
     max_concurrent = 10
 
 then just use ``mario`` as normal.
+
+
+
 
 The ``base_exec_before`` option allows you to define any Python code you want to execute before your commands run. Your commands can reference names defined in the ``base_exec_before``. This option can be supplemented by using the ``--exec-before`` option on the command line to run additional code before your commands.
 
@@ -294,11 +302,11 @@ try:
 
 
 
+.. _command-config-schema:
 
+Command configuration schema
+================================
 
-Configuration schema
-=====================
-
-Below is the config file specification.
+At the top level, add new commands with a ``[[command]]`` heading, documented as ``CommandSpecschema`` in the tables.
 
 .. marshmallow:: mario.declarative:CommandSpecSchema

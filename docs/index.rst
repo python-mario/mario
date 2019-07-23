@@ -6,6 +6,7 @@ Contents
 
 
    readme
+   installation
    async
    cli_reference
    config_reference
@@ -13,6 +14,7 @@ Contents
    contributing
    authors
    changelog
+   q&a
 
 
 Indices and tables
