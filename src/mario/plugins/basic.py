@@ -299,16 +299,20 @@ def pip(ctx, pip_args):
 
 
 @meta.command("test", cls=cli_tools.CommandInSection, section=doc.UNSECTIONED)
+@click.argument("pytest_args", nargs=-1, type=click.UNPROCESSED)
 @click.pass_context
-def run_tests(ctx):
-    """Run all declarative command tests.
+def run_tests(ctx, pytest_args):
+    """Run all declarative command tests from plugins and config.
 
-    Executes each test in the ``tests`` field.
+    Executes each test in the ``command.tests`` field with pytest.
 
+    Default pytest args: ``-vvv --tb=short``
     """
 
     import tempfile
     import textwrap
+
+    pytest_args = pytest_args or ["-vvv", "--tb=short"]
 
     source = textwrap.dedent(
         """\
@@ -337,7 +341,7 @@ def run_tests(ctx):
     f = tempfile.NamedTemporaryFile("wt", suffix=".py", delete=False)
     f.write(source)
     f.close()
-    args = [sys.executable, "-m", "pytest", "-vvv", "--tb=short", f.name]
+    args = [sys.executable, "-m", "pytest"] + pytest_args + [f.name]
     proc = subprocess.run(args)
     ctx.exit(proc.returncode)
 
