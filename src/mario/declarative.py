@@ -224,6 +224,7 @@ class CommandSpec:
     inject_values: t.List[str] = attr.ib(converter=pyrsistent.freeze)
     tests: t.List[CommandTest] = attr.ib(converter=pyrsistent.freeze)
     section: str
+    hidden: bool
 
 
 class CommandSpecSchema(marshmallow.Schema):
@@ -278,6 +279,9 @@ class CommandSpecSchema(marshmallow.Schema):
         metadata={
             "description": "Name of the documentation section in which the new command should appear."
         },
+    )
+    hidden = fields.Boolean(
+        missing=False, metadata={"description": "Hide this command on the help page."}
     )
 
     @marshmallow.post_load()

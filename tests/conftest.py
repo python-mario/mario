@@ -9,8 +9,8 @@ def _runner():
     return click.testing.CliRunner()
 
 
-@pytest.fixture
-def tmp_env(tmp_path):
+@pytest.fixture(name="tmp_env")
+def _tmp_env(tmp_path):
     env = os.environ.copy()
     env["MARIO_CONFIG_DIR"] = tmp_path
     return env

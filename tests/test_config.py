@@ -81,3 +81,41 @@ def test_m_submodule_not_executed_at_startup(tmp_path, tmp_env):
     file.write_text("print('hello')")
     result = helpers.run(["eval", "''"], env=tmp_env).decode()
     assert result == "\n"
+
+
+def test_hidden_false(tmp_path, tmp_env):
+    """Non-hidden commands do appear in --help."""
+
+    text = """
+    [[command]]
+    name = "my-visible-command"
+    hidden = false
+
+    [[command.stages]]
+    command = "eval"
+    params = {code='1'}
+    """
+
+    (tmp_path / "config.toml").write_text(text)
+
+    result = helpers.run(["--help"], env=tmp_env).decode()
+    assert "my-visible-command" in result
+
+
+def test_hidden_true(tmp_path, tmp_env):
+    """Hidden commands don't appear in --help."""
+
+    text = """
+    [[command]]
+    name = "my-hidden-command"
+    hidden = true
+
+    [[command.stages]]
+    command = "eval"
+    params = {code='1'}
+    """
+
+    (tmp_path / "config.toml").write_text(text)
+
+    result = helpers.run(["--help"], env=tmp_env).decode()
+    assert "my-hidden-command" not in result
