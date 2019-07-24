@@ -232,6 +232,7 @@ def build_stages(command):
         short_help=command.short_help,
         help=command.help,
         section=getattr(command, "section", None),
+        hidden=command.hidden,
     )
 
 
