@@ -282,22 +282,6 @@ meta.sections = None  # type: ignore
 meta.help = "Commands about using mario."
 
 
-@meta.command(
-    context_settings=dict(ignore_unknown_options=True),
-    cls=cli_tools.CommandInSection,
-    section=doc.UNSECTIONED,
-)
-@click.argument("pip_args", nargs=-1, type=click.UNPROCESSED)
-@click.pass_context
-def pip(ctx, pip_args):
-    """Run pip in the environment that mario is installed into.
-
-    Arguments are forwarded to pip.
-    """
-    cli_args = [sys.executable, "-m", "pip"] + list(pip_args)
-    ctx.exit(subprocess.run(cli_args).returncode)
-
-
 @meta.command("test", cls=cli_tools.CommandInSection, section=doc.UNSECTIONED)
 @click.pass_context
 def run_tests(ctx):
