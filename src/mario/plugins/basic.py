@@ -276,7 +276,7 @@ for cmd in more_commands:
     registry.add_cli(name=cmd.name)(cmd)
 
 
-meta = click.Group("meta")
+meta = click.Group("meta", chain=True)
 meta.section = doc.UNSECTIONED  # type: ignore
 meta.sections = None  # type: ignore
 meta.help = "Commands about using mario."
