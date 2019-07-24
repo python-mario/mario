@@ -3,6 +3,7 @@ import typing as t
 import attr
 import click
 import marshmallow
+import pyrsistent
 from marshmallow import fields
 
 
@@ -137,7 +138,7 @@ class ArgumentSchema(marshmallow.Schema):
         return click.Argument(**validated)
 
 
-@attr.dataclass
+@attr.dataclass(frozen=True)
 class RemapParam:
     new: str
     old: str
@@ -154,11 +155,11 @@ class RemapParamSchema(marshmallow.Schema):
         return RemapParam(**validated)
 
 
-@attr.dataclass
+@attr.dataclass(frozen=True)
 class CommandStage:
     command: str
-    remap_params: t.List[RemapParam]
-    params: t.Dict[str, str]
+    remap_params: t.List[RemapParam] = attr.ib(converter=pyrsistent.freeze)
+    params: t.Dict[str, str] = attr.ib(converter=pyrsistent.freeze)
 
 
 class CommandStageSchema(marshmallow.Schema):
@@ -184,9 +185,9 @@ class CommandStageSchema(marshmallow.Schema):
         return CommandStage(**validated)
 
 
-@attr.dataclass
+@attr.dataclass(frozen=True)
 class CommandTest:
-    invocation: t.List[str]
+    invocation: t.List[str] = attr.ib(converter=pyrsistent.freeze)
     input: str
     output: str
 
@@ -212,16 +213,16 @@ class CommandTestSchema(marshmallow.Schema):
         return CommandTest(**validated)
 
 
-@attr.dataclass
+@attr.dataclass(frozen=True)
 class CommandSpec:
     name: str
     short_help: t.Optional[str]
     help: t.Optional[str]
-    arguments: t.List[click.Argument]
-    options: t.List[click.Option]
-    stages: t.List[CommandStage]
-    inject_values: t.List[str]
-    tests: t.List[CommandTest]
+    arguments: t.List[click.Argument] = attr.ib(converter=pyrsistent.freeze)
+    options: t.List[click.Option] = attr.ib(converter=pyrsistent.freeze)
+    stages: t.List[CommandStage] = attr.ib(converter=pyrsistent.freeze)
+    inject_values: t.List[str] = attr.ib(converter=pyrsistent.freeze)
+    tests: t.List[CommandTest] = attr.ib(converter=pyrsistent.freeze)
     section: str
 
 

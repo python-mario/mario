@@ -275,7 +275,7 @@ for cmd in more_commands:
     registry.add_cli(name=cmd.name)(cmd)
 
 
-meta = click.Group("meta")
+meta = click.Group("meta", chain=True)
 meta.section = doc.UNSECTIONED  # type: ignore
 meta.sections = None  # type: ignore
 meta.help = "Commands about using mario."
@@ -295,6 +295,59 @@ def pip(ctx, pip_args):
     """
     cli_args = [sys.executable, "-m", "pip"] + list(pip_args)
     ctx.exit(subprocess.run(cli_args).returncode)
+
+
+@meta.command(
+    "test",
+    cls=cli_tools.CommandInSection,
+    section=doc.UNSECTIONED,
+    context_settings=dict(ignore_unknown_options=True),
+)
+@click.argument("pytest_args", nargs=-1, type=click.UNPROCESSED)
+@click.pass_context
+def run_tests(ctx, pytest_args):
+    """Run all declarative command tests from plugins and config.
+
+    Executes each test in the ``command.tests`` field with pytest.
+
+    Default pytest args: ``-vvv --tb=short``
+    """
+
+    import tempfile
+    import textwrap
+
+    pytest_args = list(pytest_args) or ["-vvv", "--tb=short"]
+
+    source = textwrap.dedent(
+        """\
+    import subprocess
+    import sys
+
+    import pytest
+
+    import mario.app
+
+    COMMANDS = mario.app.global_registry.commands.values()  # pylint: disable=no-member
+    TEST_SPECS = [test for command in COMMANDS for test in command.tests]
+
+
+    @pytest.mark.parametrize(\"test_spec\", TEST_SPECS, ids=lambda ts: str(list(ts.invocation)))
+    def test_command(test_spec):
+
+        output = subprocess.check_output(
+            [sys.executable, \"-m\", \"mario\"] + list(test_spec.invocation),
+            input=test_spec.input.encode(),
+        ).decode()
+        assert output == test_spec.output
+
+    """
+    )
+    f = tempfile.NamedTemporaryFile("wt", suffix=".py", delete=False)
+    f.write(source)
+    f.close()
+    args = [sys.executable, "-m", "pytest"] + pytest_args + [f.name]
+    proc = subprocess.run(args)
+    ctx.exit(proc.returncode)
 
 
 registry.add_cli(name="meta")(meta)
