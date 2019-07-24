@@ -1,4 +1,3 @@
-import difflib
 import subprocess
 import sys
 
@@ -298,7 +297,12 @@ def pip(ctx, pip_args):
     ctx.exit(subprocess.run(cli_args).returncode)
 
 
-@meta.command("test", cls=cli_tools.CommandInSection, section=doc.UNSECTIONED)
+@meta.command(
+    "test",
+    cls=cli_tools.CommandInSection,
+    section=doc.UNSECTIONED,
+    context_settings=dict(ignore_unknown_options=True),
+)
 @click.argument("pytest_args", nargs=-1, type=click.UNPROCESSED)
 @click.pass_context
 def run_tests(ctx, pytest_args):
@@ -312,7 +316,7 @@ def run_tests(ctx, pytest_args):
     import tempfile
     import textwrap
 
-    pytest_args = pytest_args or ["-vvv", "--tb=short"]
+    pytest_args = list(pytest_args) or ["-vvv", "--tb=short"]
 
     source = textwrap.dedent(
         """\

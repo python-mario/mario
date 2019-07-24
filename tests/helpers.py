@@ -6,6 +6,7 @@ import sys
 TESTS_DIR = pathlib.Path(__file__).parent
 
 
-def run(args, **kwargs):
+def run(args, capture_output=True, check=True, **kwargs):
     args = [sys.executable, "-m", "mario"] + args
-    return subprocess.check_output(args, **kwargs)
+    proc = subprocess.run(args, capture_output=capture_output, check=check, **kwargs)
+    return proc.stdout

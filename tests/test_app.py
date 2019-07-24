@@ -4,6 +4,8 @@
 from __future__ import generator_stop
 
 import os
+import subprocess
+import sys
 import textwrap
 
 import hypothesis
@@ -96,3 +98,79 @@ def test_exec_before():
 
 def test_stage_exec_before():
     assert helpers.run(["eval", "--exec-before", "a=1", "a"]).decode() == "1\n"
+
+
+def test_meta_pip_command():
+    """``meta pip`` command accepts pip subcommands and options."""
+    result = helpers.run(["meta", "pip", "install", "--help"]).decode()
+    expected = (
+        "pip install [options] <requirement specifier> [package-index-options] ..."
+    )
+    assert expected in result
+
+
+def test_meta_test_command_fail(tmp_path, tmp_env):
+    """Get a failing result when a test fails."""
+
+    text = r"""
+    [[command]]
+    name = "mario-failing-test"
+    short_help = "An internal test command for mario"
+    help = "An internal test command for mario"
+
+    [[command.stages]]
+    command = "eval"
+    params = {code="1"}
+
+    [[command.tests]]
+    invocation = ["mario-failing-test"]
+    input = ""
+    output = "2\n"
+
+    """
+    (tmp_path / "config.toml").write_text(text)
+
+    proc = subprocess.run(
+        [sys.executable, "-m", "python", "meta", "test", "-vvvvv", "-pno:sugar"],
+        env=tmp_env,
+        check=False,
+        capture_output=True,
+    )
+    assert proc.returncode != 0
+
+
+def test_meta_test_command_pass(tmp_path, tmp_env):
+    """Get a failing result when a test fails."""
+
+    text = r"""
+    [[command]]
+    name = "mario-passing-test"
+    short_help = "An internal test command for mario"
+    help = "An internal test command for mario"
+
+    [[command.stages]]
+    command = "eval"
+    params = {code="1"}
+
+    [[command.tests]]
+    invocation = ["mario-passing-test"]
+    input = ""
+    output = "1\n"
+    """
+    (tmp_path / "config.toml").write_text(text)
+
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "mario",
+            "meta",
+            "test",
+            "-vvvv",
+            "-pno:sugar",
+            "--tb=long",
+        ],
+        env=tmp_env,
+        capture_output=True,
+    )
+    assert proc.returncode == 0
