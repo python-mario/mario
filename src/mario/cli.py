@@ -60,15 +60,29 @@ class SectionedFormatter(click.formatting.HelpFormatter):
         section_name_to_commands = {}
         # pylint: disable=redefined-builtin
         for _formatted_name, subcommand, help in rows:
+
             section_name_to_commands.setdefault(
                 getattr(subcommand, "section", "Custom"), []
             ).append((subcommand, help))
-        for section in sorted(self.sections, key=lambda s: s.priority):
 
-            with super().section(section.name):
-                commands = section_name_to_commands[section.name]
+        section_name_to_spec = {s.name: s for s in self.sections}
 
-                section_rows = [(pair[0].name, pair[1]) for pair in commands]
+        for section_name in sorted(
+            section_name_to_commands.keys(),
+            key=lambda name: section_name_to_spec.get(
+                name, mario.doc.NULL_SECTION
+            ).priority,
+        ):
+            commands = section_name_to_commands[section_name]
+            section_rows = [(pair[0].name, pair[1]) for pair in commands]
+            if section_name == mario.doc.UNSECTIONED:
+                formatted_name = "More"
+            elif section_name is None:
+                formatted_name = mario.doc.NULL_SECTION.name
+            else:
+                formatted_name = section_name
+
+            with super().section(formatted_name):
                 super().write_dl(section_rows, *args, **kwargs)
 
 

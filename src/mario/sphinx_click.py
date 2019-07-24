@@ -438,6 +438,18 @@ class ClickDirective(rst.Directive):
         for help_section, subcommands in self._group_commands(command, commands):
             group_name = help_section.name
 
+            if group_name == doc.UNSECTIONED:
+
+                for subcommand in subcommands:
+                    item.extend(
+                        self._generate_nodes(
+                            subcommand.name, subcommand, ctx, show_nested
+                        )
+                    )
+
+                self.state.nested_parse(result, 0, item)
+                continue
+
             group_item = nodes.section(
                 "",
                 nodes.title(text=group_name),

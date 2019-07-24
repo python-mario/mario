@@ -71,6 +71,9 @@ class HelpSectionSpec:
     name: str = ""
 
 
+UNSECTIONED = "UNSECTIONED"
+UNSECTIONED_PRIORITY = 100_000
+
 SECTION_SPECS = {
     HelpSectionSpec(
         name="Traversals", doc="Commands for calling code on data.", priority=0
@@ -80,6 +83,7 @@ SECTION_SPECS = {
         doc="Commands for asynchronously calling code on data.",
         priority=1,
     ),
+    HelpSectionSpec(name=UNSECTIONED, doc="", priority=UNSECTIONED_PRIORITY),
 }
 
 SECTION_NAME_TO_SECTION_SPEC = {s.name: s for s in SECTION_SPECS}

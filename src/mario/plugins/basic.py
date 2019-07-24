@@ -1,6 +1,10 @@
+import subprocess
+import sys
+
 import click
 
 from mario import cli_tools
+from mario import doc
 from mario import interpret
 from mario import plug
 from mario import traversals
@@ -225,14 +229,14 @@ for subcommand in subcommands:
     # TODO: add_cli and add_traversal should be the non-decorator form
     registry.add_cli(name=subcommand.name)(subcommand)
 
-# type: ignore
-reduce_command_decorator = click.command(  # type: ignore
-    "reduce", cls=cli_tools.CommandInSection, section="Traversals"  # type: ignore
-)  # type: ignore
-
 
 @registry.add_cli(name="reduce")
-@reduce_command_decorator
+@click.command(  # type: ignore
+    "reduce",
+    cls=cli_tools.CommandInSection,
+    section="Traversals",
+    help="Reduce a sequence with a function like ``operator.mul``.",
+)
 @option_exec_before
 @click.argument("function_name")
 def _reduce(function_name, **parameters):
@@ -271,20 +275,26 @@ for cmd in more_commands:
     registry.add_cli(name=cmd.name)(cmd)
 
 
-# meta = click.Group("meta")
+meta = click.Group("meta")
+meta.section = doc.UNSECTIONED  # type: ignore
+meta.sections = None  # type: ignore
+meta.help = "Commands about using mario."
 
 
-# @meta.command(
-#     context_settings=dict(ignore_unknown_options=True),
-#     cls=cli_tools.CommandInSection,
-#     section="Meta",
-# )
-# @click.argument("pip_args", nargs=-1, type=click.UNPROCESSED)
-# @click.pass_context
-# def pip(ctx, pip_args):
-#     """Run pip in the environment that mario is installed into."""
-#     cli_args = [sys.executable, "-m", "pip"] + list(pip_args)
-#     ctx.exit(subprocess.run(cli_args).returncode)
+@meta.command(
+    context_settings=dict(ignore_unknown_options=True),
+    cls=cli_tools.CommandInSection,
+    section=doc.UNSECTIONED,
+)
+@click.argument("pip_args", nargs=-1, type=click.UNPROCESSED)
+@click.pass_context
+def pip(ctx, pip_args):
+    """Run pip in the environment that mario is installed into.
+
+    Arguments are forwarded to pip.
+    """
+    cli_args = [sys.executable, "-m", "pip"] + list(pip_args)
+    ctx.exit(subprocess.run(cli_args).returncode)
 
 
-# registry.add_cli(name="meta")(meta)
+registry.add_cli(name="meta")(meta)
