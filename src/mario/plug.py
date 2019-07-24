@@ -105,7 +105,7 @@ class Registry:
     def add_cli(self, name=None):
         def wrap(function):
             if name is None:
-                registered_name = function.__name__
+                registered_name = getattr(function, "__name__", None), function.name
             else:
                 registered_name = name
             # pylint: disable=unsupported-assignment-operation

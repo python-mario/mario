@@ -356,35 +356,32 @@ class ClickDirective(rst.Directive):
 
     def _make_subcommand_to_section(self, command):
         subcommand_to_section = {}
-        for help_section in command.sections.values():
+        for help_section in command.sections:
             for subcommand_name in help_section.entries:
                 subcommand_to_section[subcommand_name] = help_section
         return subcommand_to_section
+
+    def _get_section_spec(self, cmd):
+
+        if cmd.section in doc.SECTION_NAME_TO_SECTION_SPEC:
+            return doc.SECTION_NAME_TO_SECTION_SPEC[cmd.section]
+        if cmd.section:
+            return doc.HelpSectionSpec(
+                priority=doc.DEFAULT_SECTION_PRIORITY, name=cmd.section
+            )
+        return doc.NULL_SECTION
 
     def _sort_commands(self, command, subcommands):
         if not hasattr(command, "sections"):
             return subcommands
 
-        subcommand_to_section = self._make_subcommand_to_section(command)
-
-        def get_section(cmd):
-            return subcommand_to_section.get(
-                cmd.name, doc.HelpSection(float("inf"), [], name="Custom")
-            )
-
-        return sorted(subcommands, key=get_section)
+        return sorted(subcommands, key=self._get_section_spec)
 
     def _group_commands(self, command, subcommands):
         if not hasattr(command, "sections"):
             return subcommands
-        subcommand_to_section = self._make_subcommand_to_section(command)
 
-        def get_section(cmd):
-            return subcommand_to_section.get(
-                cmd.name, doc.HelpSection(float("inf"), [], name="Custom")
-            )
-
-        return itertools.groupby(subcommands, key=get_section)
+        return itertools.groupby(subcommands, key=self._get_section_spec)
 
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-arguments
@@ -439,7 +436,19 @@ class ClickDirective(rst.Directive):
         commands = self._sort_commands(command, commands)
 
         for help_section, subcommands in self._group_commands(command, commands):
-            group_name = help_section.name or "CustomFOO"
+            group_name = help_section.name
+
+            if group_name == doc.UNSECTIONED:
+
+                for subcommand in subcommands:
+                    item.extend(
+                        self._generate_nodes(
+                            subcommand.name, subcommand, ctx, show_nested
+                        )
+                    )
+
+                self.state.nested_parse(result, 0, item)
+                continue
 
             group_item = nodes.section(
                 "",
