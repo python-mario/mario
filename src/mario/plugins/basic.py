@@ -58,6 +58,22 @@ def calculate_reduce(traversal):
 async def map(
     function, items, exit_stack, max_concurrent
 ):  # pylint: disable=redefined-builtin
+    """
+    Run code on each input item.
+
+    For example,
+
+    .. code-block:: bash
+
+        $ mario map 'x*2' <<EOF
+        a
+        b
+        c
+        EOF
+        aa
+        bb
+        cc
+    """
     return await exit_stack.enter_async_context(
         traversals.sync_map(function, items, max_concurrent)
     )
@@ -65,13 +81,29 @@ async def map(
 
 @registry.add_traversal("async_map", calculate_more_params=calculate_function)
 async def async_map(function, items, exit_stack, max_concurrent):
+    """
+    Run code on each input item asynchronously.
+
+    For example,
+
+    .. code-block:: bash
+
+        % mario async-map 'await asks.get ! x.text ! len' apply max <<EOF
+        http://httpbin.org/delay/5
+        http://httpbin.org/delay/1
+        http://httpbin.org/delay/4
+        http://httpbin.org/delay/3
+        http://httpbin.org/delay/4
+        EOF
+        297
+    """
     return await exit_stack.enter_async_context(
         traversals.async_map(function, items, max_concurrent)
     )
 
 
 @registry.add_traversal("async_map_unordered", calculate_more_params=calculate_function)
-async def map_unordered(function, items, exit_stack, max_concurrent):
+async def async_map_unordered(function, items, exit_stack, max_concurrent):
     return await exit_stack.enter_async_context(
         traversals.async_map_unordered(function, items, max_concurrent)
     )
@@ -151,39 +183,53 @@ async def async_chain(items, exit_stack):
 
 
 subcommands = [
-    cli_tools.CommandInSection(
-        "map", short_help="Call code on each line of input.", section="Traversals"
+    cli_tools.DocumentedCommand(
+        "map",
+        help=map.__doc__,
+        short_help="Call code on each line of input.",
+        section="Traversals",
     ),
-    cli_tools.CommandInSection(
+    cli_tools.DocumentedCommand(
         "async-map",
+        help=async_map.__doc__,
         short_help="Call code on each line of input.",
         section="Async traversals",
     ),
-    cli_tools.CommandInSection(
-        "apply", short_help="Call code on input as a sequence.", section="Traversals"
+    cli_tools.DocumentedCommand(
+        "apply",
+        help=apply.__doc__,
+        short_help="Call code on input as a sequence.",
+        section="Traversals",
     ),
-    cli_tools.CommandInSection(
+    cli_tools.DocumentedCommand(
         "async-apply",
+        help=async_apply.__doc__,
         short_help="Call code asynchronously on input as a sequence.",
         section="Async traversals",
     ),
-    cli_tools.CommandInSection(
+    cli_tools.DocumentedCommand(
         "filter",
+        help=filter.__doc__,
         short_help="Call code on each line of input and exclude false values.",
         section="Traversals",
     ),
-    cli_tools.CommandInSection(
+    cli_tools.DocumentedCommand(
         "async-filter",
+        help=async_filter.__doc__,
         short_help="Async call code on each line of input and exclude false values.",
         section="Async traversals",
     ),
-    cli_tools.CommandInSection(
+    cli_tools.DocumentedCommand(
         "async-map-unordered",
+        help=async_map_unordered.__doc__,
         short_help="Call code on each line of input, ignoring order of input items.",
         section="Async traversals",
     ),
-    cli_tools.CommandInSection(
-        "eval", short_help="Evaluate a python expression code", section="Traversals"
+    cli_tools.DocumentedCommand(
+        "eval",
+        help=eval.__doc__,
+        short_help="Evaluate a python expression code",
+        section="Traversals",
     ),
 ]
 
@@ -233,7 +279,7 @@ for subcommand in subcommands:
 @registry.add_cli(name="reduce")
 @click.command(  # type: ignore
     "reduce",
-    cls=cli_tools.CommandInSection,
+    cls=cli_tools.DocumentedCommand,
     section="Traversals",
     help="Reduce a sequence with a function like ``operator.mul``.",
 )
@@ -258,13 +304,13 @@ def _reduce(function_name, **parameters):
 
 
 more_commands = [
-    cli_tools.CommandInSection(
+    cli_tools.DocumentedCommand(
         "chain",
         callback=lambda **kw: [{"name": "chain", "parameters": kw}],
         short_help="Expand iterable of iterables of items into an iterable of items.",
         section="Traversals",
     ),
-    cli_tools.CommandInSection(
+    cli_tools.DocumentedCommand(
         "async-chain",
         callback=lambda **kw: [{"name": "async-chain", "parameters": kw}],
         short_help="Expand iterable of async iterables into an iterable of items.",
@@ -283,7 +329,7 @@ meta.help = "Commands about using mario."
 
 @meta.command(
     context_settings=dict(ignore_unknown_options=True),
-    cls=cli_tools.CommandInSection,
+    cls=cli_tools.DocumentedCommand,
     section=doc.UNSECTIONED,
 )
 @click.argument("pip_args", nargs=-1, type=click.UNPROCESSED)
@@ -299,7 +345,7 @@ def pip(ctx, pip_args):
 
 @meta.command(
     "test",
-    cls=cli_tools.CommandInSection,
+    cls=cli_tools.DocumentedCommand,
     section=doc.UNSECTIONED,
     context_settings=dict(ignore_unknown_options=True),
 )
