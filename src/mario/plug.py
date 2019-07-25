@@ -16,7 +16,6 @@ import toml
 
 from mario import config
 from mario import declarative
-from mario import utils
 
 
 @attr.dataclass

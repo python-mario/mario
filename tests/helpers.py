@@ -58,9 +58,3 @@ class Timer:
 
         if self.elapsed > self.max:
             raise TimerMaxExceeded(self)
-
-
-def test_adding():
-    with Timer(max=0.1):
-        foo = 1 + 2
-        bar = foo + 10

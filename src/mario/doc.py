@@ -6,7 +6,7 @@ import typing as t
 import attr
 
 
-def parse_rst(text: str) -> docutils.nodes.document:
+def parse_rst(text: str) -> docutils.nodes.document:  # type: ignore
     import docutils.nodes
     import docutils.parsers.rst
     import docutils.utils
@@ -21,7 +21,8 @@ def parse_rst(text: str) -> docutils.nodes.document:
     return document
 
 
-def format_text(document: docutils.nodes.document) -> str:
+# pylint: disable=undefined-variable
+def format_text(document: docutils.nodes.document) -> str:  # type: ignore
     import sphinx.builders.text
     import sphinx.events
     import sphinx.util.osutil
