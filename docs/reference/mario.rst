@@ -67,6 +67,14 @@ mario.doc module
    :undoc-members:
    :show-inheritance:
 
+mario.exceptions module
+-----------------------
+
+.. automodule:: mario.exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 mario.interfaces module
 -----------------------
 
