@@ -25,4 +25,5 @@ lxml
 docshtest
 pygments>=2.4
 marshmallow-jsonschema
+pluggy>=0.12
 -r requirements.in
