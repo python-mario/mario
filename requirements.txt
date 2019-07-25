@@ -21,7 +21,7 @@ docutils==0.14
 h11==0.9.0                # via asks
 idna==2.8                 # via requests, trio
 imagesize==1.1.0          # via sphinx
-importlib-metadata==0.18  # via pluggy, pytest
+importlib-metadata==0.18
 jinja2==2.10.1            # via sphinx
 markupsafe==1.1.1         # via jinja2
 marshmallow==3.0.0rc7

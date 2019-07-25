@@ -39,6 +39,7 @@ hyperlink==19.0.0         # via twisted
 hypothesis==4.17.1
 idna==2.8                 # via hyperlink, requests, trio, twisted, yarl
 imagesize==1.1.0          # via sphinx
+importlib-metadata==0.18
 incremental==17.5.0       # via cuvner, treq, twisted
 isort==4.3.17             # via pylint
 jedi==0.13.3
@@ -113,6 +114,7 @@ webencodings==0.5.1       # via bleach
 wrapt==1.11.1             # via astroid
 yapf==0.27.0
 yarl==1.3.0               # via aiohttp
+zipp==0.5.2               # via importlib-metadata
 zope.interface==4.6.0     # via twisted
 
 # The following packages are considered to be unsafe in a requirements file:
