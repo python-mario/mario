@@ -4,7 +4,6 @@ import subprocess
 import sys
 import time
 
-import attr
 import pytest
 import requests
 
@@ -33,21 +32,6 @@ def test_server(server):
     assert requests.get("http://localhost:8080/?delay=1")
 
 
-@attr.s
-class Timer:
-    start = attr.ib(default=None)
-    end = attr.ib(default=None)
-    elapsed = attr.ib(default=None)
-
-    def __enter__(self):
-        self.start = time.monotonic()
-        return self
-
-    def __exit__(self, *args):
-        self.end = time.monotonic()
-        self.elapsed = self.end - self.start
-
-
 def test_cli_async_map_then_apply(runner, reactor, server):
     base_url = "http://localhost:8080/?delay={}\n"
 
@@ -70,7 +54,7 @@ def test_cli_async_map_then_apply(runner, reactor, server):
 
     expected = "42\n"
     limit_seconds = 6.0
-    with Timer() as t:
+    with helpers.Timer() as t:
         output = subprocess.check_output(
             [sys.executable, *args], input=in_stream.encode(), timeout=limit_seconds
         ).decode()
@@ -93,7 +77,7 @@ def test_cli_async_map(runner, reactor, server, capsys):
 
     expected = "1\n1\n5\n1\n"
 
-    with Timer() as t:
+    with helpers.Timer() as t:
         output = helpers.run(args, input=in_stream.encode()).decode()
 
     assert output == expected
@@ -113,7 +97,7 @@ def test_cli_async_map_unordered(runner, reactor, server, capsys):
 
     expected = "1\n2\n3\n4\n5\n"
 
-    with Timer() as t:
+    with helpers.Timer() as t:
         output = helpers.run(args, input=in_stream.encode()).decode()
 
     assert output == expected
@@ -149,7 +133,7 @@ def test_cli_async_reduce_without_curry(runner, reactor, server, capsys):
 
     expected = "3.0\n"
 
-    with Timer() as t:
+    with helpers.Timer() as t:
         output = helpers.run(args, input=in_stream.encode()).decode()
 
     assert output == expected

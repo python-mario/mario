@@ -1,17 +1,16 @@
+from __future__ import annotations
+
 import types
 import typing as t
 
 import attr
-import docutils.nodes
-import docutils.parsers.rst
-import docutils.utils
-import sphinx.builders.text
-import sphinx.events
-import sphinx.util.osutil
-import sphinx.writers.text
 
 
-def parse_rst(text: str) -> docutils.nodes.document:
+def parse_rst(text: str) -> docutils.nodes.document:  # type: ignore
+    import docutils.nodes
+    import docutils.parsers.rst
+    import docutils.utils
+
     parser = docutils.parsers.rst.Parser()
     components = (docutils.parsers.rst.Parser,)
     settings = docutils.frontend.OptionParser(
@@ -22,7 +21,12 @@ def parse_rst(text: str) -> docutils.nodes.document:
     return document
 
 
-def format_text(document: docutils.nodes.document) -> str:
+# pylint: disable=undefined-variable
+def format_text(document: docutils.nodes.document) -> str:  # type: ignore
+    import sphinx.builders.text
+    import sphinx.events
+    import sphinx.util.osutil
+    import sphinx.writers.text
 
     app = types.SimpleNamespace(
         srcdir=None,

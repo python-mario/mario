@@ -11,12 +11,11 @@ from typing import Iterable
 from typing import List
 
 import attr
-import pkg_resources
+import importlib_metadata
 import toml
 
 from mario import config
 from mario import declarative
-from mario import utils
 
 
 @attr.dataclass
@@ -118,8 +117,8 @@ class Registry:
 
 def plugin_module_paths() -> List[str]:
     return [
-        entry_point.module_name + "." + entry_point.name
-        for entry_point in pkg_resources.iter_entry_points(f"{utils.NAME}_plugins")
+        entry_point.value + "." + entry_point.name
+        for entry_point in importlib_metadata.entry_points()["mario_plugins"]
     ]
 
 

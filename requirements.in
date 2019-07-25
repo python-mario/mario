@@ -15,3 +15,4 @@ trio_typing
 docutils
 sphinx
 pytest
+importlib_metadata
