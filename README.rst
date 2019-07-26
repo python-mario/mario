@@ -163,7 +163,7 @@ try
 More commands
 ***********************************************************
 
-Here are a few commands. See `Command reference <cli_reference.html>`__ for the complete set.
+Here are a few commands. See `Command reference <cli_reference.html>`__ for the complete set, and get even more from `mario-addons <https://mario-addons.readthedocs.org/>`__.
 
 
 ``eval``
