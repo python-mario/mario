@@ -58,8 +58,11 @@ def calculate_reduce(traversal):
 async def map(
     function, items, exit_stack, max_concurrent
 ):  # pylint: disable=redefined-builtin
-    """
-    Run code on each input item.
+    """Run code on each input item.
+
+    Each item is handled in the order it was received, and also output in the
+    same order. For less strict ordering and asynchronous execution, see
+    ``async-map`` and ``async-map-unordered``.
 
     For example,
 
@@ -73,6 +76,7 @@ async def map(
         aa
         bb
         cc
+
     """
     return await exit_stack.enter_async_context(
         traversals.sync_map(function, items, max_concurrent)
@@ -81,21 +85,33 @@ async def map(
 
 @registry.add_traversal("async_map", calculate_more_params=calculate_function)
 async def async_map(function, items, exit_stack, max_concurrent):
-    """
-    Run code on each input item asynchronously.
+    """Run code on each input item asynchronously.
 
-    For example,
+    The order of inputs is retained in the outputs. However, the order of inputs
+    does not determine the order in which each input is handled, only the order
+    in which its result is emitted. To keep the order in which each input is
+    handled, use the synchronous version, ``map``.
+
+    In this example, we make requests that have a server-side delay of specified
+    length. The input order is retained in the output by holding each item until
+    its precedents are ready.
 
     .. code-block:: bash
 
-        % mario async-map 'await asks.get ! x.text ! len' apply max <<EOF
-        http://httpbin.org/delay/5
-        http://httpbin.org/delay/1
-        http://httpbin.org/delay/4
-        http://httpbin.org/delay/3
-        http://httpbin.org/delay/4
-        EOF
-        297
+
+           $ mario async-map 'await asks.get ! x.json()["url"]'  <<EOF
+           http://httpbin.org/delay/5
+           http://httpbin.org/delay/1
+           http://httpbin.org/delay/2
+           http://httpbin.org/delay/3
+           http://httpbin.org/delay/4
+           EOF
+           https://httpbin.org/delay/5
+           https://httpbin.org/delay/1
+           https://httpbin.org/delay/2
+           https://httpbin.org/delay/3
+           https://httpbin.org/delay/4
+
     """
     return await exit_stack.enter_async_context(
         traversals.async_map(function, items, max_concurrent)
@@ -104,6 +120,35 @@ async def async_map(function, items, exit_stack, max_concurrent):
 
 @registry.add_traversal("async_map_unordered", calculate_more_params=calculate_function)
 async def async_map_unordered(function, items, exit_stack, max_concurrent):
+    """Run code on each input item asynchronously, without retaining input order.
+
+    Each result is emitted in the order it becomes ready, regardless of input
+    order. Input order is also ignored when determining in which order to
+    *start* handling each item. Results start emitting as soon as the first one
+    is ready. It also saves memory because it doesn't require accumulating
+    results while waiting for previous items to become ready. For stricter
+    ordering, see ``map`` or ``async_map``.
+
+    In this example, we make requests that have a server-side delay of specified
+    length. The input order is lost but the results appear immediately as they
+    are ready (the delay length determines the output order):
+
+    .. code-block:: bash
+
+           $ mario async-map-unordered 'await asks.get ! x.json()["url"]'  <<EOF
+           http://httpbin.org/delay/5
+           http://httpbin.org/delay/1
+           http://httpbin.org/delay/2
+           http://httpbin.org/delay/3
+           http://httpbin.org/delay/4
+           EOF
+           https://httpbin.org/delay/1
+           https://httpbin.org/delay/2
+           https://httpbin.org/delay/3
+           https://httpbin.org/delay/4
+           https://httpbin.org/delay/5
+
+    """
     return await exit_stack.enter_async_context(
         traversals.async_map_unordered(function, items, max_concurrent)
     )
@@ -113,6 +158,7 @@ async def async_map_unordered(function, items, exit_stack, max_concurrent):
 async def filter(
     function, items, exit_stack, max_concurrent
 ):  # pylint: disable=redefined-builtin
+
     return await exit_stack.enter_async_context(
         traversals.sync_filter(function, items, max_concurrent)
     )
