@@ -70,3 +70,4 @@ deploy:
   on:
     tags: true
     branch: master
+  distributions: "sdist bdist_wheel"
