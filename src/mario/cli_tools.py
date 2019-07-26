@@ -1,3 +1,5 @@
+import textwrap
+
 import click
 
 import mario.doc
@@ -15,19 +17,17 @@ class ReSTCommand(click.Command):
     def format_help_text(self, ctx, formatter):
 
         if self.help:
-            self.help = mario.doc.rst2text(self.help)
+            self.help = mario.doc.rst2text(textwrap.dedent(self.help))
             original_wrap_text = click.formatting.wrap_text
             click.formatting.wrap_text = lambda x, *a, **kw: x
             super().format_help_text(ctx, formatter)
             click.formatting.wrap_text = original_wrap_text
-            return
 
-        if self.short_help:
+        elif self.short_help:
             original_help = self.help
             self.help = self.short_help
             super().format_help_text(ctx, formatter)
             self.help = original_help
-            return
 
 
 class DocumentedCommand(ReSTCommand, CommandInSection):

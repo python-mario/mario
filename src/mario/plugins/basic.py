@@ -58,7 +58,8 @@ def calculate_reduce(traversal):
 async def map(
     function, items, exit_stack, max_concurrent
 ):  # pylint: disable=redefined-builtin
-    """Run code on each input item.
+    """
+    Run code on each input item.
 
     Each item is handled in the order it was received, and also output in the
     same order. For less strict ordering and asynchronous execution, see
@@ -85,7 +86,8 @@ async def map(
 
 @registry.add_traversal("async_map", calculate_more_params=calculate_function)
 async def async_map(function, items, exit_stack, max_concurrent):
-    """Run code on each input item asynchronously.
+    """
+    Run code on each input item asynchronously.
 
     The order of inputs is retained in the outputs. However, the order of inputs
     does not determine the order in which each input is handled, only the order
@@ -120,7 +122,8 @@ async def async_map(function, items, exit_stack, max_concurrent):
 
 @registry.add_traversal("async_map_unordered", calculate_more_params=calculate_function)
 async def async_map_unordered(function, items, exit_stack, max_concurrent):
-    """Run code on each input item asynchronously, without retaining input order.
+    """
+    Run code on each input item asynchronously, without retaining input order.
 
     Each result is emitted in the order it becomes ready, regardless of input
     order. Input order is also ignored when determining in which order to
@@ -158,7 +161,8 @@ async def async_map_unordered(function, items, exit_stack, max_concurrent):
 async def filter(
     function, items, exit_stack, max_concurrent
 ):  # pylint: disable=redefined-builtin
-    """Keep input items that satisfy a condition.
+    """
+    Keep input items that satisfy a condition.
 
     Order of input items is retained in the output.
 
@@ -186,21 +190,22 @@ async def filter(
 
 @registry.add_traversal("async_filter", calculate_more_params=calculate_function)
 async def async_filter(function, items, exit_stack, max_concurrent):
-    """Keep input items that satisfy an asynchronous condition.
+    """
+    Keep input items that satisfy an asynchronous condition.
 
-       For example,
+    For example,
 
-       .. code-block:: bash
+    .. code-block:: bash
 
-           $ mario filter 'await asks.get(x).json()["url"].endswith(("1", "3"))'  <<EOF
-           http://httpbin.org/delay/5
-           http://httpbin.org/delay/1
-           http://httpbin.org/delay/2
-           http://httpbin.org/delay/3
-           http://httpbin.org/delay/4
-           EOF
-           http://httpbin.org/delay/1
-           http://httpbin.org/delay/3
+        $ mario filter 'await asks.get(x).json()["url"].endswith(("1", "3"))'  <<EOF
+        http://httpbin.org/delay/5
+        http://httpbin.org/delay/1
+        http://httpbin.org/delay/2
+        http://httpbin.org/delay/3
+        http://httpbin.org/delay/4
+        EOF
+        http://httpbin.org/delay/1
+        http://httpbin.org/delay/3
 
     """
     return await exit_stack.enter_async_context(
@@ -210,7 +215,8 @@ async def async_filter(function, items, exit_stack, max_concurrent):
 
 @registry.add_traversal("apply", calculate_more_params=calculate_function)
 async def apply(function, items):
-    """Apply code to the iterable of items.
+    """
+    Apply code to the iterable of items.
 
     The code should take an iterable and it will be called with the input items.
     The items iterable will be converted to a list before the code is called, so
@@ -248,7 +254,8 @@ async def async_apply(function, items):
     ),
 )
 async def eval(function):
-    """Evaluate a Python expression.
+    """
+    Evaluate a Python expression.
 
     No input items are used.
 
@@ -264,7 +271,8 @@ async def eval(function):
 
 @registry.add_traversal("reduce", calculate_more_params=calculate_reduce)
 async def reduce(function, items, exit_stack, max_concurrent):
-    """Reduce input items with code that takes two arguments, similar to ``functools.reduce``.
+    """
+    Reduce input items with code that takes two arguments, similar to ``functools.reduce``.
 
     For example,
 
@@ -299,7 +307,8 @@ async def dropwhile(function, items, exit_stack):
     ),
 )
 async def chain(items, exit_stack):
-    """Flatten a nested iterable by one level.
+    """
+    Flatten a nested iterable by one level.
 
     Converts an iterable of iterables of items into an iterable of items, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_.
 
@@ -325,9 +334,13 @@ async def chain(items, exit_stack):
     ),
 )
 async def async_chain(items, exit_stack):
-    """Flatten a nested async iterable by one level.
+    """
+    Flatten a nested async iterable by one level.
 
-    Converts an async iterable of async iterables of items into an async iterable of items, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_ for async iterables.
+    Converts an async iterable of async iterables of items into an async
+    iterable of items, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_
+    for async iterables.
+
     """
     return await exit_stack.enter_async_context(traversals.async_chain(items))
 
@@ -431,7 +444,8 @@ for subcommand in subcommands:
     "reduce",
     cls=cli_tools.DocumentedCommand,
     section="Traversals",
-    help="Reduce a sequence with a function like ``operator.mul``.",
+    short_help="Reduce a sequence with a function like ``operator.mul``.",
+    help=reduce.__doc__,
 )
 @option_exec_before
 @click.argument("function_name")
@@ -457,6 +471,7 @@ more_commands = [
     cli_tools.DocumentedCommand(
         "chain",
         callback=lambda **kw: [{"name": "chain", "parameters": kw}],
+        help=chain.__doc__,
         short_help="Expand iterable of iterables of items into an iterable of items.",
         section="Traversals",
     ),
@@ -464,6 +479,7 @@ more_commands = [
         "async-chain",
         callback=lambda **kw: [{"name": "async-chain", "parameters": kw}],
         short_help="Expand iterable of async iterables into an iterable of items.",
+        help=async_chain.__doc__,
         section="Async traversals",
     ),
 ]
@@ -485,9 +501,10 @@ meta.help = "Commands about using mario."
 @click.argument("pip_args", nargs=-1, type=click.UNPROCESSED)
 @click.pass_context
 def pip(ctx, pip_args):
-    """Run pip in the environment that mario is installed into.
+    """
+    Run ``pip`` in the environment that mario is installed into.
 
-    Arguments are forwarded to pip.
+    Arguments are forwarded to ``pip``.
     """
     cli_args = [sys.executable, "-m", "pip"] + list(pip_args)
     ctx.exit(subprocess.run(cli_args).returncode)
@@ -502,7 +519,8 @@ def pip(ctx, pip_args):
 @click.argument("pytest_args", nargs=-1, type=click.UNPROCESSED)
 @click.pass_context
 def run_tests(ctx, pytest_args):
-    """Run all declarative command tests from plugins and config.
+    """
+    Run all declarative command tests from plugins and config.
 
     Executes each test in the ``command.tests`` field with pytest.
 
