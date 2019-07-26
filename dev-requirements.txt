@@ -106,7 +106,7 @@ twisted[tls]==19.2.0
 typed-ast==1.4.0          # via astroid, mypy
 typing-extensions==3.7.4  # via mypy, trio-typing
 unidiff==0.5.5            # via cuvner
-urllib3==1.24.2
+urllib3==1.24.3
 virtualenv==16.4.3        # via tox
 vulture==1.0
 watchdog==0.9.0           # via cuvner

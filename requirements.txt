@@ -56,7 +56,7 @@ trio-typing==0.2.0
 trio==0.11.0
 typed-ast==1.4.0          # via mypy
 typing-extensions==3.7.4  # via trio-typing
-urllib3==1.25.3           # via requests
+urllib3==1.24.3           # via requests
 wcwidth==0.1.7            # via pytest
 zipp==0.5.2               # via importlib-metadata
 
