@@ -24,10 +24,10 @@ new_version="$(git describe)"
 git branch -m "${new_version}"
 
 # Add remote.
-git remote add origin https://"${GITHUB_TOKEN}"@github.com/"${REPO_OWNER}"/"${REPO_NAME}".git
+git remote add authorized-origin https://"${GITHUB_TOKEN}"@github.com/"${REPO_OWNER}"/"${REPO_NAME}".git
 
 # Push to remote branch.
-git push --set-upstream origin "$new_version"  --follow-tags
+git push --set-upstream authorized-origin "$new_version"  --follow-tags
 
 # Open a pull request from the new branch into `release` branch.
 # Write the json output into a file.
