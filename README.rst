@@ -104,7 +104,7 @@ Use ``map`` to act on each item in the file with python commands:
 
 .. code-block:: bash
 
-  $ mario map 'x.upper()' <<<'abc'
+  $ mario map str.upper <<<'abc'
   ABC
 
 
@@ -112,14 +112,14 @@ Chain python functions together with ``!``:
 
 .. code-block:: bash
 
-  $ mario map 'x.upper() ! len(x)' <<<hello
+  $ mario map 'str.upper ! len' <<<hello
   5
 
 or by adding another command
 
 .. code-block:: bash
 
-   $ mario map 'x.upper()' map 'len(x)' <<<hello
+   $ mario map str.upper map len <<<hello
    5
 
 
@@ -127,11 +127,11 @@ Use ``x`` as a placeholder for the input at each stage:
 
 .. code-block:: bash
 
-  $ mario map ' x.split()[0] ! x.upper() + "!"' <<<'Hello world'
-  HELLO!
+  $ mario map ' x.split()[0] ! x.upper()' <<<'Hello world'
+  HELLO
 
-  $ mario map 'x.split()[0] ! x.upper() + "!" ! x.replace("H", "J")' <<<'Hello world'
-  JELLO!
+  $ mario map 'x.split()[0] ! x.upper() ! x.replace("H", "J")' <<<'Hello world'
+  JELLO
 
 
 
@@ -143,7 +143,7 @@ Automatically import modules you need:
     {'m': 1, 'i': 4, 's': 4, 'p': 2}
 
 
-You don't need to explicitly call the function with ``some_function(x)``; just use the function's name ``some_function``. For example, instead of
+You don't need to explicitly call the function with ``some_function(x)``; just use the function's name, ``some_function``. For example, instead of
 
 .. code-block:: bash
 
