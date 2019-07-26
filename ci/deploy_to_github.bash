@@ -11,8 +11,8 @@ pip install httpie
 git checkout -b new-branch
 
 # Configure git.
-git configure user.name "$GIT_AUTHOR_NAME"
-git configure user.email "$GIT_AUTHOR_EMAIL"
+git config user.name "$GIT_AUTHOR_NAME"
+git config user.email "$GIT_AUTHOR_EMAIL"
 
 # Bump version.
 tox -e bump
