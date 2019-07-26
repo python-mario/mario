@@ -10,6 +10,10 @@ pip install httpie
 # Check out a new branch for the new version.
 git checkout -b new-branch
 
+# Configure git.
+git configure user.name "$GIT_AUTHOR_NAME"
+git configure user.email "$GIT_AUTHOR_EMAIL"
+
 # Bump version.
 tox -e bump
 
