@@ -42,7 +42,7 @@ imagesize==1.1.0          # via sphinx
 importlib-metadata==0.18
 incremental==17.5.0       # via cuvner, treq, twisted
 isort==4.3.17             # via pylint
-jedi==0.13.3
+jedi==0.14.1
 jinja2==2.10.1            # via sphinx
 lazy-object-proxy==1.3.1  # via astroid
 lockfile==0.12.2
@@ -57,7 +57,7 @@ mypy-extensions==0.4.1    # via mypy, trio-typing
 mypy==0.720               # via trio-typing
 outcome==1.0.0            # via trio
 packaging==19.0           # via pytest-sugar, sphinx
-parso==0.4.0
+parso==0.5.1
 pathtools==0.1.2          # via watchdog
 pkginfo==1.5.0.1          # via twine
 pluggy==0.12.0
