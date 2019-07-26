@@ -87,7 +87,7 @@ or for more isolation, use `pipx <https://github.com/pipxproject/pipx/>`_:
     installation-inclusion-end
 
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-Usage
+Quickstart
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 Basics
@@ -104,7 +104,7 @@ Use ``map`` to act on each item in the file with python commands:
 
 .. code-block:: bash
 
-  $ mario map 'x.upper()' <<<'abc'
+  $ mario map str.upper <<<'abc'
   ABC
 
 
@@ -112,14 +112,14 @@ Chain python functions together with ``!``:
 
 .. code-block:: bash
 
-  $ mario map 'x.upper() ! len(x)' <<<hello
+  $ mario map 'str.upper ! len' <<<hello
   5
 
 or by adding another command
 
 .. code-block:: bash
 
-   $ mario map 'x.upper()' map 'len(x)' <<<hello
+   $ mario map str.upper map len <<<hello
    5
 
 
@@ -127,11 +127,11 @@ Use ``x`` as a placeholder for the input at each stage:
 
 .. code-block:: bash
 
-  $ mario map ' x.split()[0] ! x.upper() + "!"' <<<'Hello world'
-  HELLO!
+  $ mario map ' x.split()[0] ! x.upper()' <<<'Hello world'
+  HELLO
 
-  $ mario map 'x.split()[0] ! x.upper() + "!" ! x.replace("H", "J")' <<<'Hello world'
-  JELLO!
+  $ mario map 'x.split()[0] ! x.upper() ! x.replace("H", "J")' <<<'Hello world'
+  JELLO
 
 
 
@@ -143,7 +143,7 @@ Automatically import modules you need:
     {'m': 1, 'i': 4, 's': 4, 'p': 2}
 
 
-You don't need to explicitly call the function with ``some_function(x)``; just use the function's name ``some_function``. For example, instead of
+You don't need to explicitly call the function with ``some_function(x)``; just use the function's name, ``some_function``. For example, instead of
 
 .. code-block:: bash
 
@@ -163,7 +163,7 @@ try
 More commands
 ***********************************************************
 
-Here are a few commands. See `Command reference <cli_reference.html>`__ for the complete set.
+Here are a few commands. See `Command reference <cli_reference.html>`__ for the complete set, and get even more from `mario-addons <https://mario-addons.readthedocs.org/>`__.
 
 
 ``eval``
@@ -294,41 +294,49 @@ Then subsequent commands will act on these new rows. Here we get the length of e
 ..
     async-inclusion-start
 
-Making sequential requests is slow. These requests take 20 seconds to complete.
+Making sequential requests is slow. These requests take 16 seconds to complete.
 
 .. code-block:: bash
 
-   % time mario map 'requests.get ! x.text ! len' apply max <<EOF
-   http://httpbin.org/delay/5
-   http://httpbin.org/delay/1
-   http://httpbin.org/delay/4
-   http://httpbin.org/delay/3
-   http://httpbin.org/delay/4
-   EOF
 
-   302
+       % time mario map 'await asks.get ! x.json()["url"]'  <<EOF
+       http://httpbin.org/delay/5
+       http://httpbin.org/delay/1
+       http://httpbin.org/delay/2
+       http://httpbin.org/delay/3
+       http://httpbin.org/delay/4
+       EOF
+       https://httpbin.org/delay/5
+       https://httpbin.org/delay/1
+       https://httpbin.org/delay/2
+       https://httpbin.org/delay/3
+       https://httpbin.org/delay/4
+       0.51s user
+       0.02s system
+       16.460 total
 
-   0.61s user
-   0.06s system
-   19.612 total
 
 Concurrent requests can go much faster. The same requests now take only 6 seconds. Use ``async-map``, or ``async-filter``, or ``reduce`` with ``await some_async_function`` to get concurrency out of the box.
 
+
 .. code-block:: bash
 
-   % time mario async-map 'await asks.get ! x.text ! len' apply max <<EOF
-   http://httpbin.org/delay/5
-   http://httpbin.org/delay/1
-   http://httpbin.org/delay/4
-   http://httpbin.org/delay/3
-   http://httpbin.org/delay/4
-   EOF
 
-   297
-
-   0.57s user
-   0.08s system
-   5.897 total
+       % time mario async-map 'await asks.get ! x.json()["url"]'  <<EOF
+       http://httpbin.org/delay/5
+       http://httpbin.org/delay/1
+       http://httpbin.org/delay/2
+       http://httpbin.org/delay/3
+       http://httpbin.org/delay/4
+       EOF
+       https://httpbin.org/delay/5
+       https://httpbin.org/delay/1
+       https://httpbin.org/delay/2
+       https://httpbin.org/delay/3
+       https://httpbin.org/delay/4
+       0.49s user
+       0.03s system
+       5.720 total
 
 ..
     async-inclusion-end

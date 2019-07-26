@@ -20,31 +20,6 @@ config.DEFAULTS.update(
 )
 
 
-class ReSTCommand(click.Command):
-    """Parse help as rst."""
-
-    def format_help_text(self, ctx, formatter):
-
-        if self.help:
-            self.help = mario.doc.rst2text(self.help)
-            original_wrap_text = click.formatting.wrap_text
-            click.formatting.wrap_text = lambda x, *a, **kw: x
-            super().format_help_text(ctx, formatter)
-            click.formatting.wrap_text = original_wrap_text
-            return
-
-        if self.short_help:
-            original_help = self.help
-            self.help = self.short_help
-            super().format_help_text(ctx, formatter)
-            self.help = original_help
-            return
-
-
-class DocumentedCommand(ReSTCommand, cli_tools.CommandInSection):
-    pass
-
-
 class SectionedFormatter(click.formatting.HelpFormatter):
     def __init__(self, *args, sections, **kwargs):
         self.sections = sections
@@ -225,7 +200,7 @@ def build_stages(command):
 
     params = command.arguments + command.options
 
-    return DocumentedCommand(
+    return cli_tools.DocumentedCommand(
         name=command.name,
         params=params,
         callback=click.pass_context(run),

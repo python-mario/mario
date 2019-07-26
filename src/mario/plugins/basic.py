@@ -58,6 +58,26 @@ def calculate_reduce(traversal):
 async def map(
     function, items, exit_stack, max_concurrent
 ):  # pylint: disable=redefined-builtin
+    """Run code on each input item.
+
+    Each item is handled in the order it was received, and also output in the
+    same order. For less strict ordering and asynchronous execution, see
+    ``async-map`` and ``async-map-unordered``.
+
+    For example,
+
+    .. code-block:: bash
+
+        $ mario map 'x*2' <<EOF
+        a
+        b
+        c
+        EOF
+        aa
+        bb
+        cc
+
+    """
     return await exit_stack.enter_async_context(
         traversals.sync_map(function, items, max_concurrent)
     )
@@ -65,13 +85,70 @@ async def map(
 
 @registry.add_traversal("async_map", calculate_more_params=calculate_function)
 async def async_map(function, items, exit_stack, max_concurrent):
+    """Run code on each input item asynchronously.
+
+    The order of inputs is retained in the outputs. However, the order of inputs
+    does not determine the order in which each input is handled, only the order
+    in which its result is emitted. To keep the order in which each input is
+    handled, use the synchronous version, ``map``.
+
+    In this example, we make requests that have a server-side delay of specified
+    length. The input order is retained in the output by holding each item until
+    its precedents are ready.
+
+    .. code-block:: bash
+
+
+           $ mario async-map 'await asks.get ! x.json()["url"]'  <<EOF
+           http://httpbin.org/delay/5
+           http://httpbin.org/delay/1
+           http://httpbin.org/delay/2
+           http://httpbin.org/delay/3
+           http://httpbin.org/delay/4
+           EOF
+           https://httpbin.org/delay/5
+           https://httpbin.org/delay/1
+           https://httpbin.org/delay/2
+           https://httpbin.org/delay/3
+           https://httpbin.org/delay/4
+
+    """
     return await exit_stack.enter_async_context(
         traversals.async_map(function, items, max_concurrent)
     )
 
 
 @registry.add_traversal("async_map_unordered", calculate_more_params=calculate_function)
-async def map_unordered(function, items, exit_stack, max_concurrent):
+async def async_map_unordered(function, items, exit_stack, max_concurrent):
+    """Run code on each input item asynchronously, without retaining input order.
+
+    Each result is emitted in the order it becomes ready, regardless of input
+    order. Input order is also ignored when determining in which order to
+    *start* handling each item. Results start emitting as soon as the first one
+    is ready. It also saves memory because it doesn't require accumulating
+    results while waiting for previous items to become ready. For stricter
+    ordering, see ``map`` or ``async_map``.
+
+    In this example, we make requests that have a server-side delay of specified
+    length. The input order is lost but the results appear immediately as they
+    are ready (the delay length determines the output order):
+
+    .. code-block:: bash
+
+           $ mario async-map-unordered 'await asks.get ! x.json()["url"]'  <<EOF
+           http://httpbin.org/delay/5
+           http://httpbin.org/delay/1
+           http://httpbin.org/delay/2
+           http://httpbin.org/delay/3
+           http://httpbin.org/delay/4
+           EOF
+           https://httpbin.org/delay/1
+           https://httpbin.org/delay/2
+           https://httpbin.org/delay/3
+           https://httpbin.org/delay/4
+           https://httpbin.org/delay/5
+
+    """
     return await exit_stack.enter_async_context(
         traversals.async_map_unordered(function, items, max_concurrent)
     )
@@ -81,6 +158,27 @@ async def map_unordered(function, items, exit_stack, max_concurrent):
 async def filter(
     function, items, exit_stack, max_concurrent
 ):  # pylint: disable=redefined-builtin
+    """Keep input items that satisfy a condition.
+
+    Order of input items is retained in the output.
+
+    For example,
+
+    .. code-block::
+
+        $ mario filter 'x > "c"' <<EOF
+        a
+        b
+        c
+        d
+        e
+        f
+        EOF
+        d
+        e
+        f
+    """
+
     return await exit_stack.enter_async_context(
         traversals.sync_filter(function, items, max_concurrent)
     )
@@ -88,6 +186,23 @@ async def filter(
 
 @registry.add_traversal("async_filter", calculate_more_params=calculate_function)
 async def async_filter(function, items, exit_stack, max_concurrent):
+    """Keep input items that satisfy an asynchronous condition.
+
+       For example,
+
+       .. code-block:: bash
+
+           $ mario filter 'await asks.get(x).json()["url"].endswith(("1", "3"))'  <<EOF
+           http://httpbin.org/delay/5
+           http://httpbin.org/delay/1
+           http://httpbin.org/delay/2
+           http://httpbin.org/delay/3
+           http://httpbin.org/delay/4
+           EOF
+           http://httpbin.org/delay/1
+           http://httpbin.org/delay/3
+
+    """
     return await exit_stack.enter_async_context(
         traversals.async_filter(function, items, max_concurrent)
     )
@@ -95,13 +210,33 @@ async def async_filter(function, items, exit_stack, max_concurrent):
 
 @registry.add_traversal("apply", calculate_more_params=calculate_function)
 async def apply(function, items):
-    """When ``function`` takes an iterable."""
+    """Apply code to the iterable of items.
+
+    The code should take an iterable and it will be called with the input items.
+    The items iterable will be converted to a list before the code is called, so
+    it doesn't work well on very large streams.
+
+    For example,
+
+    .. code-block:: bash
+
+        $ mario map int apply sum <<EOF
+        10
+        20
+        30
+        EOF
+        60
+
+    """
     return traversals.AsyncIterableWrapper([await function([x async for x in items])])
 
 
 @registry.add_traversal("async_apply", calculate_more_params=calculate_function)
 async def async_apply(function, items):
-    """When ``function`` takes an async iterable."""
+    """Apply code to an async iterable of items.
+
+    The code should take an async iterable.
+    """
     return await traversals.async_apply(function, items)
 
 
@@ -113,11 +248,38 @@ async def async_apply(function, items):
     ),
 )
 async def eval(function):
+    """Evaluate a Python expression.
+
+    No input items are used.
+
+    For example,
+
+    .. code-block:: bash
+
+        $ mario eval 1+1
+        2
+    """
     return traversals.AsyncIterableWrapper([await function(None)])
 
 
 @registry.add_traversal("reduce", calculate_more_params=calculate_reduce)
 async def reduce(function, items, exit_stack, max_concurrent):
+    """Reduce input items with code that takes two arguments, similar to ``functools.reduce``.
+
+    For example,
+
+    .. code-block:: bash
+
+        $ mario reduce map int operator.mul <<EOF
+        1
+        2
+        3
+        4
+        5
+        EOF
+        120
+
+    """
     return await exit_stack.enter_async_context(
         traversals.async_reduce(function, items, max_concurrent)
     )
@@ -137,6 +299,22 @@ async def dropwhile(function, items, exit_stack):
     ),
 )
 async def chain(items, exit_stack):
+    """Flatten a nested iterable by one level.
+
+    Converts an iterable of iterables of items into an iterable of items, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_.
+
+    For example,
+
+    .. code-block:: bash
+
+        $ mario eval '[[1,2]]'
+        [[1, 2]]
+
+
+        $ mario eval '[[1, 2]]' chain
+        [1, 2]
+
+    """
     return await exit_stack.enter_async_context(traversals.sync_chain(items))
 
 
@@ -147,43 +325,61 @@ async def chain(items, exit_stack):
     ),
 )
 async def async_chain(items, exit_stack):
+    """Flatten a nested async iterable by one level.
+
+    Converts an async iterable of async iterables of items into an async iterable of items, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_ for async iterables.
+    """
     return await exit_stack.enter_async_context(traversals.async_chain(items))
 
 
 subcommands = [
-    cli_tools.CommandInSection(
-        "map", short_help="Call code on each line of input.", section="Traversals"
+    cli_tools.DocumentedCommand(
+        "map",
+        help=map.__doc__,
+        short_help="Call code on each line of input.",
+        section="Traversals",
     ),
-    cli_tools.CommandInSection(
+    cli_tools.DocumentedCommand(
         "async-map",
+        help=async_map.__doc__,
         short_help="Call code on each line of input.",
         section="Async traversals",
     ),
-    cli_tools.CommandInSection(
-        "apply", short_help="Call code on input as a sequence.", section="Traversals"
+    cli_tools.DocumentedCommand(
+        "apply",
+        help=apply.__doc__,
+        short_help="Call code on input as a sequence.",
+        section="Traversals",
     ),
-    cli_tools.CommandInSection(
+    cli_tools.DocumentedCommand(
         "async-apply",
+        help=async_apply.__doc__,
         short_help="Call code asynchronously on input as a sequence.",
         section="Async traversals",
     ),
-    cli_tools.CommandInSection(
+    cli_tools.DocumentedCommand(
         "filter",
+        help=filter.__doc__,
         short_help="Call code on each line of input and exclude false values.",
         section="Traversals",
     ),
-    cli_tools.CommandInSection(
+    cli_tools.DocumentedCommand(
         "async-filter",
+        help=async_filter.__doc__,
         short_help="Async call code on each line of input and exclude false values.",
         section="Async traversals",
     ),
-    cli_tools.CommandInSection(
+    cli_tools.DocumentedCommand(
         "async-map-unordered",
+        help=async_map_unordered.__doc__,
         short_help="Call code on each line of input, ignoring order of input items.",
         section="Async traversals",
     ),
-    cli_tools.CommandInSection(
-        "eval", short_help="Evaluate a python expression code", section="Traversals"
+    cli_tools.DocumentedCommand(
+        "eval",
+        help=eval.__doc__,
+        short_help="Evaluate a python expression code",
+        section="Traversals",
     ),
 ]
 
@@ -233,7 +429,7 @@ for subcommand in subcommands:
 @registry.add_cli(name="reduce")
 @click.command(  # type: ignore
     "reduce",
-    cls=cli_tools.CommandInSection,
+    cls=cli_tools.DocumentedCommand,
     section="Traversals",
     help="Reduce a sequence with a function like ``operator.mul``.",
 )
@@ -258,13 +454,13 @@ def _reduce(function_name, **parameters):
 
 
 more_commands = [
-    cli_tools.CommandInSection(
+    cli_tools.DocumentedCommand(
         "chain",
         callback=lambda **kw: [{"name": "chain", "parameters": kw}],
         short_help="Expand iterable of iterables of items into an iterable of items.",
         section="Traversals",
     ),
-    cli_tools.CommandInSection(
+    cli_tools.DocumentedCommand(
         "async-chain",
         callback=lambda **kw: [{"name": "async-chain", "parameters": kw}],
         short_help="Expand iterable of async iterables into an iterable of items.",
@@ -283,7 +479,7 @@ meta.help = "Commands about using mario."
 
 @meta.command(
     context_settings=dict(ignore_unknown_options=True),
-    cls=cli_tools.CommandInSection,
+    cls=cli_tools.DocumentedCommand,
     section=doc.UNSECTIONED,
 )
 @click.argument("pip_args", nargs=-1, type=click.UNPROCESSED)
@@ -299,7 +495,7 @@ def pip(ctx, pip_args):
 
 @meta.command(
     "test",
-    cls=cli_tools.CommandInSection,
+    cls=cli_tools.DocumentedCommand,
     section=doc.UNSECTIONED,
     context_settings=dict(ignore_unknown_options=True),
 )
