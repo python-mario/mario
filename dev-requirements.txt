@@ -32,7 +32,7 @@ coverage==4.5.3
 cryptography==2.6.1       # via pyopenssl, service-identity
 cuvner==18.0.1
 docshtest==0.0.2
-docutils==0.14
+docutils==0.15
 filelock==3.0.10          # via tox
 h11==0.9.0                # via asks
 hyperlink==19.0.0         # via twisted
