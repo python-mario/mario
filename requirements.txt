@@ -24,7 +24,7 @@ imagesize==1.1.0          # via sphinx
 importlib-metadata==0.18
 jinja2==2.10.1            # via sphinx
 markupsafe==1.1.1         # via jinja2
-marshmallow==3.0.0rc7
+marshmallow==3.0.0rc8
 more-itertools==7.2.0     # via pytest
 mypy-extensions==0.4.1    # via mypy, trio-typing
 mypy==0.711               # via trio-typing
