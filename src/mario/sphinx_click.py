@@ -1,4 +1,5 @@
 import itertools
+import textwrap
 import traceback
 
 import click
@@ -89,6 +90,7 @@ def _format_description(ctx):
     if not help_string:
         return
 
+    help_string = textwrap.dedent(help_string)
     bar_enabled = False
     for line in statemachine.string2lines(
         help_string, tab_width=4, convert_whitespace=True
