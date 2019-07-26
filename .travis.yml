@@ -43,15 +43,13 @@ jobs:
     python: 3.7
     dist: xenial
     sudo: required
-    deploy:
+    on:
+        branch: actually-release
     - provider: pypi
       username: mariopy
       password:
         secure: pTPqaLVhYiZCyAEhgwf1LzJxeAqzNGeGVKHG8vaRD5/qjeCF920pjzWh6f433S3JGZTr81Z+rMvw8h1amjtJEFPya5HI5TmaSbuCDLVIzsXlbBNmRWF67pMCnDch3kdHu02Ki6ULXl2ybTDR6l5+ZZGIUFFXEjrLxTTNWz/tOA0TdsrKswANwybwFCPfLzCSbN+uzT/cEvIiLodRMw5e9IgDGvlUNqi6Pv9roqiFWYhJ5SHg120Awu5JWEs7+v9x0EpUSYvgtgobrS3LDaI8kF1+OwcKfSzPc2GyHIjeqLveC2ltop3IYINPpKcVYxzowuL7DWyuOFjP4YOlF5uwoEFNwDFcPRHffAJogZJ188xIo2xVUg0LvtjEl650e9MAY7F0AwsXfwrB1vSST0Ra8IEgzRnJVBVPtYUDDdf08VK5X99LtlwiN3QOe4tRtaRusESLR7B9vO12W1+Q2bXfXJy4YWfuqQnExrFXwYRrmXgCpdrM77jfsBkdYp+qxwcnla+bC6fSDToYM6/mXh+rg47WUc2m8dV2780YsdItk9hjlL2PBQdAow1AIZHlPsqp4324oLn03CAzb2rbyOKhz8AFHMx9nNWL8Db6MSIQCFhBm32zEyx+Jvn2SqnFPkeGeHKWuBsKoTVtKpqWgIy7ixN5EVkv+mdKbIsTMtN4BrM=
-      on:
-        tags: true
-        branch: actually-release
-      distributions: sdist bdist_wheel
+      distributions: "sdist bdist_wheel"
       skip_existing: true
       skip_cleanup: true
 
