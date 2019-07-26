@@ -24,6 +24,9 @@ jobs:
     env:
     - TOXENV=doc
   - stage: deploy-to-github
+    python: 3.7
+    dist: xenial
+    sudo: required
     env:
     - GITHUB_USERNAME=python-mario-bot
     - REPO_OWNER=python-mario
@@ -37,6 +40,9 @@ jobs:
       branch: master
     script: bash ci/deploy_to_github.bash
   - stage: deploy-to-pypi
+    python: 3.7
+    dist: xenial
+    sudo: required
     deploy:
     - provider: pypi
       username: mariopy
