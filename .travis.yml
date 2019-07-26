@@ -3,62 +3,73 @@ sudo: false
 cache: pip
 env:
   global:
-    - LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
-    - SEGFAULT_SIGNALS=all
+  - LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
+  - SEGFAULT_SIGNALS=all
 matrix:
   include:
-    - python: '3.7'
-      dist: xenial
-      sudo: required
-      env:
-        - TOXENV=coverage,codecov
-    - python: '3.7'
-      dist: xenial
-      sudo: required
-      env:
-      - TOXENV=check
-    - python: '3.7'
-      dist: xenial
-      sudo: required
-      env:
-      - TOXENV=doc
+  - python: '3.7'
+    dist: xenial
+    sudo: required
+    env:
+    - TOXENV=coverage,codecov
+  - python: '3.7'
+    dist: xenial
+    sudo: required
+    env:
+    - TOXENV=check
+  - python: '3.7'
+    dist: xenial
+    sudo: required
+    env:
+    - TOXENV=doc
 before_install:
-  - python --version
-  - uname -a
-  - lsb_release -a
+- python --version
+- uname -a
+- lsb_release -a
 install:
-  - pip install tox
-  - virtualenv --version
-  - easy_install --version
-  - pip --version
-  - tox --version
-  - |
-    set -ex
-    if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then
-        (cd $HOME
-         wget https://bitbucket.org/pypy/pypy/downloads/pypy2-v6.0.0-linux64.tar.bz2
-         tar xf pypy2-*.tar.bz2
-         pypy2-*/bin/pypy -m ensurepip
-         pypy2-*/bin/pypy -m pip install -U virtualenv)
-        export PATH=$(echo $HOME/pypy2-*/bin):$PATH
-        export TOXPYTHON=$(echo $HOME/pypy2-*/bin/pypy)
-    fi
-    if [[ $TRAVIS_PYTHON_VERSION == 'pypy3' ]]; then
-        (cd $HOME
-         wget https://bitbucket.org/pypy/pypy/downloads/pypy3.6-v7.1.1-linux64.tar.bz2
-         tar xf pypy3*.tar.bz2
-         pypy3*/bin/pypy3 -m ensurepip
-         pypy3*/bin/pypy3 -m pip install -U virtualenv)
-        export PATH=$(echo $HOME/pypy3*/bin):$PATH
-        export TOXPYTHON=$(echo $HOME/pypy3*/bin/pypy3)
-    fi
-    set +x
+- pip install tox
+- virtualenv --version
+- easy_install --version
+- pip --version
+- tox --version
+- |
+  set -ex
+  if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then
+      (cd $HOME
+       wget https://bitbucket.org/pypy/pypy/downloads/pypy2-v6.0.0-linux64.tar.bz2
+       tar xf pypy2-*.tar.bz2
+       pypy2-*/bin/pypy -m ensurepip
+       pypy2-*/bin/pypy -m pip install -U virtualenv)
+      export PATH=$(echo $HOME/pypy2-*/bin):$PATH
+      export TOXPYTHON=$(echo $HOME/pypy2-*/bin/pypy)
+  fi
+  if [[ $TRAVIS_PYTHON_VERSION == 'pypy3' ]]; then
+      (cd $HOME
+       wget https://bitbucket.org/pypy/pypy/downloads/pypy3.6-v7.1.1-linux64.tar.bz2
+       tar xf pypy3*.tar.bz2
+       pypy3*/bin/pypy3 -m ensurepip
+       pypy3*/bin/pypy3 -m pip install -U virtualenv)
+      export PATH=$(echo $HOME/pypy3*/bin):$PATH
+      export TOXPYTHON=$(echo $HOME/pypy3*/bin/pypy3)
+  fi
+  set +x
 script:
-  - tox -v
+- tox -v
 after_failure:
-  - more .tox/log/* | cat
-  - more .tox/*/log/* | cat
+- more .tox/log/* | cat
+- more .tox/*/log/* | cat
 notifications:
   email:
     on_success: never
     on_failure: always
+deploy:
+  provider: pypi
+  username: mariopy
+  password:
+    secure: pTPqaLVhYiZCyAEhgwf1LzJxeAqzNGeGVKHG8vaRD5/qjeCF920pjzWh6f433S3JGZTr81Z+rMvw8h1amjtJEFPya5HI5TmaSbuCDLVIzsXlbBNmRWF67pMCnDch3kdHu02Ki6ULXl2ybTDR6l5+ZZGIUFFXEjrLxTTNWz/tOA0TdsrKswANwybwFCPfLzCSbN+uzT/cEvIiLodRMw5e9IgDGvlUNqi6Pv9roqiFWYhJ5SHg120Awu5JWEs7+v9x0EpUSYvgtgobrS3LDaI8kF1+OwcKfSzPc2GyHIjeqLveC2ltop3IYINPpKcVYxzowuL7DWyuOFjP4YOlF5uwoEFNwDFcPRHffAJogZJ188xIo2xVUg0LvtjEl650e9MAY7F0AwsXfwrB1vSST0Ra8IEgzRnJVBVPtYUDDdf08VK5X99LtlwiN3QOe4tRtaRusESLR7B9vO12W1+Q2bXfXJy4YWfuqQnExrFXwYRrmXgCpdrM77jfsBkdYp+qxwcnla+bC6fSDToYM6/mXh+rg47WUc2m8dV2780YsdItk9hjlL2PBQdAow1AIZHlPsqp4324oLn03CAzb2rbyOKhz8AFHMx9nNWL8Db6MSIQCFhBm32zEyx+Jvn2SqnFPkeGeHKWuBsKoTVtKpqWgIy7ixN5EVkv+mdKbIsTMtN4BrM=
+  on:
+    tags: true
+    branch: master
+  distributions: "sdist bdist_wheel"
+  skip_existing: true
+  skip_cleanup: true
