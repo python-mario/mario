@@ -158,6 +158,26 @@ async def async_map_unordered(function, items, exit_stack, max_concurrent):
 async def filter(
     function, items, exit_stack, max_concurrent
 ):  # pylint: disable=redefined-builtin
+    """Keep input items that satisfy a condition.
+
+    Order of input items is retained in the output.
+
+    For example,
+
+    .. code-block::
+
+        $ mario filter 'x > "c"' <<EOF
+        a
+        b
+        c
+        d
+        e
+        f
+        EOF
+        d
+        e
+        f
+    """
 
     return await exit_stack.enter_async_context(
         traversals.sync_filter(function, items, max_concurrent)
@@ -166,6 +186,23 @@ async def filter(
 
 @registry.add_traversal("async_filter", calculate_more_params=calculate_function)
 async def async_filter(function, items, exit_stack, max_concurrent):
+    """Keep input items that satisfy an asynchronous condition.
+
+       For example,
+
+       .. code-block:: bash
+
+           $ mario filter 'await asks.get(x).json()["url"].endswith(("1", "3"))'  <<EOF
+           http://httpbin.org/delay/5
+           http://httpbin.org/delay/1
+           http://httpbin.org/delay/2
+           http://httpbin.org/delay/3
+           http://httpbin.org/delay/4
+           EOF
+           http://httpbin.org/delay/1
+           http://httpbin.org/delay/3
+
+    """
     return await exit_stack.enter_async_context(
         traversals.async_filter(function, items, max_concurrent)
     )
@@ -173,13 +210,33 @@ async def async_filter(function, items, exit_stack, max_concurrent):
 
 @registry.add_traversal("apply", calculate_more_params=calculate_function)
 async def apply(function, items):
-    """When ``function`` takes an iterable."""
+    """Apply code to the iterable of items.
+
+    The code should take an iterable and it will be called with the input items.
+    The items iterable will be converted to a list before the code is called, so
+    it doesn't work well on very large streams.
+
+    For example,
+
+    .. code-block:: bash
+
+        $ mario map int apply sum <<EOF
+        10
+        20
+        30
+        EOF
+        60
+
+    """
     return traversals.AsyncIterableWrapper([await function([x async for x in items])])
 
 
 @registry.add_traversal("async_apply", calculate_more_params=calculate_function)
 async def async_apply(function, items):
-    """When ``function`` takes an async iterable."""
+    """Apply code to an async iterable of items.
+
+    The code should take an async iterable.
+    """
     return await traversals.async_apply(function, items)
 
 
@@ -191,11 +248,38 @@ async def async_apply(function, items):
     ),
 )
 async def eval(function):
+    """Evaluate a Python expression.
+
+    No input items are used.
+
+    For example,
+
+    .. code-block:: bash
+
+        $ mario eval 1+1
+        2
+    """
     return traversals.AsyncIterableWrapper([await function(None)])
 
 
 @registry.add_traversal("reduce", calculate_more_params=calculate_reduce)
 async def reduce(function, items, exit_stack, max_concurrent):
+    """Reduce input items with code that takes two arguments, similar to ``functools.reduce``.
+
+    For example,
+
+    .. code-block:: bash
+
+        $ mario reduce map int operator.mul <<EOF
+        1
+        2
+        3
+        4
+        5
+        EOF
+        120
+
+    """
     return await exit_stack.enter_async_context(
         traversals.async_reduce(function, items, max_concurrent)
     )
@@ -215,6 +299,22 @@ async def dropwhile(function, items, exit_stack):
     ),
 )
 async def chain(items, exit_stack):
+    """Flatten a nested iterable by one level.
+
+    Converts an iterable of iterables of items into an iterable of items, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_.
+
+    For example,
+
+    .. code-block:: bash
+
+        $ mario eval '[[1,2]]'
+        [[1, 2]]
+
+
+        $ mario eval '[[1, 2]]' chain
+        [1, 2]
+
+    """
     return await exit_stack.enter_async_context(traversals.sync_chain(items))
 
 
@@ -225,6 +325,10 @@ async def chain(items, exit_stack):
     ),
 )
 async def async_chain(items, exit_stack):
+    """Flatten a nested async iterable by one level.
+
+    Converts an async iterable of async iterables of items into an async iterable of items, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_ for async iterables.
+    """
     return await exit_stack.enter_async_context(traversals.async_chain(items))
 
 
