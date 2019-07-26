@@ -79,7 +79,7 @@ pytz==2019.1              # via babel
 pyyaml==5.1               # via watchdog
 readme-renderer==24.0     # via twine
 requests-toolbelt==0.8.0  # via twine
-requests==2.21.0
+requests==2.22.0
 service-identity==18.1.0  # via twisted
 six==1.12.0               # via astroid, automat, bleach, cryptography, cuvner, packaging, pyhamcrest, pyopenssl, pyrsistent, pytest, readme-renderer, tox, treq
 sniffio==1.1.0            # via anyio, trio
