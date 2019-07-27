@@ -308,7 +308,7 @@ async def dropwhile(function, items, exit_stack):
 )
 async def chain(items, exit_stack):
     """
-    Flatten a nested iterable by one level.
+    Concatenate a sequence of input iterables together into one long iterable.
 
     Converts an iterable of iterables of items into an iterable of items, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_.
 
@@ -335,7 +335,7 @@ async def chain(items, exit_stack):
 )
 async def async_chain(items, exit_stack):
     """
-    Flatten a nested async iterable by one level.
+    Concatenate a sequence of input async iterables into one long async iterable.
 
     Converts an async iterable of async iterables of items into an async
     iterable of items, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_
