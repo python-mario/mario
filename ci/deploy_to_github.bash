@@ -47,7 +47,7 @@ echo Show the file contents.
 cat posted_pull_request.json
 
 echo Extract the issue number from the pull request.
-issue_number="$(jq '.issue_number' < posted_pull_request.json)"
+issue_number="$(jq '.number' < posted_pull_request.json)"
 
 echo Show the pull request number.
 echo Pull request: "$issue_number"
