@@ -28,14 +28,6 @@ jobs:
     python: 3.7
     dist: xenial
     sudo: required
-    env:
-    - GITHUB_USERNAME=python-mario-bot
-    - REPO_OWNER=python-mario
-    - REPO_NAME=mario
-    - GIT_AUTHOR_NAME=python-mario-bot@travis
-    - GIT_COMMITTER_NAME=python-mario-bot@travis
-    - GIT_AUTHOR_EMAIL=python-mario-bot@travis
-    - GIT_COMITTER_EMAIL=python-mario-bot@travis
     deploy:
       on:
         branch: master
