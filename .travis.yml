@@ -41,7 +41,7 @@ jobs:
     deploy:
     - provider: script
       script: tox -e release
-
+      branch: release
 
 before_install:
 - python --version
