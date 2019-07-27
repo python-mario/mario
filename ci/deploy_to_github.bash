@@ -35,7 +35,6 @@ echo Open a pull request from the new branch into release branch.
 echo Write the json output into a file.
 http \
     -a "${GITHUB_USERNAME}":"${GITHUB_TOKEN}" \
-    --verbose \
     --json \
     POST https://api.github.com/repos/"${REPO_OWNER}"/"${REPO_NAME}"/pulls  \
     title="Merge new version: ${new_version}" \
@@ -55,7 +54,6 @@ echo Pull request: "$issue_number"
 echo Add the _merge_ label to the pull request so that probot-auto-merge will rebase and merge it.
 http \
     -a "${GITHUB_USERNAME}":"${GITHUB_TOKEN}" \
-    --verbose \
     --json \
     POST https://api.github.com/repos/"${REPO_OWNER}"/"${REPO_NAME}"/issues/"${issue_number}"/labels \
     labels="merge"
