@@ -2,7 +2,7 @@
 
 
 # Stop on error.
-set -e
+set -euo pipefail
 
 # Setup.
 pip install httpie
