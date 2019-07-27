@@ -31,7 +31,7 @@ git remote add authorized-origin https://"${GITHUB_TOKEN}"@github.com/"${REPO_OW
 echo Push to remote branch.
 git push --set-upstream authorized-origin "$new_version"  --follow-tags
 
-echo Open a pull request from the new branch into `release` branch.
+echo Open a pull request from the new branch into release branch.
 echo Write the json output into a file.
 http \
     -a "${GITHUB_USERNAME}":"${GITHUB_TOKEN}" \
