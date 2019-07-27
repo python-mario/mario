@@ -26,4 +26,5 @@ docshtest
 pygments>=2.4
 marshmallow-jsonschema
 pluggy>=0.12
+pre-commit
 -r requirements.in
