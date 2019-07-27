@@ -40,7 +40,7 @@ http \
     title="Merge new version: ${new_version}" \
     head="${new_version}" \
     base="release" \
-    | tee posted_pull_request.json
+    >posted_pull_request.json \
     2>/dev/null
 
 echo Show the file contents.
@@ -58,4 +58,4 @@ http \
     --json \
     POST https://api.github.com/repos/"${REPO_OWNER}"/"${REPO_NAME}"/issues/"${issue_number}"/labels \
     labels="merge" \
-    2>/dev/null
+    &>/dev/null
