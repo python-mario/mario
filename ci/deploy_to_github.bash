@@ -41,6 +41,7 @@ http \
     head="${new_version}" \
     base="release" \
     | tee posted_pull_request.json
+    2>/dev/null
 
 echo Show the file contents.
 cat posted_pull_request.json
@@ -56,4 +57,5 @@ http \
     -a "${GITHUB_USERNAME}":"${GITHUB_TOKEN}" \
     --json \
     POST https://api.github.com/repos/"${REPO_OWNER}"/"${REPO_NAME}"/issues/"${issue_number}"/labels \
-    labels="merge"
+    labels="merge" \
+    2>/dev/null
