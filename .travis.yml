@@ -6,7 +6,7 @@ env:
   - LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
   - SEGFAULT_SIGNALS=all
 
-matrix:
+jobs:
   include:
   - python: '3.7'
     dist: xenial
@@ -23,6 +23,38 @@ matrix:
     sudo: required
     env:
     - TOXENV=doc
+  - stage: deploy-to-github
+    if: branch = master
+    python: 3.7
+    dist: xenial
+    sudo: required
+    deploy:
+      env:
+      - GITHUB_USERNAME=python-mario-bot
+      - REPO_OWNER=python-mario
+      - REPO_NAME=mario
+      - GIT_AUTHOR_NAME=python-mario-bot@travis
+      - GIT_COMMITTER_NAME=python-mario-bot@travis
+      - GIT_AUTHOR_EMAIL=python-mario-bot@travis
+      - GIT_COMITTER_EMAIL=python-mario-bot@travis
+      - secure: JRWtyykzheoUHBBve4iAAuANs24vFM0RR4mnro63KeDD/BlLziBz4mmP19YKuRMu/nRNQnv4EO+Un3o/dQXZJh5zxxe/+MrfGC8WxrxUzgA8XPJy/suvoxRsLDF5FsT7OB6jaA8tA2cvJZOZa809HxsAtijYY57woJ7Y1+Plsqe2osJLslF59TRFzGusu7or84jGBF8jSucKR6XgffgwrGZUSqhVQN3uJC/jc9Ej18QDkgygCTsV5R4gjAPA78LVatdi3ktt4f7m4LN0pcd6BaOH5NermX1B17AgSaK8tKbPnuf5uCpHX61fRZJn7kOXpofSJqOUPS3nIB2i6+pT2sv8kmA8yEqI9vNo4GPxSAxytdRUNo+rl8m9DDLsXVKml0H6XI/BxivONHse3W9ikMGqkRY4X9B+0er2z/UBnPQIWvYgAQktKaIBmisYVK3rfIwK1eRgRxxQVU6KEiPNSaz1uv3j7AtnLV0eqp4/7vE9VN4xi6drlPMgz5i9FdH2q+KuBury+mgsVotUPwm/Xr1c7f2jvy3YPWZaY66MhuPnnH4rl5c8gozFSStD7LqxpGFV5tpK64yGgvVTiZVyh7Acdy2UJ47kXgBmwZxNsxtLkmI9Rt7Ijf31yGAUiuJ0rqbwp73U7fR30H3xPeL4GD/QZC4oreNyHcz/s9FD7Xw=
+      on:
+        branch: master
+      script: bash ci/deploy_to_github.bash
+  - stage: deploy-to-pypi
+    if: branch = actually-release
+    python: 3.7
+    dist: xenial
+    sudo: required
+    deploy:
+    - provider: pypi
+      username: mariopy
+      password:
+        secure: pTPqaLVhYiZCyAEhgwf1LzJxeAqzNGeGVKHG8vaRD5/qjeCF920pjzWh6f433S3JGZTr81Z+rMvw8h1amjtJEFPya5HI5TmaSbuCDLVIzsXlbBNmRWF67pMCnDch3kdHu02Ki6ULXl2ybTDR6l5+ZZGIUFFXEjrLxTTNWz/tOA0TdsrKswANwybwFCPfLzCSbN+uzT/cEvIiLodRMw5e9IgDGvlUNqi6Pv9roqiFWYhJ5SHg120Awu5JWEs7+v9x0EpUSYvgtgobrS3LDaI8kF1+OwcKfSzPc2GyHIjeqLveC2ltop3IYINPpKcVYxzowuL7DWyuOFjP4YOlF5uwoEFNwDFcPRHffAJogZJ188xIo2xVUg0LvtjEl650e9MAY7F0AwsXfwrB1vSST0Ra8IEgzRnJVBVPtYUDDdf08VK5X99LtlwiN3QOe4tRtaRusESLR7B9vO12W1+Q2bXfXJy4YWfuqQnExrFXwYRrmXgCpdrM77jfsBkdYp+qxwcnla+bC6fSDToYM6/mXh+rg47WUc2m8dV2780YsdItk9hjlL2PBQdAow1AIZHlPsqp4324oLn03CAzb2rbyOKhz8AFHMx9nNWL8Db6MSIQCFhBm32zEyx+Jvn2SqnFPkeGeHKWuBsKoTVtKpqWgIy7ixN5EVkv+mdKbIsTMtN4BrM=
+      distributions: sdist bdist_wheel
+      skip_existing: true
+      skip_cleanup: true
+
 before_install:
 - python --version
 - uname -a
@@ -63,27 +95,3 @@ notifications:
   email:
     on_success: never
     on_failure: always
-deploy:
-- provider: pypi
-  username: mariopy
-  password:
-    secure: pTPqaLVhYiZCyAEhgwf1LzJxeAqzNGeGVKHG8vaRD5/qjeCF920pjzWh6f433S3JGZTr81Z+rMvw8h1amjtJEFPya5HI5TmaSbuCDLVIzsXlbBNmRWF67pMCnDch3kdHu02Ki6ULXl2ybTDR6l5+ZZGIUFFXEjrLxTTNWz/tOA0TdsrKswANwybwFCPfLzCSbN+uzT/cEvIiLodRMw5e9IgDGvlUNqi6Pv9roqiFWYhJ5SHg120Awu5JWEs7+v9x0EpUSYvgtgobrS3LDaI8kF1+OwcKfSzPc2GyHIjeqLveC2ltop3IYINPpKcVYxzowuL7DWyuOFjP4YOlF5uwoEFNwDFcPRHffAJogZJ188xIo2xVUg0LvtjEl650e9MAY7F0AwsXfwrB1vSST0Ra8IEgzRnJVBVPtYUDDdf08VK5X99LtlwiN3QOe4tRtaRusESLR7B9vO12W1+Q2bXfXJy4YWfuqQnExrFXwYRrmXgCpdrM77jfsBkdYp+qxwcnla+bC6fSDToYM6/mXh+rg47WUc2m8dV2780YsdItk9hjlL2PBQdAow1AIZHlPsqp4324oLn03CAzb2rbyOKhz8AFHMx9nNWL8Db6MSIQCFhBm32zEyx+Jvn2SqnFPkeGeHKWuBsKoTVtKpqWgIy7ixN5EVkv+mdKbIsTMtN4BrM=
-  on:
-    tags: true
-    branch: actually-release
-  distributions: sdist bdist_wheel
-  skip_existing: true
-  skip_cleanup: true
-- provider: script
-  env:
-  - GITHUB_USERNAME=python-mario-bot
-  - REPO_OWNER=python-mario
-  - REPO_NAME=mario
-  - GIT_AUTHOR_NAME=python-mario-bot@travis
-  - GIT_COMMITTER_NAME=python-mario-bot@travis
-  - GIT_AUTHOR_EMAIL=python-mario-bot@travis
-  - GIT_COMITTER_EMAIL=python-mario-bot@travis
-  - secure: JRWtyykzheoUHBBve4iAAuANs24vFM0RR4mnro63KeDD/BlLziBz4mmP19YKuRMu/nRNQnv4EO+Un3o/dQXZJh5zxxe/+MrfGC8WxrxUzgA8XPJy/suvoxRsLDF5FsT7OB6jaA8tA2cvJZOZa809HxsAtijYY57woJ7Y1+Plsqe2osJLslF59TRFzGusu7or84jGBF8jSucKR6XgffgwrGZUSqhVQN3uJC/jc9Ej18QDkgygCTsV5R4gjAPA78LVatdi3ktt4f7m4LN0pcd6BaOH5NermX1B17AgSaK8tKbPnuf5uCpHX61fRZJn7kOXpofSJqOUPS3nIB2i6+pT2sv8kmA8yEqI9vNo4GPxSAxytdRUNo+rl8m9DDLsXVKml0H6XI/BxivONHse3W9ikMGqkRY4X9B+0er2z/UBnPQIWvYgAQktKaIBmisYVK3rfIwK1eRgRxxQVU6KEiPNSaz1uv3j7AtnLV0eqp4/7vE9VN4xi6drlPMgz5i9FdH2q+KuBury+mgsVotUPwm/Xr1c7f2jvy3YPWZaY66MhuPnnH4rl5c8gozFSStD7LqxpGFV5tpK64yGgvVTiZVyh7Acdy2UJ47kXgBmwZxNsxtLkmI9Rt7Ijf31yGAUiuJ0rqbwp73U7fR30H3xPeL4GD/QZC4oreNyHcz/s9FD7Xw=
-  on:
-    branch: master
-  script: bash ci/deploy_to_github.bash
