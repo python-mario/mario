@@ -197,7 +197,7 @@ async def async_filter(function, items, exit_stack, max_concurrent):
 
     .. code-block:: bash
 
-        $ mario filter 'await asks.get(x).json()["url"].endswith(("1", "3"))'  <<EOF
+        $ mario async-filter 'await asks.get(x).json()["url"].endswith(("1", "3"))'  <<EOF
         http://httpbin.org/delay/5
         http://httpbin.org/delay/1
         http://httpbin.org/delay/2
