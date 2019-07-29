@@ -23,26 +23,17 @@ jobs:
     sudo: required
     env:
     - TOXENV=doc
-  - stage: deploy-to-github
-    if: branch = master
-    python: 3.7
-    dist: xenial
-    sudo: required
-    deploy:
-      on:
-        branch: master
-      provider: script
-      script: bash ci/deploy_to_github.bash
-  - stage: Deploy to PyPI
+  - stage: Bump version and push into master.
     if: branch = release
     python: 3.7
     dist: xenial
     sudo: required
     deploy:
-    - provider: script
-      script: tox -e release
       on:
         branch: release
+      provider: script
+      script: bash ci/bump_and_release.bash
+
 
 before_install:
 - python --version
