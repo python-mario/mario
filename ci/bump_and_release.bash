@@ -22,7 +22,7 @@ git checkout -b master origin/master
 
 echo Checking for changes since last release.
 last_release="$( bump2version --dry-run --list patch | grep current_version | sed -r 's/^.*=//')"
-if [[ $( git diff --name-only HEAD.."$last_release" ) ]]
+if [[ $( git diff --name-only HEAD..v"$last_release" ) ]]
 then
     echo "Changes found. Continuing"
 else
