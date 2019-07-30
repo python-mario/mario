@@ -30,7 +30,7 @@ cfgv==2.0.1               # via pre-commit
 chardet==3.0.4            # via aiohttp, requests
 click==7.0
 constantly==15.1.0        # via twisted
-coverage==4.5.3
+coverage==4.5.4
 cryptography==2.6.1       # via pyopenssl, service-identity
 cuvner==18.0.1
 docshtest==0.0.2
