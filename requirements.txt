@@ -38,6 +38,7 @@ pyparsing==2.4.0          # via packaging
 pyrsistent==0.15.2
 pytest==5.0.1
 pytz==2019.1              # via babel
+pyyaml==5.1.1
 requests==2.22.0          # via sphinx
 six==1.12.0               # via packaging, pyrsistent
 sniffio==1.1.0            # via anyio, trio
@@ -58,6 +59,7 @@ typed-ast==1.4.0          # via mypy
 typing-extensions==3.7.4  # via trio-typing
 urllib3==1.25.3           # via requests
 wcwidth==0.1.7            # via pytest
+xmltodict==0.12.0
 zipp==0.5.2               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:

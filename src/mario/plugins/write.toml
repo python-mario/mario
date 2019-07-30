@@ -1,0 +1,394 @@
+[[command]]
+name = 'write-toml'
+short_help = "Write toml document"
+section = "Write"
+help = """
+Write each input item to its toml representation.
+
+For example,
+
+.. code-block:: bash
+
+
+    $ mario read-json write-toml map str.rstrip <<EOF
+    {
+        "persons": [
+            {
+                "name": "Alice",
+                "age": 21
+            },
+            {
+                "name": "Bob",
+                "age": 22
+            }
+        ]
+    }
+    EOF
+    [[persons]]
+    name = "Alice"
+    age = 21
+
+    [[persons]]
+    name = "Bob"
+    age = 22
+
+"""
+
+[[command.stages]]
+command = "map"
+params ={code="toml.dumps"}
+
+[[command.tests]]
+invocation = ["read-text", "map", "json.loads", "write-toml"]
+input = '''{"x": 1}
+'''
+output = """x = 1\n\n"""
+
+
+
+[[command]]
+name = 'write-json'
+short_help = "Write json document"
+section = "Write"
+
+help = """
+
+Serialize each input item to its json representation.
+
+For example,
+
+.. code-block:: bash
+
+    $ mario eval "[1, 2, 'foo']" write-json --no-pretty
+    [1, 2, "foo"]
+
+
+Use the ``--indent`` option to set the indentation level:
+
+.. code-block::
+
+    $ mario read-toml write-json --pretty <<EOF
+    [[persons]]
+    name = "Alice"
+    age = 21
+
+    [[persons]]
+    name = "Bob"
+    age = 22
+    EOF
+    {
+        "persons": [
+            {
+                "name": "Alice",
+                "age": 21
+            },
+            {
+                "name": "Bob",
+                "age": 22
+            }
+        ]
+    }
+
+
+"""
+inject_values = ["pretty"]
+
+
+[[command.options]]
+name = "--pretty/--no-pretty"
+default=true
+
+[[command.stages]]
+command = "map"
+
+[command.stages.params]
+code = "json.dumps(x, indent=4 if pretty else None)"
+
+[[command.tests]]
+invocation = ["read-text", "map", "str.split", "write-json", "--no-pretty"]
+input = "1 2\n"
+output ="[\"1\", \"2\"]\n"
+
+
+[[command]]
+name = "write-xml"
+section = "Write"
+short_help = "Write a mapping to xml string."
+inject_values = ["pretty"]
+
+help = """
+Write a mapping to xml string.
+
+For example,
+
+.. code-block:: bash
+
+    $ mario eval '{"foo": {"bar": 1}}' write-xml
+    <?xml version="1.0" encoding="utf-8"?>
+    <foo>
+    \t<bar>1</bar>
+    </foo>
+"""
+
+[[command.options]]
+name = "--pretty/--no-pretty"
+is_flag=true
+default=true
+help = "Pretty-print the output"
+
+[[command.stages]]
+command = "map"
+params = {code="xmltodict.unparse(x, pretty=pretty)"}
+
+
+[[command.tests]]
+invocation = ["eval", '{"foo": {"bar": 1}}', "write-xml",]
+input = ""
+output = """
+<?xml version="1.0" encoding="utf-8"?>
+<foo>
+	<bar>1</bar>
+</foo>
+"""
+
+
+[[command]]
+name = 'write-csv-dicts'
+section = "Write"
+short_help = "Write a list of dicts to csv"
+inject_values = ["header", "dialect"]
+help = """
+Write a list of dicts to csv.
+
+For example,
+
+.. code-block:: bash
+
+     $ mario read-json write-csv-dicts --no-header <<EOF
+     [
+           {
+               "name": "Alice",
+               "age": 21
+           },
+           {
+               "name": "Bob",
+               "age": 22
+           }
+     ]
+     EOF
+     Alice,21
+     Bob,22
+
+"""
+
+[[command.options]]
+name = "--header/--no-header"
+is_flag = true
+default = true
+help = "Whether to write the dict keys as the first row"
+
+[[command.options]]
+name = "--dialect"
+default = "excel"
+help = "CSV dialect (See https://docs.python.org/3/library/csv.html)"
+choices = ["excel", "excel-tab", "unix"]
+
+[[command.stages]]
+command = "map"
+params = {code="mario.plugins.write.write_csv_dicts(x, header=header, dialect=dialect)"}
+
+
+[[command.tests]]
+invocation = ["read-json", "write-csv-dicts"]
+input = '''
+[
+      {
+          "name": "Alice",
+          "age": 21
+      },
+      {
+          "name": "Bob",
+          "age": 22
+      }
+]
+'''
+output = """
+name,age\r
+Alice,21\r
+Bob,22\r
+
+"""
+
+
+[[command.tests]]
+invocation = ["read-json", "write-csv-dicts", "--no-header"]
+input = """
+[
+      {
+          "name": "Alice",
+          "age": 21
+      },
+      {
+          "name": "Bob",
+          "age": 22
+      }
+]
+"""
+output = """
+Alice,21\r
+Bob,22\r
+
+"""
+
+[[command]]
+name = 'write-csv-tuples'
+section = "Write"
+short_help = "Write a list of tuples to csv"
+inject_values = ["header", "dialect"]
+help = """
+Write a list of tuples to csv.
+
+For example,
+
+.. code-block:: bash
+
+     $ mario read-json write-csv-tuples  <<EOF
+     [
+             ["name", "age"],
+             ["Alice", 21],
+             ["Bob", 22]
+     ]
+     EOF
+     name,age
+     Alice,21
+     Bob,22
+
+
+"""
+
+
+[[command.options]]
+name = "--dialect"
+default = "excel"
+help = "CSV dialect (See https://docs.python.org/3/library/csv.html)"
+choices = ["excel", "excel-tab", "unix"]
+
+[[command.stages]]
+command = "map"
+params = {code="mario.plugins.write.write_csv_tuples(x, dialect=dialect)"}
+
+[[command.tests]]
+invocation = ["read-json", "write-csv-tuples"]
+input = """
+[
+            ["name", "age"],
+            ["Alice", 21],
+            ["Bob", 22]
+]
+"""
+output = """
+name,age\r
+Alice,21\r
+Bob,22\r
+
+"""
+
+
+[[command]]
+name = "write-jsonl"
+section = "Write"
+short_help = "Write a sequence to newline-separated json."
+help = """
+Write a sequence to newline-separated json.
+
+.. code-block:: bash
+
+    $ mario read-json write-jsonl <<EOF
+    [
+            {"name": "Alice", "age": 21},
+            {"name": "Bob", "age": 22}
+    ]
+    EOF
+    {"name": "Alice", "age": 21}
+    {"name": "Bob", "age": 22}
+
+"""
+[[command.stages]]
+command = "chain"
+
+[[command.stages]]
+command = "map"
+params = {code="json.dumps"}
+
+
+[[command.tests]]
+invocation = ["read-json", "write-jsonl"]
+input = """
+    [
+            {"name": "Alice", "age": 21},
+            {"name": "Bob", "age": 22}
+    ]
+"""
+output = """
+{"name": "Alice", "age": 21}
+{"name": "Bob", "age": 22}
+"""
+
+
+[[command]]
+name = "write-yaml"
+section = "Write"
+short_help = "Write a yaml document."
+
+help = """
+
+Write a yaml document.
+
+.. code-block:: bash
+
+    $ mario read-json write-yaml map str.rstrip  <<EOF
+    [
+            {
+                "name": "Alice",
+                "age": 21
+            },
+            {
+                "name": "Bob",
+                "age": 22
+            }
+    ]
+    EOF
+    - age: 21
+      name: Alice
+    - age: 22
+      name: Bob
+
+
+"""
+
+[[command.stages]]
+command = "map"
+params = {code="mario.plugins.write.write_yaml(x)"}
+
+
+[[command.tests]]
+invocation = ["read-json", "write-yaml",]
+input = """
+    [
+            {
+                "name": "Alice",
+                "age": 21
+            },
+            {
+                "name": "Bob",
+                "age": 22
+            }
+    ]
+"""
+output = """
+- age: 21
+  name: Alice
+- age: 22
+  name: Bob
+
+"""
