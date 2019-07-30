@@ -1,0 +1,374 @@
+[[command]]
+name = "read-toml"
+short_help = "Read toml document"
+section = "Read"
+
+help = """
+
+Read a toml document into a Python object.
+
+For example,
+
+.. code-block:: bash
+
+    $ mario read-toml  <<EOF
+    [[persons]]
+    name = "Alice"
+    age = 21
+
+    [[persons]]
+    name = "Bob"
+    age = 22
+    EOF
+    {'persons': [{'name': 'Alice', 'age': 21}, {'name': 'Bob', 'age': 22}]}
+
+"""
+
+[[command.stages]]
+command = "read-text"
+
+[[command.stages]]
+command = "map"
+params = {code="toml.loads"}
+
+[[command.tests]]
+invocation = ["read-toml"]
+input = """
+[[persons]]
+name = "Alice"
+age = 21
+
+[[persons]]
+name = "Bob"
+age = 22
+"""
+output = "{'persons': [{'name': 'Alice', 'age': 21}, {'name': 'Bob', 'age': 22}]}\n"
+
+[[command]]
+name = "read-yaml"
+short_help = "Read yaml document"
+section = "Read"
+
+help = """
+
+Read a yaml document into a Python object.
+
+For example,
+
+.. code-block:: bash
+
+    $ mario read-yaml <<EOF
+    - Cat: "foo"
+    - Dog: "bar"
+    - Goldfish: "baz"
+    EOF
+    [{'Cat': 'foo'}, {'Dog': 'bar'}, {'Goldfish': 'baz'}]
+
+"""
+
+[[command.stages]]
+command = "read-text"
+
+[[command.stages]]
+command = "map"
+params = {code="yaml.safe_load(x)"}
+
+[[command.tests]]
+invocation = ["read-yaml"]
+input = "{'x': 1,}\n"
+output = "{'x': 1}\n"
+
+
+[[command]]
+name = "read-csv-dicts"
+section = "Read"
+help = """
+
+Read a csv file into Python dicts. Given a csv like this:
+
+
+.. code-block::
+
+    name,age
+    Alice,21
+    Bob,22
+
+try:
+
+.. code-block:: bash
+
+    $ mario read-csv-dicts <<EOF
+    name,age
+    Alice,21
+    Bob,22
+    EOF
+    {'name': 'Alice', 'age': '21'}
+    {'name': 'Bob', 'age': '22'}
+
+
+
+
+"""
+short_help = "Load csv rows into python objects"
+inject_values=["dialect", "header"]
+
+
+[[command.options]]
+name = "--dialect"
+help = "CSV dialect (See https://docs.python.org/3/library/csv.html)"
+choices = ["excel", "excel-tab", "unix"]
+default = "excel"
+
+
+[[command.options]]
+name = "--header/--no-header"
+default=true
+help = "Treat the first row as a header?"
+
+[[command.stages]]
+command = "apply"
+params = {code="mario_addons.plugins.read.read_csv_dicts(x, header=header, dialect=dialect)"}
+
+[[command.stages]]
+command = "chain"
+
+[[command.stages]]
+command = "map"
+params = {code="dict(x)"}
+
+[[command.tests]]
+invocation = ["read-csv-dicts"]
+input = """name,age\nAlice,21\nBob,22\n"""
+output = """{'name': 'Alice', 'age': '21'}\n{'name': 'Bob', 'age': '22'}\n"""
+
+
+
+[[command]]
+name = "read-csv-tuples"
+section = "Read"
+help = """
+
+Read a csv file into Python tuples. Given a csv like this:
+
+
+.. code-block::
+
+    name,age
+    Alice,21
+    Bob,22
+
+try:
+
+.. code-block:: bash
+
+    $ mario read-csv-tuples map list <<EOF
+    name,age
+    Alice,21
+    Bob,22
+    EOF
+    [('name', 'age'), ('Alice', '21'), ('Bob', '22')]
+
+"""
+short_help = "Load csv rows into python objects"
+inject_values=["dialect"]
+
+
+[[command.options]]
+name = "--dialect"
+help = "CSV dialect (See https://docs.python.org/3/library/csv.html)"
+choices = ["excel", "excel-tab", "unix"]
+default = "excel"
+
+
+[[command.stages]]
+command = "apply"
+params = {code="mario_addons.plugins.read.read_csv_tuples(x, dialect=dialect)"}
+
+[[command.tests]]
+invocation = ["read-csv-tuples", "map", "list"]
+input = """name,age\nAlice,21\nBob,22\n"""
+output = "[('name', 'age'), ('Alice', '21'), ('Bob', '22')]\n"
+
+
+
+[[command]]
+name = "read-json"
+short_help = "Read json into Python objects"
+section ="Read"
+
+help = """
+
+Read a single json string into a Python object.
+
+For example,
+
+.. code-block:: bash
+
+    $ mario read-json  <<EOF
+    [
+        {"name": "Alice", "age": 21},
+        {"name": "Bob", "age": 22}
+    ]
+    EOF
+    [{'name': 'Alice', 'age': 21}, {'name': 'Bob', 'age': 22}]
+
+
+"""
+
+[[command.stages]]
+command = "read-text"
+
+[[command.stages]]
+command = "map"
+params =  {code="json.loads"}
+
+[[command.tests]]
+invocation = ["read-jsonl"]
+input = """{"name": "Alice", "age": "21"}\n{"name": "Bob", "age": "22"}\n"""
+output = """{'name': 'Alice', 'age': '21'}\n{'name': 'Bob', 'age': '22'}\n"""
+
+
+[[command]]
+name = "read-jsonl"
+short_help = "Read jsonlines into Python objects"
+section ="Read"
+
+help = """
+
+Read a sequence of json entities into Python objects.
+
+For example,
+
+.. code-block:: bash
+
+    $ mario read-jsonl  <<EOF
+    {"a":1, "b":2}
+    {"a": 5, "b":9}
+    EOF
+    {'a': 1, 'b': 2}
+    {'a': 5, 'b': 9}
+
+
+"""
+
+[[command.stages]]
+
+command = "map"
+
+params =  {code="json.loads"}
+
+[[command.tests]]
+invocation = ["read-jsonl"]
+input = """{"name": "Alice", "age": "21"}\n{"name": "Bob", "age": "22"}\n"""
+output = """{'name': 'Alice', 'age': '21'}\n{'name': 'Bob', 'age': '22'}\n"""
+
+
+[[command]]
+
+name = "read-xml"
+section = "Read"
+short_help = "Read xml into a Python object."
+
+help = """
+Read xml into a Python object.
+
+For example,
+
+.. code-block:: bash
+
+    $ mario read-xml <<EOF
+    <?xml version="1.0" encoding="UTF-8"?>
+    <message>
+        <warning>
+             Hello World
+        </warning>
+    </message>
+    EOF
+    {'message': {'warning': 'Hello World'}}
+
+"""
+
+inject_values = ["process_namespaces"]
+
+[[command.options]]
+
+name = "--process-namespaces"
+type = "bool"
+is_flag=true
+default=false
+
+[[command.stages]]
+command = "read-text"
+
+[[command.stages]]
+command = "map"
+params = {code="xmltodict.parse(x, process_namespaces=process_namespaces, dict_constructor=dict)"}
+
+[[command.tests]]
+invocation = ["read-xml"]
+input = """<?xml version="1.0" encoding="UTF-8"?>
+   <message>
+       <warning>
+            Hello World
+       </warning>
+   </message>
+"""
+output = "{'message': {'warning': 'Hello World'}}\n"
+
+
+[[command]]
+name = "read-text"
+section = "Read"
+short_help = "Read a block of text into a string."
+help = """
+Read input lines as a block of text, joining lines with a line separator.
+
+For example,
+
+.. code-block:: bash
+
+    $ mario read-text <<EOF
+    Lorem ipsum dolor sit amet,
+    consectetur adipiscing elit,
+    EOF
+    Lorem ipsum dolor sit amet,
+    consectetur adipiscing elit,
+
+.. code-block:: bash
+
+    $ mario read-text map len <<EOF
+    Lorem ipsum dolor sit amet,
+    consectetur adipiscing elit,
+    EOF
+    56
+
+"""
+inject_values = ["sep"]
+
+[[command.options]]
+name = "--sep"
+default = "\n"
+help = "Separator to join input lines with"
+
+[[command.stages]]
+command = "apply"
+params={code="sep.join(x)"}
+
+[[command.tests]]
+invocation = ["read-text"]
+input = """
+Lorem ipsum dolor sit amet,
+consectetur adipiscing elit,
+"""
+output = """
+Lorem ipsum dolor sit amet,
+consectetur adipiscing elit,
+"""
+
+[[command.tests]]
+invocation = ["read-text", "map", "len"]
+input = """
+Lorem ipsum dolor sit amet,
+consectetur adipiscing elit,
+"""
+output = "56\n"
