@@ -16,3 +16,5 @@ docutils
 sphinx
 pytest
 importlib_metadata
+xmltodict
+pyyaml
