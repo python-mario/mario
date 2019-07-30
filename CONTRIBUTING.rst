@@ -35,9 +35,9 @@ If you are proposing a feature:
 Development
 ===========
 
-To set up `python-mario` for local development:
+To set up `mario` for local development:
 
-1. Fork `python-mario <https://github.com/python-mario/mario>`_
+1. Fork `mario <https://github.com/python-mario/mario>`_
    (look for the "Fork" button).
 2. Clone your fork locally::
 
