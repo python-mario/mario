@@ -1,7 +1,6 @@
 from __future__ import annotations
 from __future__ import generator_stop
 
-import functools
 import itertools
 import types
 import typing as t
