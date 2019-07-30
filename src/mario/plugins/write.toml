@@ -195,7 +195,7 @@ choices = ["excel", "excel-tab", "unix"]
 
 [[command.stages]]
 command = "map"
-params = {code="mario_addons.plugins.write.write_csv_dicts(x, header=header, dialect=dialect)"}
+params = {code="mario.plugins.write.write_csv_dicts(x, header=header, dialect=dialect)"}
 
 
 [[command.tests]]
@@ -275,7 +275,7 @@ choices = ["excel", "excel-tab", "unix"]
 
 [[command.stages]]
 command = "map"
-params = {code="mario_addons.plugins.write.write_csv_tuples(x, dialect=dialect)"}
+params = {code="mario.plugins.write.write_csv_tuples(x, dialect=dialect)"}
 
 [[command.tests]]
 invocation = ["read-json", "write-csv-tuples"]
@@ -368,7 +368,7 @@ Write a yaml document.
 
 [[command.stages]]
 command = "map"
-params = {code="mario_addons.plugins.write.write_yaml(x)"}
+params = {code="mario.plugins.write.write_yaml(x)"}
 
 
 [[command.tests]]
