@@ -14,10 +14,6 @@ Changes for the upcoming release can be found in the `"changelog.d" directory <h
 
 
 
-
-Changelog
-=========
-
 0.1.0 (2019-07-15)
 ------------------
 
