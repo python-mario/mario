@@ -4,7 +4,7 @@ Mario: Shell pipes in Python
 
 Your favorite plumbing snake 🐍🔧 with your favorite pipes, right in your shell 🐢.
 
-.. image:: https://shields.io/github/stars/python-mario/mario?style=social
+.. image:: https://img.shields.io/github/stars/python-mario/mario?style=social
    :target: https://github.com/python-mario/mario
    :alt: GitHub
 
@@ -12,7 +12,7 @@ Your favorite plumbing snake 🐍🔧 with your favorite pipes, right in your sh
    :target: https://readthedocs.org/projects/python-mario
    :alt: Documentation Status
 
-.. image:: https://travis-ci.com/python-mario/mario.svg?branch=master
+.. image:: https://img.shields.io/travis/com/python-mario/mario/master
    :target: https://travis-ci.com/python-mario/mario#
    :alt: Build status
 
