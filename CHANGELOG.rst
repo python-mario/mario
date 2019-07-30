@@ -1,7 +1,7 @@
 Changelog
 =========
 
-Changes for the upcoming release can be found in the `"changelog.d" directory <https://github.com/python-attrs/attrs/tree/master/changelog.d>`_ in our repository.
+Changes for the upcoming release can be found in the `"changelog.d" directory <https://github.com/python-mario/mario/tree/master/changelog.d>`_ in our repository.
 
 ..
    Do *NOT* add changelog entries here!
