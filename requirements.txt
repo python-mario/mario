@@ -17,7 +17,7 @@ bump2version==0.5.10
 certifi==2019.6.16        # via requests
 chardet==3.0.4            # via requests
 click==7.0
-docutils==0.14
+docutils==0.15.2
 h11==0.9.0                # via asks
 idna==2.8                 # via requests, trio
 imagesize==1.1.0          # via sphinx

@@ -12,7 +12,7 @@ asks==2.3.3
 marshmallow==3.0rc8
 pyrsistent==0.15.2
 trio_typing==0.2.0
-docutils==0.14
+docutils==0.15.2
 sphinx==2.1.2
 pytest==5.0.1
 importlib_metadata==0.18
