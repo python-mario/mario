@@ -10,7 +10,7 @@ appdirs==1.4.3
 toml==0.10.0
 asks==2.3.3
 marshmallow==3.0rc8
-pyrsistent==0.15.2
+pyrsistent==0.15.4
 trio_typing==0.2.0
 docutils==0.14
 sphinx==2.1.2
