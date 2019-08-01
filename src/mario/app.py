@@ -58,7 +58,7 @@ async def program_runner(
 
 async def async_main(basic_traversals, **kwargs):
     # pylint: disable=protected-access
-    stream = trio._unix_pipes.PipeReceiveStream(os.dup(0))
+    stream = trio.hazmat.FdStream(os.dup(0))
     receiver = asynch.TerminatedFrameReceiver(stream, b"\n")
     items = (item.decode() async for item in receiver)
 
