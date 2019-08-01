@@ -3,7 +3,7 @@ toolz
 attrs
 parso
 bump2version
-trio
+trio==0.11.0
 async_generator
 async_exit_stack
 appdirs
@@ -16,3 +16,5 @@ docutils
 sphinx
 pytest
 importlib_metadata
+xmltodict
+pyyaml

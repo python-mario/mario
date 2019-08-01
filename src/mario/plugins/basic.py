@@ -293,13 +293,6 @@ async def reduce(function, items, exit_stack, max_concurrent):
     )
 
 
-@registry.add_traversal("dropwhile", calculate_more_params=calculate_function)
-async def dropwhile(function, items, exit_stack):
-    return await exit_stack.enter_async_context(
-        traversals.sync_dropwhile(function, items)
-    )
-
-
 @registry.add_traversal(
     "chain",
     calculate_more_params=lambda x: calculate_function(

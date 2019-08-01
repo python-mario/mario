@@ -2,15 +2,20 @@
 Mario: Shell pipes in Python
 ``````````````````````````````````````````````````````
 
-Your favorite plumbing snake 🐍🔧 with your favorite pipes, right in your shell 🐢.
+Have you ever wanted to use Python functions directly in your Unix shell? Mario can read and write csv, json, and yaml; traverse trees, and even do xpath queries. Plus, it supports async commands right out of the box. Build your own commands with a simple configuration file, and install plugins for even more!
+
+Mario is the plumbing snake 🐍🔧 helping you build data pipelines in your shell 🐢.
 
 
+.. image:: https://img.shields.io/github/stars/python-mario/mario?style=social
+   :target: https://github.com/python-mario/mario
+   :alt: GitHub
 
 .. image:: https://readthedocs.org/projects/python-mario/badge/?style=flat
    :target: https://readthedocs.org/projects/python-mario
    :alt: Documentation Status
 
-.. image:: https://travis-ci.com/python-mario/mario.svg?branch=master
+.. image:: https://img.shields.io/travis/com/python-mario/mario/master
    :target: https://travis-ci.com/python-mario/mario#
    :alt: Build status
 
@@ -35,6 +40,8 @@ Installation
 Mario
 ***********************************************************
 
+
+Windows support is hopefully coming soon. Linux and MacOS are supported now.
 
 Get Mario with pip:
 
@@ -163,7 +170,7 @@ try
 More commands
 ***********************************************************
 
-Here are a few commands. See `Command reference <cli_reference.html>`__ for the complete set, and get even more from `mario-addons <https://mario-addons.readthedocs.org/>`__.
+Here are a few commands. See `Command reference <https://python-mario.readthedocs.io/en/latest/cli_reference.html>`_ for the complete set, and get even more from `mario-addons <https://mario-addons.readthedocs.org/>`__.
 
 
 ``eval``

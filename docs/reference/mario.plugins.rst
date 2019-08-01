@@ -12,6 +12,22 @@ mario.plugins.basic module
    :undoc-members:
    :show-inheritance:
 
+mario.plugins.read module
+-------------------------
+
+.. automodule:: mario.plugins.read
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mario.plugins.write module
+--------------------------
+
+.. automodule:: mario.plugins.write
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------

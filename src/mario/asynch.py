@@ -20,13 +20,6 @@ counter = itertools.count()
 _RECEIVE_SIZE = 4096  # pretty arbitrary
 
 
-async def aenumerate(items, start=0):
-    i = start
-    async for x in items:
-        yield i, x
-        i += 1
-
-
 class TerminatedFrameReceiver:
     """Parse frames out of a Trio stream, where each frame is terminated by a
     fixed byte sequence.

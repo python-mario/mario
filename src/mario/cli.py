@@ -142,7 +142,10 @@ CONTEXT_SETTINGS = {"default_map": config.DEFAULTS}
 doc = f"""\
 Mario: Python pipelines for your shell.
 
-GitHub: https://github.com/python-mario/mario
+\b
+Docs: https://python-mario.readthedocs.org
+Addons: https://mario-addons.readthedocs.org
+
 
 \b
 Configuration:
