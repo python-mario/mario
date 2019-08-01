@@ -76,7 +76,7 @@ pylint==2.3.1
 pyopenssl==19.0.0         # via twisted
 pyparsing==2.4.0          # via packaging
 pyrsistent==0.15.2
-pytest-clarity==0.1.0a1
+pytest-clarity==0.2.0a1
 pytest-cov==2.6.1
 pytest-sugar==0.9.2
 pytest==5.0.1
