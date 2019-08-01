@@ -2,7 +2,10 @@
 Mario: Shell pipes in Python
 ``````````````````````````````````````````````````````
 
-Your favorite plumbing snake 🐍🔧 with your favorite pipes, right in your shell 🐢.
+Have you ever wanted to use Python functions directly in your Unix shell? Mario can read and write csv, json, and yaml; traverse trees, and even do xpath queries. Plus, it supports async commands right out of the box. Build your own commands with a simple configuration file, and install plugins for even more!
+
+Mario is the plumbing snake 🐍🔧 helping you build data pipelines in your shell 🐢.
+
 
 .. image:: https://img.shields.io/github/stars/python-mario/mario?style=social
    :target: https://github.com/python-mario/mario
@@ -37,6 +40,8 @@ Installation
 Mario
 ***********************************************************
 
+
+Windows support is hopefully coming soon. Linux and MacOS are supported now.
 
 Get Mario with pip:
 
