@@ -165,7 +165,7 @@ try
 More commands
 ***********************************************************
 
-Here are a few commands. See `Command reference <cli_reference.html>`__ for the complete set, and get even more from `mario-addons <https://mario-addons.readthedocs.org/>`__.
+Here are a few commands. See `Command reference <https://python-mario.readthedocs.io/en/latest/cli_reference.html>`_ for the complete set, and get even more from `mario-addons <https://mario-addons.readthedocs.org/>`__.
 
 
 ``eval``
