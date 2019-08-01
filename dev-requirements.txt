@@ -10,7 +10,7 @@ ansicolors==1.0.2         # via cuvner
 anyio==1.0.0              # via asks
 appdirs==1.4.3
 argh==0.26.2              # via watchdog
-asks==2.3.3
+asks==2.3.5
 asn1crypto==0.24.0        # via cryptography
 aspy.yaml==1.3.0          # via pre-commit
 astroid==2.2.5            # via pylint
