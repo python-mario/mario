@@ -42,7 +42,7 @@ hypothesis==4.17.1
 identify==1.4.5           # via pre-commit
 idna==2.8                 # via hyperlink, requests, trio, twisted, yarl
 imagesize==1.1.0          # via sphinx
-importlib-metadata==0.18
+importlib-metadata==0.19
 incremental==17.5.0       # via cuvner, treq, twisted
 isort==4.3.17             # via pylint
 jedi==0.13.3
