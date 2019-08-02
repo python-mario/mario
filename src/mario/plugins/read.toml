@@ -213,6 +213,7 @@ For example,
     [{'name': 'Alice', 'age': 21}, {'name': 'Bob', 'age': 22}]
 
 
+
 """
 
 [[command.stages]]
@@ -226,6 +227,58 @@ params =  {code="json.loads"}
 invocation = ["read-json"]
 input = """[{"name": "Alice", "age": "21"},\n{"name": "Bob", "age": "22"}]\n"""
 output = """[{'name': 'Alice', 'age': '21'}, {'name': 'Bob', 'age': '22'}]\n"""
+
+
+[[command]]
+name = "read-json-array"
+short_help = "Read json array into Python objects."
+section ="Read"
+
+help = """
+
+Read a single json string into a Python object.
+
+For example,
+
+.. code-block:: bash
+
+    $ mario read-json-array  <<EOF
+    [
+        {"name": "Alice", "age": 21},
+        {"name": "Bob", "age": 22}
+    ]
+    EOF
+    {'name': 'Alice', 'age': 21}
+    {'name': 'Bob', 'age': 22}
+
+
+    $ mario read-json-array map 'x["age"]' <<EOF
+    [
+        {"name": "Alice", "age": 21},
+        {"name": "Bob", "age": 22}
+    ]
+    EOF
+    21
+    22
+
+
+
+"""
+
+[[command.stages]]
+command = "read-text"
+
+[[command.stages]]
+command = "map"
+params =  {code="json.loads"}
+
+[[command.stages]]
+command = "chain"
+
+[[command.tests]]
+invocation = ["read-json-array"]
+input = """[{"name": "Alice", "age": "21"},\n{"name": "Bob", "age": "22"}]\n"""
+output = """{'name': 'Alice', 'age': '21'}\n{'name': 'Bob', 'age': '22'}\n"""
 
 
 [[command]]
