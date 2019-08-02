@@ -223,9 +223,9 @@ command = "map"
 params =  {code="json.loads"}
 
 [[command.tests]]
-invocation = ["read-jsonl"]
-input = """{"name": "Alice", "age": "21"}\n{"name": "Bob", "age": "22"}\n"""
-output = """{'name': 'Alice', 'age': '21'}\n{'name': 'Bob', 'age': '22'}\n"""
+invocation = ["read-json"]
+input = """[{"name": "Alice", "age": "21"},\n{"name": "Bob", "age": "22"}]\n"""
+output = """[{'name': 'Alice', 'age': '21'}, {'name': 'Bob', 'age': '22'}]\n"""
 
 
 [[command]]
