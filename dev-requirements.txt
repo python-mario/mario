@@ -104,7 +104,7 @@ toolz==0.9.0
 tox==3.9.0
 tqdm==4.31.1              # via twine
 treq==18.6.0
-trio==0.11.0
+trio==0.12.1
 trio_typing==0.2.0
 twine==1.13.0
 twisted[tls]==19.2.0
