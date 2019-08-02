@@ -12,6 +12,30 @@ Changes for the upcoming release can be found in the `"changelog.d" directory <h
 
 .. towncrier release notes start
 
+0.0.146 (2019-08-02)
+--------------------
+
+
+Changes
+^^^^^^^
+
+- Versions of all dependencies are pinned to avoid accidental breakages from upstream changes.
+  `#167 <https://github.com/python-mario/mario/issues/167>`_
+
+
+----
+
+
+0.0.145 (2019-08-01)
+--------------------
+
+
+No significant changes.
+
+
+----
+
+
 0.0.144 (2019-07-30)
 --------------------
 

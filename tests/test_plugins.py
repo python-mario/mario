@@ -25,6 +25,9 @@ def get_param_id(param):
     return repr(param)
 
 
+command_parametrize = pytest.mark.parametrize("command", COMMANDS, ids=get_param_id)
+
+
 @pytest.mark.parametrize("test_spec", TEST_SPECS, ids=get_param_id)
 def test_command_test_spec(test_spec: mario.declarative.CommandTest):
     """The invocation and input generate the expected output."""
@@ -36,7 +39,7 @@ def test_command_test_spec(test_spec: mario.declarative.CommandTest):
     assert output == test_spec.output
 
 
-@pytest.mark.parametrize("command", COMMANDS, ids=get_param_id)
+@command_parametrize
 @pytest.mark.parametrize("field_name", REQUIRED_FIELDS, ids=get_param_id)
 def test_command_has_required_fields(command, field_name):
     """Test that the command has all required fields."""
@@ -44,7 +47,7 @@ def test_command_has_required_fields(command, field_name):
     assert attribute
 
 
-@pytest.mark.parametrize("command", COMMANDS, ids=get_param_id)
+@command_parametrize
 def test_help(command):
     """The command help passes docshtest."""
     lines = command.help.splitlines(keepends=True)
@@ -52,3 +55,12 @@ def test_help(command):
         if line.startswith(" " * 2) and not line.startswith(" " * 4):
             raise IndentationError(f"Line starts with 2 spaces and not 4: \n{line}")
     docshtest.shtest_runner(lines, regex_patterns="")
+
+
+@command_parametrize
+def test_invocation_includes_command(command):
+    """The test invocation actually includes the tested command."""
+
+    for test in command.tests:
+        message = f"The tested command {command.name} is not in the invocation {test.invocation}."
+        assert command.name in test.invocation, message
