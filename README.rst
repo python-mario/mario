@@ -120,7 +120,7 @@ Given a csv like this:
     Carol,23
     EOF
 
-try:
+Use ``read-csv-dicts`` to read each row into a dict:
 
 .. code-block:: bash
 
