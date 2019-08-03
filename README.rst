@@ -107,39 +107,65 @@ Invoke with  ``mario`` at the command line.
   $ mario eval 1+1
   2
 
-Use ``map`` to act on each item in the file with python commands:
+
+Given a csv like this:
+
 
 .. code-block:: bash
 
-  $ mario map str.upper <<<'abc'
-  ABC
+    $ cat <<EOF > hackers.csv
+    name,age
+    Alice,21
+    Bob,22
+    Carol,23
+    EOF
 
+try:
+
+.. code-block:: bash
+
+    $ mario read-csv-dicts < hackers.csv
+    {'name': 'Alice', 'age': '21'}
+    {'name': 'Bob', 'age': '22'}
+    {'name': 'Carol', 'age': '23'}
+
+
+Use ``map`` to act on each input item ``x`` :
+
+.. code-block:: bash
+
+    $ mario read-csv-dicts map 'x["name"]' < hackers.csv
+    Alice
+    Bob
+    Carol
 
 Chain python functions together with ``!``:
 
 .. code-block:: bash
 
-  $ mario map 'str.upper ! len' <<<hello
-  5
+    $ mario read-csv-dicts map 'x["name"] ! len' < hackers.csv
+    5
+    3
+    5
 
 or by adding another command
 
 .. code-block:: bash
 
-   $ mario map str.upper map len <<<hello
-   5
+    $ mario read-csv-dicts map 'x["name"]' map len < hackers.csv
+    5
+    3
+    5
 
 
 Use ``x`` as a placeholder for the input at each stage:
 
 .. code-block:: bash
 
-  $ mario map ' x.split()[0] ! x.upper()' <<<'Hello world'
-  HELLO
-
-  $ mario map 'x.split()[0] ! x.upper() ! x.replace("H", "J")' <<<'Hello world'
-  JELLO
-
+    $ mario read-csv-dicts map 'x["age"] ! int ! x*2'  < hackers.csv
+    42
+    44
+    46
 
 
 Automatically import modules you need:
