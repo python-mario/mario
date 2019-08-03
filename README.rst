@@ -269,54 +269,42 @@ Use ``apply`` to act on the sequence of items.
 ``chain``
 ----------------------------------------------------
 
-Use ``chain`` to flatten an iterable of iterables of items into an iterable of items, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_.
+Use ``chain`` to flatten a list of lists into a single list, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_.
 
-For example, after calculating a several rows of items,
+For example, after generating a several rows of items,
 
 .. code-block:: bash
 
 
-    $ mario  map 'x*2 ! [x[i:i+2] for i in range(len(x))]'   <<EOF
-    ab
-    ce
+    $ mario read-csv-tuples <<EOF
+    a,b,c
+    d,e,f
+    g,h,i
     EOF
-    ['ab', 'ba', 'ab', 'b']
-    ['ce', 'ec', 'ce', 'e']
+    ('a', 'b', 'c')
+    ('d', 'e', 'f')
+    ('g', 'h', 'i')
+
 
 
 use ``chain`` to put each item on its own row:
 
 .. code-block:: bash
 
-    $ mario  map 'x*2 ! [x[i:i+2] for i in range(len(x))]' chain  <<EOF
-    ab
-    ce
+    $ mario read-csv-tuples chain <<EOF
+    a,b,c
+    d,e,f
+    g,h,i
     EOF
-    ab
-    ba
-    ab
+    a
     b
-    ce
-    ec
-    ce
+    c
+    d
     e
-
-Then subsequent commands will act on these new rows. Here we get the length of each row.
-
-.. code-block:: bash
-
-    $ mario  map 'x*2 ! [x[i:i+2] for i in range(len(x))]' chain map len <<EOF
-    ab
-    ce
-    EOF
-    2
-    2
-    2
-    1
-    2
-    2
-    2
-    1
+    f
+    g
+    h
+    i
 
 
 
