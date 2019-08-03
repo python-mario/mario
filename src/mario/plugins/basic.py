@@ -168,7 +168,7 @@ async def filter(
 
     For example,
 
-    .. code-block::
+    .. code-block:: bash
 
         $ mario filter 'x > "c"' <<EOF
         a
