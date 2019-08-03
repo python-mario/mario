@@ -276,7 +276,7 @@ For example, after generating a several rows of items,
 .. code-block:: bash
 
 
-    $ mario read-csv-tuples  <<EOF
+    $ mario read-csv-tuples <<EOF
     a,b,c
     d,e,f
     g,h,i
@@ -291,7 +291,7 @@ use ``chain`` to put each item on its own row:
 
 .. code-block:: bash
 
-    $ mario read-csv-tuples  <<EOF
+    $ mario read-csv-tuples chain <<EOF
     a,b,c
     d,e,f
     g,h,i
