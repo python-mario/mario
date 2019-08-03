@@ -29,6 +29,20 @@ Mario is the plumbing snake 🐍🔧 helping you build data pipelines in your sh
 
 
 
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+Features
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+
+- Execute Python code in your shell.
+- Pass Python objects through multi-stage pipelines.
+- Read and write csv, json, yaml, toml, xml.
+- Run async functions natively.
+- Define your own commands in a simple configuration file or by writing Python code.
+- Install plugins to get more commands.
+- Codebase maintains high test coverage, continuous integration, and nightly releases.
+
+
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 Installation
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -94,17 +108,6 @@ or for more isolation, use `pipx <https://github.com/pipxproject/pipx/>`_:
     installation-inclusion-end
 
 
-&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-Features
-&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-
-
-- Execute Python code in your shell.
-- Read and write csv, json, yaml, toml, xml.
-- Run async functions natively.
-- Define your own commands in a simple configuration file or by writing Python code.
-- Install plugins to get more commands.
-- Codebase maintains high test coverage, continuous integration, and nightly releases.
 
 
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
