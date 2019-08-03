@@ -269,7 +269,7 @@ Use ``apply`` to act on the sequence of items.
 ``chain``
 ----------------------------------------------------
 
-Use ``chain`` to flatten an iterable of iterables of items into an iterable of items, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_.
+Use ``chain`` to flatten a list of lists into a single list, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_.
 
 For example, after generating a several rows of items,
 
