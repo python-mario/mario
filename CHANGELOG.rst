@@ -12,6 +12,20 @@ Changes for the upcoming release can be found in the `"changelog.d" directory <h
 
 .. towncrier release notes start
 
+0.0.147 (2019-08-02)
+--------------------
+
+
+Changes
+^^^^^^^
+
+- Add read-json-array command.
+  `#170 <https://github.com/python-mario/mario/issues/170>`_
+
+
+----
+
+
 0.0.146 (2019-08-02)
 --------------------
 
