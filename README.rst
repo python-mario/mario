@@ -265,24 +265,6 @@ Use ``apply`` to act on the sequence of items.
 
 
 
-``reduce``
-----------------------------------------------------
-
-Use ``reduce`` to evaluate a function of two arguments successively over a sequence, like `functools.reduce <https://docs.python.org/3/library/functools.html#functools.reduce>`_.
-
-For example, to multiply all the values together, first convert each value to ``int`` with ``map``, then use ``reduce`` to successively multiply each item with the product.
-
-.. code-block:: bash
-
-
-   $ mario map int reduce operator.mul <<EOF
-   1
-   2
-   3
-   4
-   EOF
-
-   24
 
 ``chain``
 ----------------------------------------------------

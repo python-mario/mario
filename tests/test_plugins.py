@@ -8,6 +8,7 @@ import docshtest
 import pytest
 
 import mario.declarative
+import mario.plug
 import mario.plugins
 
 
