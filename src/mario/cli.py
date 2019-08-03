@@ -150,7 +150,7 @@ Addons: https://mario-addons.readthedocs.org
 \b
 Configuration:
   Declarative config: {config.get_config_dir() / 'config.toml'}
-  Python modules: {config.get_config_dir() / 'modules/*.py'}
+  Python modules: {config.get_config_dir() / 'm/*.py'}
 
 """
 
