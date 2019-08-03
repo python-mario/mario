@@ -199,17 +199,20 @@ Read a csv file into Python tuples. Given a csv like this:
     name,age
     Alice,21
     Bob,22
+    Carol,23
 
 try:
 
 .. code-block:: bash
 
-    $ mario read-csv-tuples map list <<EOF
-    name,age
+    $ mario read-csv-tuples <<EOF
     Alice,21
     Bob,22
+    Carol,23
     EOF
-    [('name', 'age'), ('Alice', '21'), ('Bob', '22')]
+    ('Alice', '21')
+    ('Bob', '22')
+    ('Carol', '23')
 
 """
 short_help = "Load csv rows into python objects"
@@ -227,10 +230,13 @@ default = "excel"
 command = "apply"
 params = {code="mario.plugins.read.read_csv_tuples(x, dialect=dialect)"}
 
+[[command.stages]]
+command = "chain"
+
 [[command.tests]]
-invocation = ["read-csv-tuples", "map", "list"]
+invocation = ["read-csv-tuples"]
 input = """name,age\nAlice,21\nBob,22\n"""
-output = "[('name', 'age'), ('Alice', '21'), ('Bob', '22')]\n"
+output = "('name', 'age')\n('Alice', '21')\n('Bob', '22')\n"
 
 
 
