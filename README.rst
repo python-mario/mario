@@ -93,6 +93,20 @@ or for more isolation, use `pipx <https://github.com/pipxproject/pipx/>`_:
 ..
     installation-inclusion-end
 
+
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+Features
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+
+- Execute Python code in your shell.
+- Read and write csv, json, yaml, toml, xml.
+- Run async functions natively.
+- Define your own commands in a simple configuration file or by writing Python code.
+- Install plugins to get more commands.
+- Codebase maintains high test coverage, continuous integration, and nightly releases.
+
+
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 Quickstart
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -120,7 +134,7 @@ Given a csv like this:
     Carol,23
     EOF
 
-try:
+Use ``read-csv-dicts`` to read each row into a dict:
 
 .. code-block:: bash
 
