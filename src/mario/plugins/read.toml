@@ -80,6 +80,49 @@ output = "{'x': 1}\n"
 
 
 [[command]]
+name = "read-yaml-array"
+short_help = "Read yaml document"
+section = "Read"
+
+help = """
+
+Read a yaml document into a Python object.
+
+For example,
+
+.. code-block:: bash
+
+    $ mario read-yaml-array <<EOF
+    - Cat: "foo"
+    - Dog: "bar"
+    - Goldfish: "baz"
+    EOF
+    {'Cat': 'foo'}
+    {'Dog': 'bar'}
+    {'Goldfish': 'baz'}
+
+"""
+
+[[command.stages]]
+command = "read-text"
+
+[[command.stages]]
+command = "map"
+params = {code="yaml.safe_load(x)"}
+
+[[command.stages]]
+command = "chain"
+
+[[command.tests]]
+invocation = ["read-yaml-array"]
+input = """
+- x: 1
+- y: 2
+"""
+output = "{'x': 1}\n{'y': 2}\n"
+
+
+[[command]]
 name = "read-csv-dicts"
 section = "Read"
 help = """
