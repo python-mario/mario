@@ -65,7 +65,7 @@ parso==0.4.0
 pathtools==0.1.2          # via watchdog
 pkginfo==1.5.0.1          # via twine
 pluggy==0.12.0
-pre-commit==1.17.0
+pre-commit==1.18.0
 py==1.8.0                 # via pytest, tox
 pyasn1-modules==0.2.4     # via service-identity
 pyasn1==0.4.5             # via pyasn1-modules, service-identity
