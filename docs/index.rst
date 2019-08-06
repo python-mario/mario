@@ -1,4 +1,8 @@
-.. include:: readme
+=======
+Readme
+=======
+
+.. include:: readme.rst
 
 ========
 Contents
