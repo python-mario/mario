@@ -237,7 +237,7 @@ Use ``eval`` to evaluate a Python expression.
 .. code-block:: bash
 
     % mario eval 'datetime.datetime.utcnow()'
-    2019-01-01 01:23:45.562736
+   2019-01-01 01:23:45.562736
 
 
 
@@ -248,12 +248,12 @@ Use ``map`` to act on each input item.
 
 .. code-block:: bash
 
-   $ mario map 'x * 2' <<
-   a
-   bb
-   EOF
-   aa
-   bbbb
+    $ mario map 'x * 2' <<
+    a
+    bb
+    EOF
+    aa
+    bbbb
 
 ``filter``
 ----------------------------------------------------
@@ -263,13 +263,13 @@ Use ``filter`` to evaluate a condition on each line of input and exclude false v
 
 .. code-block:: bash
 
-   $  mario filter 'len(x) > 1' <<
-   a
-   bb
-   ccc
-   EOF
-   bb
-   ccc
+    $ mario filter 'len(x) > 1' <<
+    a
+    bb
+    ccc
+    EOF
+    bb
+    ccc
 
 
 ``apply``
