@@ -248,7 +248,7 @@ Use ``map`` to act on each input item.
 
 .. code-block:: bash
 
-    $ mario map 'x * 2' <<
+    $ mario map 'x * 2' <<EOF
     a
     bb
     EOF
@@ -263,7 +263,7 @@ Use ``filter`` to evaluate a condition on each line of input and exclude false v
 
 .. code-block:: bash
 
-    $ mario filter 'len(x) > 1' <<
+    $ mario filter 'len(x) > 1' <<EOF
     a
     bb
     ccc
