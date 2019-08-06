@@ -29,7 +29,9 @@ Have you ever wanted to use Python functions directly in your Unix shell? Mario 
 Mario is the plumbing snake 🐍🔧 helping you build data pipelines in your shell 🐢.
 
 
-.. image:: time.png
+.. image:: https://raw.githubusercontent.com/python-mario/mario/master/docs/time.png
+   :alt: What time is it in Sydney?
+
 
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 Features
