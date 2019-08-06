@@ -164,7 +164,7 @@ default = "excel"
 
 [[command.stages]]
 command = "apply"
-params = {code="mario.plugins.read.read_csv_dicts(x, header=header, dialect=dialect)"}
+params = {code="mario.plugins.read.read_csv_dicts(x, dialect=dialect)"}
 
 [[command.stages]]
 command = "chain"
