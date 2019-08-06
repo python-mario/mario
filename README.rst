@@ -160,7 +160,7 @@ Use ``map`` to act on each input item ``x`` :
     Bob
     Carol
 
-Chain python functions together with ``!``:
+Chain Python functions together with ``!``:
 
 .. code-block:: bash
 
@@ -201,14 +201,20 @@ You don't need to explicitly call the function with ``some_function(x)``; just u
 
 .. code-block:: bash
 
-  $ mario map 'len(x)' <<<'a\nbb'
+  $ mario map 'len(x)' <<EOF
+  a
+  bb
+  EOF
   5
 
 try
 
 .. code-block:: bash
 
-  $ mario map len <<<'a\nbb'
+  $ mario map len <<EOF
+  a
+  bb
+  EOF
   5
 
 
@@ -240,7 +246,10 @@ Use ``map`` to act on each input item.
 
 .. code-block:: bash
 
-   $ mario map 'x * 2' <<<'a\nbb\n'
+   $ mario map 'x * 2' <<
+   a
+   bb
+   EOF
    aa
    bbbb
 
@@ -252,7 +261,11 @@ Use ``filter`` to evaluate a condition on each line of input and exclude false v
 
 .. code-block:: bash
 
-   $  mario filter 'len(x) > 1' <<<'a\nbb\nccc\n'
+   $  mario filter 'len(x) > 1' <<
+   a
+   bb
+   ccc
+   EOF
    bb
    ccc
 
@@ -264,7 +277,10 @@ Use ``apply`` to act on the sequence of items.
 
 .. code-block:: bash
 
-    $ mario apply 'len(x)' <<<$'a\nbb'
+    $ mario apply 'len(x)' <<EOF
+    a
+    bb
+    EOF
     2
 
 
