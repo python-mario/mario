@@ -67,21 +67,6 @@ class Registry:
     cli_functions: Dict[str, Any] = attr.ib(factory=dict)
     commands: Dict[str, CommandCommand] = attr.ib(factory=dict)
 
-    def register(self, name=None, params=None):
-        def wrap(function):
-            if name is None:
-                registered_name = function.__name__
-            else:
-                registered_name = name
-
-            # pylint: disable=unsupported-assignment-operation
-            self.traversals[registered_name] = PluginObject(
-                registered_name, function, params
-            )
-            return function
-
-        return wrap
-
     def add_traversal(self, name=None, calculate_more_params=lambda x: {}):
         def wrap(function):
 
