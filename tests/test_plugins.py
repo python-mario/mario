@@ -65,3 +65,9 @@ def test_invocation_includes_command(command):
     for test in command.tests:
         message = f"The tested command {command.name} is not in the invocation {test.invocation}."
         assert command.name in test.invocation, message
+
+
+@pytest.mark.xfail
+def test_python_command_docstrings():
+    """Run docshtest on docstrings of commands defined in Python code."""
+    raise NotImplementedError
