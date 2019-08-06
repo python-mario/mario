@@ -158,18 +158,6 @@ Configuration:
 ALIASES = app.global_registry.commands
 
 
-def show(x):
-    if hasattr(x, "__dict__"):
-        return attr.make_class(type(x).__name__, list(vars(x).keys()))(
-            **{k: show(v) for k, v in vars(x).items()}
-        )
-    if isinstance(x, list):
-        return [show(v) for v in x]
-    if isinstance(x, dict):
-        return {k: show(v) for k, v in x.items()}
-    return repr(x)
-
-
 def cli_main(pairs, **kwargs):
     app.main(pairs, **kwargs)
 
