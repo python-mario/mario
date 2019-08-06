@@ -125,8 +125,8 @@ Invoke with  ``mario`` at the command line.
 
 .. code-block:: bash
 
-  $ mario eval 1+1
-  2
+    $ mario eval 1+1
+    2
 
 
 Given a csv like this:
@@ -201,21 +201,23 @@ You don't need to explicitly call the function with ``some_function(x)``; just u
 
 .. code-block:: bash
 
-  $ mario map 'len(x)' <<EOF
-  a
-  bb
-  EOF
-  5
+    $ mario map 'len(x)' <<EOF
+    a
+    bb
+    EOF
+    1
+    2
 
 try
 
 .. code-block:: bash
 
-  $ mario map len <<EOF
-  a
-  bb
-  EOF
-  5
+    $ mario map len <<EOF
+    a
+    bb
+    EOF
+    1
+    2
 
 
 
@@ -234,8 +236,8 @@ Use ``eval`` to evaluate a Python expression.
 
 .. code-block:: bash
 
-  $ mario eval 'datetime.datetime.utcnow()'
-  2019-01-01 01:23:45.562736
+    % mario eval 'datetime.datetime.utcnow()'
+    2019-01-01 01:23:45.562736
 
 
 
