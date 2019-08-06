@@ -12,6 +12,20 @@ Changes for the upcoming release can be found in the `"changelog.d" directory <h
 
 .. towncrier release notes start
 
+0.0.152 (2019-08-06)
+--------------------
+
+
+Backward-incompatible Changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Remove read-csv-dicts --no-header option.
+  `#193 <https://github.com/python-mario/mario/issues/193>`_
+
+
+----
+
+
 0.0.151 (2019-08-04)
 --------------------
 
