@@ -2,9 +2,6 @@
 Mario: Shell pipes in Python
 ``````````````````````````````````````````````````````
 
-Have you ever wanted to use Python functions directly in your Unix shell? Mario can read and write csv, json, and yaml; traverse trees, and even do xpath queries. Plus, it supports async commands right out of the box. Build your own commands with a simple configuration file, and install plugins for even more!
-
-Mario is the plumbing snake 🐍🔧 helping you build data pipelines in your shell 🐢.
 
 
 .. image:: https://img.shields.io/github/stars/python-mario/mario?style=social
@@ -27,6 +24,13 @@ Mario is the plumbing snake 🐍🔧 helping you build data pipelines in your sh
    :target: https://codecov.io/gh/python-mario/mario
    :alt: Coverage
 
+Have you ever wanted to use Python functions directly in your Unix shell? Mario can read and write csv, json, and yaml; traverse trees, and even do xpath queries. Plus, it supports async commands right out of the box. Build your own commands with a simple configuration file, and install plugins for even more!
+
+Mario is the plumbing snake 🐍🔧 helping you build data pipelines in your shell 🐢.
+
+
+.. image:: https://raw.githubusercontent.com/python-mario/mario/master/docs/time.png
+   :alt: What time is it in Sydney?
 
 
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
