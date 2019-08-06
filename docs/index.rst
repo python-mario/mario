@@ -1,6 +1,12 @@
+.. include:: readme
+
 ========
 Contents
 ========
+
+Index
+------
+
 
 .. toctree::
 
