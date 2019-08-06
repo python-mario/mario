@@ -44,7 +44,7 @@ Features
 - Run async functions natively.
 - Define your own commands in a simple configuration file or by writing Python code.
 - Install plugins to get more commands.
-- Codebase maintains high test coverage, continuous integration, and nightly releases.
+- Enjoy high test coverage, continuous integration, and nightly releases.
 
 
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&

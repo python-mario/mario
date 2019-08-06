@@ -3,7 +3,6 @@
 
 from __future__ import generator_stop
 
-import functools
 import itertools
 import typing
 
@@ -83,11 +82,3 @@ class TerminatedFrameReceiver:
             return await self.receive()
         except trio.EndOfChannel:
             raise StopAsyncIteration
-
-
-def make_async(f):
-    @functools.wraps(f)
-    async def wrap(*args, **kwargs):
-        return f(*args, **kwargs)
-
-    return wrap
