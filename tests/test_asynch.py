@@ -2,6 +2,7 @@
 
 import subprocess
 import sys
+import textwrap
 import time
 
 import pytest
@@ -139,3 +140,28 @@ def test_cli_async_reduce_without_curry(runner, reactor, server, capsys):
     assert output == expected
     limit_seconds = 7.0
     assert t.elapsed < limit_seconds
+
+
+def test_async_filter():
+    """Test the async-filter command.
+
+    There should be a better test case for this.
+    """
+    args = ["async-filter", '(await asks.get(x)).json()["url"].endswith(("1", "3"))']
+    stdin = textwrap.dedent(
+        """\
+    http://httpbin.org/delay/5
+    http://httpbin.org/delay/1
+    http://httpbin.org/delay/2
+    http://httpbin.org/delay/3
+    http://httpbin.org/delay/4
+    """
+    )
+    result = helpers.run(args, input=stdin.encode()).decode()
+    expected = textwrap.dedent(
+        """\
+    http://httpbin.org/delay/1
+    http://httpbin.org/delay/3
+    """
+    )
+    assert result == expected
