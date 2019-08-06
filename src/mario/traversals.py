@@ -45,50 +45,6 @@ class AsyncIterableWrapper:
             raise StopAsyncIteration
 
 
-class AsyncIterableToIterable:
-    def __init__(self, aiterable):
-        self.aiterable = aiterable
-
-    def __iter__(self):
-        return self
-
-    async def __next__(self):
-        return await self.aiterable.__anext__()
-
-
-class IterableToAsyncIterable:
-    def __init__(self, iterable):
-        self.iterable = iter(iterable)
-
-    def __aiter__(self):
-        return self
-
-    async def __anext__(self):
-        try:
-            return next(self.iterable)
-        except StopIteration:
-            raise StopAsyncIteration
-
-
-def _pull_values_from_async_iterator(
-    in_trio: trio.BlockingTrioPortal,
-    ait: t.AsyncIterator[T],
-    send_to_trio: trio.abc.SendChannel[
-        T
-    ],  # pylint: disable=unused-argument, unsubscriptable-object
-):
-    """Make a generator by asking Trio to async-iterate over the async iterable,
-    then yield the results.
-
-    This function is run in a thread.
-    """
-    while True:
-        try:
-            yield in_trio.run(ait.__anext__)
-        except StopAsyncIteration:
-            break
-
-
 async def async_apply(function, data):
     return await function(data)
 
