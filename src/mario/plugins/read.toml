@@ -153,7 +153,7 @@ try:
 
 """
 short_help = "Load csv rows into python objects"
-inject_values=["dialect", "header"]
+inject_values=["dialect"]
 
 
 [[command.options]]
@@ -162,15 +162,9 @@ help = "CSV dialect (See https://docs.python.org/3/library/csv.html)"
 choices = ["excel", "excel-tab", "unix"]
 default = "excel"
 
-
-[[command.options]]
-name = "--header/--no-header"
-default=true
-help = "Treat the first row as a header?"
-
 [[command.stages]]
 command = "apply"
-params = {code="mario.plugins.read.read_csv_dicts(x, header=header, dialect=dialect)"}
+params = {code="mario.plugins.read.read_csv_dicts(x, dialect=dialect)"}
 
 [[command.stages]]
 command = "chain"
