@@ -174,11 +174,3 @@ def test_meta_test_command_pass(tmp_path, tmp_env):
         capture_output=True,
     )
     assert proc.returncode == 0
-
-
-def test_help():
-    """CLI help is formatted as plain text not rst and includes a demo."""
-    result = helpers.run(["map", "--help"]).decode()
-
-    assert "$ mario map" in result
-    assert ".. code-block" not in result
