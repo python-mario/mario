@@ -1,7 +1,6 @@
 import os
 import sys
 
-import attr
 import click
 
 import mario
