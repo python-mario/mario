@@ -38,7 +38,7 @@ docutils==0.14
 filelock==3.0.10          # via tox
 h11==0.9.0                # via asks
 hyperlink==19.0.0         # via twisted
-hypothesis==4.17.1
+hypothesis==4.32.3
 identify==1.4.5           # via pre-commit
 idna==2.8                 # via hyperlink, requests, trio, twisted, yarl
 imagesize==1.1.0          # via sphinx
