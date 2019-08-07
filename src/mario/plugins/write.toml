@@ -392,3 +392,82 @@ output = """
   name: Bob
 
 """
+
+
+[[command]]
+name = "write-json-array"
+section = "Write"
+short_help = "Write the input sequence into a json array."
+
+help = """
+Write the input sequence into a json array.
+
+
+.. code-block:: bash
+
+    $ mario read-json-array write-json-array map str.rstrip  <<EOF
+    [
+            {
+                "name": "Alice",
+                "age": 21
+            },
+            {
+                "name": "Bob",
+                "age": 22
+            }
+    ]
+    EOF
+    [
+        {
+            "name": "Alice",
+            "age": 21
+        },
+        {
+            "name": "Bob",
+            "age": 22
+        }
+    ]
+
+"""
+
+inject_values = ["pretty"]
+
+
+[[command.options]]
+name = "--pretty/--no-pretty"
+default=true
+
+[[command.stages]]
+command = "apply"
+params={code="list"}
+
+[[command.stages]]
+command = "write-json"
+params = {code="json.dumps"}
+
+[[command.tests]]
+invocation = ["read-json-array", "write-json-array",]
+input = """
+    [
+            {
+                "name": "Alice",
+                "age": 21
+            },
+            {
+                "name": "Bob",
+                "age": 22
+            }
+    ]
+"""
+output = """
+[
+    {
+        "name": "Alice",
+        "age": 21
+    },
+    {
+        "name": "Bob",
+        "age": 22
+    }
+]
+"""
