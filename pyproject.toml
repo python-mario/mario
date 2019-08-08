@@ -107,6 +107,14 @@ pytest-clarity = {version = "^0.1.0-alpha.1", allows-prereleases = true}
 pygments = {version = "^2.4", allows-prereleases = true}
 
 
+
+[tool.poetry.plugins.mario_plugins]
+basic = "mario.plugins"
+
+[tool.poetry.scripts]
+mario = "mario.cli:cli"
+
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
