@@ -107,7 +107,16 @@ black = {version = "^18.3-alpha.0", allows-prereleases = true}
 pytest-clarity = {version = "^0.1.0-alpha.1", allows-prereleases = true}
 pygments = {version = "^2.4", allows-prereleases = true}
 
-
+[tool.poetry.extras]
+docs = [
+    "sphinx",
+    "sphinx-rtd-theme",
+    "sphinx-autodoc-typehints",
+    "sphinx-click",
+    "marshmallow-jsonschema",
+    "sphinx-jsonschema",
+    "marshmallow"
+]
 
 [tool.poetry.plugins.mario_plugins]
 basic = "mario.plugins"
@@ -117,5 +126,5 @@ mario = "mario.cli:cli"
 
 
 [build-system]
-requires = ["poetry>=0.12", "rtd-poetry"]
-build-backend = "rtd_poetry"
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 import os
-import sys
 
 
 extensions = [
@@ -62,6 +61,3 @@ autoapi_dirs = ["../src/mario"]
 html_theme_options = {"navigation_depth": 5}
 
 autosectionlabel_prefix_document = True
-
-
-sys.path.append("../src")
