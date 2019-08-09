@@ -54,6 +54,7 @@ name = "mario"
 version = "0.0.153"
 description = ""
 authors = ["akb <uBX6aXPqDSRrt92kha28@cordaz.com>"]
+readme = "README.rst"
 
 [tool.poetry.dependencies]
 python = "^3.7"
