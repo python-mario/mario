@@ -72,12 +72,12 @@ asks = "2.3.3"
 marshmallow = "3.0rc8"
 trio_typing = "0.2.0"
 docutils = "0.14"
-sphinx = "2.1.2"
 pytest = "5.0.1"
 importlib_metadata = "0.18"
 xmltodict = "0.12.0"
 pyyaml = "5.1.1"
 pyrsistent = "0.14.11"
+sphinx = {version = "2.1.2", optional = true}
 sphinx-rtd-theme = {version = "^0.4.3", optional = true}
 sphinx-autodoc-typehints = {version = "^1.7", optional = true}
 sphinx-click = {version = "^2.2", optional = true}
@@ -120,7 +120,7 @@ docs = [
     "sphinx-click",
     "marshmallow-jsonschema",
     "sphinx-jsonschema",
-    "marshmallow"
+
 ]
 
 [tool.poetry.plugins.mario_plugins]
