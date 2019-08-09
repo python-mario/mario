@@ -78,6 +78,11 @@ importlib_metadata = "0.18"
 xmltodict = "0.12.0"
 pyyaml = "5.1.1"
 pyrsistent = "0.14.11"
+sphinx-rtd-theme = {version = "^0.4.3", optional = true}
+sphinx-autodoc-typehints = {version = "^1.7", optional = true}
+sphinx-click = {version = "^2.2", optional = true}
+marshmallow-jsonschema = {version = "^0.6.0", optional = true}
+sphinx-jsonschema = {version = "^1.9", optional = true}
 
 
 [tool.poetry.dev-dependencies]
