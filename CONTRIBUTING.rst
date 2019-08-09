@@ -117,7 +117,24 @@ To set up `mario` for local development:
 
     git checkout -b name-of-your-bugfix-or-feature
 
-   Now you can make your changes locally.
+   Now you can make your changes locally. Mario uses Poetry for packaging, so
+   you'll need to install Poetry:
+
+   .. code-block:: bash
+
+       $ pip install poetry
+
+   and use Poetry to install the Mario development environment:
+
+    .. code-block:: bash
+
+       $ poetry install
+
+
+   `poetry install` will create a virtualenv and install Mario's development
+   dependencies. Use ``poetry run mario`` to access Mario inide the virtualenv,
+   or ``poetry shell`` to activate the virtualenv and then run ``mario``
+   directly.
 
 4. When you're done making changes, run all the checks, doc builder and spell checker with `tox`_ one command::
 
