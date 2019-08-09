@@ -1,0 +1,30 @@
+bump2version
+coverage
+hypothesis
+pylint
+pytest
+requests
+aiohttp
+jedi
+yapf
+parso
+twine
+vulture
+treq
+twisted
+cuvner
+pytest-cov
+tox
+pytest-clarity>=0.0.0dev
+black>=0.0.0dev
+lockfile
+urllib3>=1.24.2 # https://nvd.nist.gov/vuln/detail/CVE-2019-11324
+sphinx_rtd_theme
+pytest-sugar
+lxml
+docshtest
+pygments>=2.4
+marshmallow-jsonschema
+pluggy>=0.12
+pre-commit
+-r requirements.in
