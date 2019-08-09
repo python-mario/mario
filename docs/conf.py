@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import os
+import sys
 
 
 extensions = [
@@ -57,6 +58,9 @@ napoleon_use_rtype = False
 napoleon_use_param = True
 
 autoapi_dirs = ["../src/mario"]
+
+for path in autoapi_dirs:
+    sys.path.append(path)
 
 html_theme_options = {"navigation_depth": 5}
 
