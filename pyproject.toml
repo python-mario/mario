@@ -51,7 +51,7 @@ exclude = '''
 
 [tool.poetry]
 name = "mario"
-version = "0.0.153" # MARIO_VERSION  (This comment helps bumpversion find the right line.)
+version = "0.0.154" # MARIO_VERSION  (This comment helps bumpversion find the right line.)
 description = ""
 authors = ["akb <uBX6aXPqDSRrt92kha28@cordaz.com>"]
 readme = "README.rst"
