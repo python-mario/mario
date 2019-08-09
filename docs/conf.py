@@ -32,7 +32,7 @@ project = "mario"
 year = "2019"
 author = "mario contributors"
 copyright = "{0}, {1}".format(year, author)
-version = release = "0.0.154"
+version = release = "0.0.153"
 
 pygments_style = "trac"
 templates_path = ["."]
