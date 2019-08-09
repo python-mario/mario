@@ -59,9 +59,9 @@ napoleon_use_param = True
 
 autoapi_dirs = ["../src/mario"]
 
-for path in autoapi_dirs:
-    sys.path.append(path)
-
 html_theme_options = {"navigation_depth": 5}
 
 autosectionlabel_prefix_document = True
+
+
+sys.path.append("../src")
