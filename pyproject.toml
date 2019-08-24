@@ -108,7 +108,7 @@ lxml = "^4.4"
 docshtest = "^0.0.2"
 marshmallow-jsonschema = "^0.7.0"
 pre-commit = "^1.18"
-black = {version = "^18.3-alpha.0", allows-prereleases = true}
+black = {version = "^19.3b0", allows-prereleases = true}
 pytest-clarity = {version = "^0.1.0-alpha.1", allows-prereleases = true}
 pygments = {version = "^2.4", allows-prereleases = true}
 
