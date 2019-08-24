@@ -55,6 +55,7 @@ version = "0.0.154" # MARIO_VERSION  (This comment helps bumpversion find the ri
 description = ""
 authors = ["akb <uBX6aXPqDSRrt92kha28@cordaz.com>"]
 readme = "README.rst"
+license = "GPL-3.0"
 
 [tool.poetry.dependencies]
 python = "^3.7"
