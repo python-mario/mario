@@ -430,6 +430,7 @@ A number of cool projects have pioneered in the Python-in-shell space. I wrote M
 * https://spy.readthedocs.io/en/latest/intro.html
 * https://github.com/ksamuel/Pyped
 * https://github.com/ircflagship2/pype
+* https://code.google.com/archive/p/pyp/
 
 
 ..
