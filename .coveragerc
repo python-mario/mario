@@ -18,3 +18,4 @@ omit =
 show_missing = true
 precision = 2
 omit = *migrations*
+skip_covered = true

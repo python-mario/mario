@@ -97,3 +97,16 @@ DEFAULT_SECTION_PRIORITY = 500
 NULL_SECTION = HelpSectionSpec(
     priority=1000, name="Custom", doc="Custom defined commands"
 )
+
+
+def get_jsonschema_type_mapping(type_):
+    def _jsonschema_type_mapping(self):
+        d = {"type": type_}
+        if "description" in self.metadata.keys():
+            d["description"] = self.metadata["description"]
+        else:
+            d["description"] = self.metadata["metadata"]["description"]
+
+        return d
+
+    return _jsonschema_type_mapping

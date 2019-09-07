@@ -6,22 +6,10 @@ import marshmallow
 import pyrsistent
 from marshmallow import fields
 
+from . import doc
+
 
 TYPES = {t.__name__: t for t in [int, str, bool, float]}
-
-
-def get_jsonschema_type_mapping(type_):
-    def _jsonschema_type_mapping(self):
-        d = {"type": type_}
-
-        if "description" in self.metadata.keys():
-            d["description"] = self.metadata["description"]
-        else:
-            d["description"] = self.metadata["metadata"]["description"]
-
-        return d
-
-    return _jsonschema_type_mapping
 
 
 class TypeField(marshmallow.fields.Field):
@@ -38,7 +26,7 @@ class TypeField(marshmallow.fields.Field):
                 raise
             return self.default
 
-    _jsonschema_type_mapping = get_jsonschema_type_mapping("string")
+    _jsonschema_type_mapping = doc.get_jsonschema_type_mapping("string")
 
 
 class OptionNameField(marshmallow.fields.Field):
@@ -46,7 +34,7 @@ class OptionNameField(marshmallow.fields.Field):
     def _deserialize(self, value, attr, data, **kwargs):
         return [value]
 
-    _jsonschema_type_mapping = get_jsonschema_type_mapping("string")
+    _jsonschema_type_mapping = doc.get_jsonschema_type_mapping("string")
 
 
 class ArgumentNameField(marshmallow.fields.Field):
@@ -54,11 +42,11 @@ class ArgumentNameField(marshmallow.fields.Field):
     def _deserialize(self, value, attr, data, **kwargs):
         return [value]
 
-    _jsonschema_type_mapping = get_jsonschema_type_mapping("string")
+    _jsonschema_type_mapping = doc.get_jsonschema_type_mapping("string")
 
 
 class AnyField(marshmallow.fields.Field):
-    _jsonschema_type_mapping = get_jsonschema_type_mapping("string")
+    _jsonschema_type_mapping = doc.get_jsonschema_type_mapping("string")
 
 
 class OptionSchema(marshmallow.Schema):
