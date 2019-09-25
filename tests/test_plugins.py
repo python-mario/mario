@@ -32,7 +32,7 @@ command_parametrize = pytest.mark.parametrize("command", COMMANDS, ids=get_param
 @pytest.mark.parametrize("test_spec", TEST_SPECS, ids=get_param_id)
 def test_command_test_spec(test_spec: mario.declarative.CommandTest):
     """The invocation and input generate the expected output."""
-
+    # pylint: disable=unexpected-keyword-arg
     output = subprocess.check_output(
         [sys.executable, "-m", "mario"] + list(test_spec.invocation),
         input=test_spec.input.encode(),

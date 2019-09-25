@@ -56,6 +56,7 @@ def test_cli_async_map_then_apply(runner, reactor, server):
     expected = "42\n"
     limit_seconds = 6.0
     with helpers.Timer() as t:
+        # pylint: disable=unexpected-keyword-arg
         output = subprocess.check_output(
             [sys.executable, *args], input=in_stream.encode(), timeout=limit_seconds
         ).decode()

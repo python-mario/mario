@@ -7,9 +7,9 @@ import attr
 
 
 def parse_rst(text: str) -> docutils.nodes.document:  # type: ignore
-    import docutils.nodes
-    import docutils.parsers.rst
-    import docutils.utils
+    import docutils.nodes  # pylint: disable=import-outside-toplevel
+    import docutils.parsers.rst  # pylint: disable=import-outside-toplevel
+    import docutils.utils  # pylint: disable=import-outside-toplevel
 
     parser = docutils.parsers.rst.Parser()
     components = (docutils.parsers.rst.Parser,)
@@ -23,10 +23,10 @@ def parse_rst(text: str) -> docutils.nodes.document:  # type: ignore
 
 # pylint: disable=undefined-variable
 def format_text(document: docutils.nodes.document) -> str:  # type: ignore
-    import sphinx.builders.text
-    import sphinx.events
-    import sphinx.util.osutil
-    import sphinx.writers.text
+    import sphinx.builders.text  # pylint: disable=import-outside-toplevel
+    import sphinx.events  # pylint: disable=import-outside-toplevel
+    import sphinx.util.osutil  # pylint: disable=import-outside-toplevel
+    import sphinx.writers.text  # pylint: disable=import-outside-toplevel
 
     app = types.SimpleNamespace(
         srcdir=None,
