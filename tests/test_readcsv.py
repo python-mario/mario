@@ -67,6 +67,7 @@ read_csv_row = make_reader()
 def test_py_read():
 
     for _ in range(10):
+        # pylint: disable=unexpected-keyword-arg
         output = subprocess.check_output(
             [
                 sys.executable,
@@ -89,6 +90,7 @@ def test_py_read():
 def test_apply_csv_dictreader_read_csv():
 
     for _ in range(10):
+        # pylint: disable=unexpected-keyword-arg
         output = subprocess.check_output(
             [
                 sys.executable,

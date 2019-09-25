@@ -75,7 +75,7 @@ class Registry:
             else:
                 registered_name = name
 
-            params = [param for param in inspect.signature(function).parameters.keys()]
+            params = list(inspect.signature(function).parameters.keys())
             # pylint: disable=unsupported-assignment-operation
             self.traversals[
                 registered_name
@@ -139,6 +139,7 @@ def make_config_registry():
 
     try:
         # pylint: disable=import-error
+        # pylint: disable=import-outside-toplevel
         import m
     except ModuleNotFoundError:
         return Registry()

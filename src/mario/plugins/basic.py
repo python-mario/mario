@@ -1,5 +1,7 @@
 import subprocess
 import sys
+import tempfile
+import textwrap
 
 import click
 
@@ -500,7 +502,7 @@ def pip(ctx, pip_args):
     Arguments are forwarded to ``pip``.
     """
     cli_args = [sys.executable, "-m", "pip"] + list(pip_args)
-    ctx.exit(subprocess.run(cli_args).returncode)
+    ctx.exit(subprocess.run(cli_args, check=False).returncode)
 
 
 @meta.command(
@@ -519,9 +521,6 @@ def run_tests(ctx, pytest_args):
 
     Default pytest args: ``-vvv --tb=short``
     """
-
-    import tempfile
-    import textwrap
 
     pytest_args = list(pytest_args) or ["-vvv", "--tb=short"]
 
@@ -553,7 +552,7 @@ def run_tests(ctx, pytest_args):
     f.write(source)
     f.close()
     args = [sys.executable, "-m", "pytest"] + pytest_args + [f.name]
-    proc = subprocess.run(args)
+    proc = subprocess.run(args, check=False)
     ctx.exit(proc.returncode)
 
 

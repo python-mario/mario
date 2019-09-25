@@ -89,7 +89,6 @@ sphinx-jsonschema = {version = "^1.9", optional = true}
 [tool.poetry.dev-dependencies]
 bump2version = "^0.5.11"
 coverage = "^4.5"
-pytest = "^5.0"
 hypothesis = "^4.32"
 requests = "^2.22"
 yapf = "^0.28.0"

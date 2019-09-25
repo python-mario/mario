@@ -172,5 +172,6 @@ def test_meta_test_command_pass(tmp_path, tmp_env):
         ],
         env=tmp_env,
         capture_output=True,
+        check=False,
     )
     assert proc.returncode == 0
