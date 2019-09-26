@@ -60,7 +60,6 @@ license = "GPL-3.0"
 [tool.poetry.dependencies]
 python = "^3.7"
 click = "7.0"
-toolz = "0.9.0"
 attrs = "19.1.0"
 parso = "0.5.1"
 bump2version = "0.5.11"
@@ -84,6 +83,7 @@ sphinx-autodoc-typehints = {version = "^1.7", optional = true}
 sphinx-click = {version = "^2.2", optional = true}
 marshmallow-jsonschema = {version = "^0.7.0", optional = true}
 sphinx-jsonschema = {version = "^1.9", optional = true}
+toolz = "^0.10.0"
 
 
 [tool.poetry.dev-dependencies]

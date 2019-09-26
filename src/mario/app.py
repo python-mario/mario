@@ -60,7 +60,6 @@ async def async_main(basic_traversals, **kwargs):
     # pylint: disable=protected-access
     stream = trio._unix_pipes.PipeReceiveStream(os.dup(0))
     receiver = asynch.TerminatedFrameReceiver(stream, b"\n")
-    items = (item.decode() async for item in receiver)
 
     # pylint: disable=no-member
     global_context = interfaces.Context(global_registry.global_options.copy())
@@ -100,6 +99,8 @@ async def async_main(basic_traversals, **kwargs):
                 plugin_object=global_registry.traversals[d["name"]],
             )
             traversals.append(traversal)
+
+    items = (item.decode() async for item in receiver)
 
     stack, items = await program_runner(traversals, items, global_context)
 

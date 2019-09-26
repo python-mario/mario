@@ -468,3 +468,51 @@ Lorem ipsum dolor sit amet,
 consectetur adipiscing elit,
 """
 output = "56\n"
+
+
+
+[[command]]
+name = "read-bytes"
+section = "Read"
+short_help = "Read a block of bytes into a byte string."
+help = """
+Read input as a block of bytes, joining lines with a line separator.
+
+For example,
+
+.. code-block:: bash
+
+    $ mario read-bytes <<EOF
+    Lorem ipsum dolor sit amet,
+    consectetur adipiscing elit,
+    EOF
+    Lorem ipsum dolor sit amet,
+    consectetur adipiscing elit,
+
+.. code-block:: bash
+
+    $ mario read-bytes map len <<EOF
+    Lorem ipsum dolor sit amet,
+    consectetur adipiscing elit,
+    EOF
+    56
+
+"""
+inject_values = ["sep"]
+
+[[command.options]]
+name = "--sep"
+default = "\n"
+help = "Separator to join input lines with"
+
+[[command.stages]]
+command = "apply"
+params={code="sep.join(x).encode()"}
+
+[[command.tests]]
+invocation = ["read-bytes", "map", "len"]
+input = """
+Lorem ipsum dolor sit amet,
+consectetur adipiscing elit,
+"""
+output = "56\n"
