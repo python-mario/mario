@@ -486,7 +486,7 @@ For example,
     Lorem ipsum dolor sit amet,
     consectetur adipiscing elit,
     EOF
-    b'Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit,'
+    b'Lorem ipsum dolor sit amet,\\nconsectetur adipiscing elit,'
 
 .. code-block:: bash
 
