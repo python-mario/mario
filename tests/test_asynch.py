@@ -54,15 +54,14 @@ def test_cli_async_map_then_apply(runner, reactor, server):
     ]
 
     expected = "42\n"
-    limit_seconds = 6.0
-    with helpers.Timer() as t:
+
+    with helpers.Timer(6.0):
         # pylint: disable=unexpected-keyword-arg
         output = subprocess.check_output(
-            [sys.executable, *args], input=in_stream.encode(), timeout=limit_seconds
+            [sys.executable, *args], input=in_stream.encode()
         ).decode()
 
     assert output == expected
-    assert t.elapsed < limit_seconds
 
 
 def test_cli_async_map(runner, reactor, server, capsys):
@@ -79,12 +78,10 @@ def test_cli_async_map(runner, reactor, server, capsys):
 
     expected = "1\n1\n5\n1\n"
 
-    with helpers.Timer() as t:
+    with helpers.Timer(6.0):
         output = helpers.run(args, input=in_stream.encode()).decode()
 
     assert output == expected
-    limit_seconds = 6.0
-    assert t.elapsed < limit_seconds
 
 
 def test_cli_async_map_unordered(runner, reactor, server, capsys):
@@ -99,12 +96,10 @@ def test_cli_async_map_unordered(runner, reactor, server, capsys):
 
     expected = "1\n2\n3\n4\n5\n"
 
-    with helpers.Timer() as t:
+    with helpers.Timer(7.0):
         output = helpers.run(args, input=in_stream.encode()).decode()
 
     assert output == expected
-    limit_seconds = 7.0
-    assert t.elapsed < limit_seconds
 
 
 def test_cli_async_reduce_fails(runner, reactor, server, capsys):
@@ -135,12 +130,10 @@ def test_cli_async_reduce_without_curry(runner, reactor, server, capsys):
 
     expected = "3.0\n"
 
-    with helpers.Timer() as t:
+    with helpers.Timer(7):
         output = helpers.run(args, input=in_stream.encode()).decode()
 
     assert output == expected
-    limit_seconds = 7.0
-    assert t.elapsed < limit_seconds
 
 
 def test_async_filter():

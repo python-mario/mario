@@ -1,3 +1,4 @@
+import os
 import pathlib
 import subprocess
 import sys
@@ -57,4 +58,5 @@ class Timer:
         self.elapsed = self._end - self._start
 
         if self.elapsed > self.max:
-            raise TimerMaxExceeded(self)
+            if not int(os.environ.get("MARIO_TESTING_IGNORE_TIMER", 0)):
+                raise TimerMaxExceeded(self)
