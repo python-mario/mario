@@ -239,15 +239,6 @@ async def apply(function, items):
     return traversals.AsyncIterableWrapper([await function([x async for x in items])])
 
 
-@registry.add_traversal("async_apply", calculate_more_params=calculate_function)
-async def async_apply(function, items):
-    """Apply code to an async iterable of items.
-
-    The code should take an async iterable.
-    """
-    return await traversals.async_apply(function, items)
-
-
 # pylint: disable=redefined-builtin
 @registry.add_traversal(
     "eval",
@@ -340,12 +331,6 @@ subcommands = [
         help=apply.__doc__,
         short_help="Call code on input as a sequence.",
         section="Traversals",
-    ),
-    cli_tools.DocumentedCommand(
-        "async-apply",
-        help=async_apply.__doc__,
-        short_help="Call code asynchronously on input as a sequence.",
-        section="Async traversals",
     ),
     cli_tools.DocumentedCommand(
         "filter",
