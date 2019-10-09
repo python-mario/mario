@@ -322,24 +322,6 @@ async def chain(items, exit_stack):
     return await exit_stack.enter_async_context(traversals.sync_chain(items))
 
 
-@registry.add_traversal(
-    "async-chain",
-    calculate_more_params=lambda x: calculate_function(
-        x, howcall=interpret.HowCall.NONE
-    ),
-)
-async def async_chain(items, exit_stack):
-    """
-    Concatenate a sequence of input async iterables into one long async iterable.
-
-    Converts an async iterable of async iterables of items into an async
-    iterable of items, like `itertools.chain.from_iterable <https://docs.python.org/3/library/itertools.html#itertools.chain.from_iterable>`_
-    for async iterables.
-
-    """
-    return await exit_stack.enter_async_context(traversals.async_chain(items))
-
-
 subcommands = [
     cli_tools.DocumentedCommand(
         "map",
@@ -469,14 +451,7 @@ more_commands = [
         help=chain.__doc__,
         short_help="Expand iterable of iterables of items into an iterable of items.",
         section="Traversals",
-    ),
-    cli_tools.DocumentedCommand(
-        "async-chain",
-        callback=lambda **kw: [{"name": "async-chain", "parameters": kw}],
-        short_help="Expand iterable of async iterables into an iterable of items.",
-        help=async_chain.__doc__,
-        section="Async traversals",
-    ),
+    )
 ]
 for cmd in more_commands:
     registry.add_cli(name=cmd.name)(cmd)
