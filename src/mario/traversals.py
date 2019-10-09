@@ -45,10 +45,6 @@ class AsyncIterableWrapper:
             raise StopAsyncIteration
 
 
-async def async_apply(function, data):
-    return await function(data)
-
-
 @async_generator.asynccontextmanager
 async def async_map(
     function: Callable[[T], Awaitable[U]], iterable: AsyncIterable[T], max_concurrent
@@ -95,11 +91,6 @@ async def sync_map(
 @async_generator.asynccontextmanager
 async def sync_chain(iterable: AsyncIterable[Iterable], **_kwargs):
     yield (item async for subiterable in iterable for item in subiterable)
-
-
-@async_generator.asynccontextmanager
-async def async_chain(iterable: AsyncIterable[AsyncIterable], **_kwargs):
-    yield (item async for subiterable in iterable async for item in subiterable)
 
 
 @async_generator.asynccontextmanager
