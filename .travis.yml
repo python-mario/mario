@@ -5,7 +5,7 @@ env:
   global:
   - LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
   - SEGFAULT_SIGNALS=all
-
+  - MARIO_TESTING_IGNORE_TIMER=1
 jobs:
   include:
   - python: '3.7'
@@ -13,7 +13,6 @@ jobs:
     sudo: required
     env:
     - TOXENV=coverage,codecov
-    - MARIO_TESTING_IGNORE_TIMER=1
   - python: '3.7'
     dist: xenial
     sudo: required
