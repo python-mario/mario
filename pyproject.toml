@@ -60,7 +60,7 @@ license = "GPL-3.0"
 [tool.poetry.dependencies]
 python = "^3.7"
 click = "7.0"
-attrs = "19.2.0"
+attrs = "19.3.0"
 parso = "0.5.1"
 bump2version = "0.5.11"
 trio = "0.11.0"
