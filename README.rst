@@ -390,7 +390,7 @@ Configuration
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 
-Define new commands and set default options. See `Configuration reference <config_reference.html>`_ for details.
+Define new commands and set default options. See `Configuration reference <docs/config_reference.rst>`_ for details.
 
 
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
