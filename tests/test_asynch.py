@@ -13,7 +13,7 @@ from . import helpers
 
 @pytest.fixture(name="reactor")
 def _reactor():
-    from twisted.internet import reactor
+    from twisted.internet import reactor  # pylint: disable=import-outside-toplevel
 
     return reactor
 
