@@ -1,0 +1,1 @@
+Now track the Poetry lock file in git.
