@@ -109,9 +109,9 @@ lxml = "^4.4"
 docshtest = "^0.0.2"
 marshmallow-jsonschema = "^0.8.0"
 pre-commit = "^1.18"
-black = {version = "^19.3b0", allows-prereleases = true}
-pytest-clarity = {version = "^0.1.0-alpha.1", allows-prereleases = true}
-pygments = {version = "^2.4", allows-prereleases = true}
+black = {version = "^19.3b0", allow-prereleases = true}
+pytest-clarity = {version = "^0.1.0-alpha.1", allow-prereleases = true}
+pygments = {version = "^2.4", allow-prereleases = true}
 
 [tool.poetry.extras]
 docs = [
@@ -132,5 +132,5 @@ mario = "mario.cli:cli"
 
 
 [build-system]
-requires = ["poetry>=0.12"]
+requires = ["poetry>=1.0.0b1"]
 build-backend = "poetry.masonry.api"
