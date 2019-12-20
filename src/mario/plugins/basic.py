@@ -1,9 +1,12 @@
+import builtins
 import subprocess
 import sys
 import tempfile
 import textwrap
+import typing as t
 
 import click
+import trio
 
 from mario import cli_tools
 from mario import doc
@@ -216,7 +219,7 @@ async def async_filter(function, items, exit_stack, max_concurrent):
 
 
 @registry.add_traversal("apply", calculate_more_params=calculate_function)
-async def apply(function, items):
+async def apply(function, items, exit_stack, max_concurrent):
     """
     Apply code to the iterable of items.
 
@@ -236,7 +239,65 @@ async def apply(function, items):
         60
 
     """
-    return traversals.AsyncIterableWrapper([await function([x async for x in items])])
+
+    return asyncgenify([sync_apply(syncify(function), items)])
+
+
+async def asyncgenify(it):
+    for x in it:
+        yield x
+
+
+T = t.TypeVar("T")
+
+
+def syncify(afn):
+    def run_secretly_sync_async_function(*args, **kw):
+        coro = afn(*args, **kw)
+        try:
+            coro.send(None)
+        except StopIteration as ex:
+            return ex.value
+        else:
+            raise RuntimeError("the async function you passed me was not secretly sync")
+
+    return run_secretly_sync_async_function
+
+
+async def iter_to_aiter(it: t.Iterable[T]) -> t.AsyncIterable[T]:
+    for x in it:
+        yield x
+
+
+def iterate_in_trio_thread(agen):
+    while True:
+        try:
+            yield trio.from_thread.run(agen.asend, None)
+        except StopAsyncIteration as e:
+            trio.from_thread.run(agen.athrow, e)
+            return
+
+
+def run_agen_in_thread_and_call_function(function, agen, send_channel):
+    for value in function(iterate_in_trio_thread(agen)):
+        trio.from_thread.run(send_channel.send, value)
+    trio.from_thread.run(send_channel.aclose)
+
+
+async def sync_apply(function, ait):
+    send_channel, receive_channel = trio.open_memory_channel(0)
+
+    async with trio.open_nursery() as nursery:
+        nursery.start_soon(
+            trio.to_thread.run_sync,
+            run_agen_in_thread_and_call_function,
+            function,
+            ait,
+            send_channel,
+        )
+
+        async for x in receive_channel:
+            yield x
 
 
 # pylint: disable=redefined-builtin
@@ -311,6 +372,30 @@ async def chain(items, exit_stack):
 
     """
     return await exit_stack.enter_async_context(traversals.sync_chain(items))
+
+
+@registry.add_traversal(
+    "async-chain",
+    calculate_more_params=lambda x: calculate_function(
+        x, howcall=interpret.HowCall.NONE
+    ),
+)
+async def async_chain(items, exit_stack):
+    """
+    .. code-block:: bash
+
+        $ mario map int apply 'functools.partial(filter, bool)' async-chain <<EOF
+        1
+        0
+        20
+        300
+        EOF
+        1
+        20
+        300
+
+    """
+    return await exit_stack.enter_async_context(traversals.async_chain(items))
 
 
 subcommands = [
@@ -436,7 +521,14 @@ more_commands = [
         help=chain.__doc__,
         short_help="Expand iterable of iterables of items into an iterable of items.",
         section="Traversals",
-    )
+    ),
+    cli_tools.DocumentedCommand(
+        "async-chain",
+        callback=lambda **kw: [{"name": "async-chain", "parameters": kw}],
+        help=async_chain.__doc__,
+        short_help="Expand iterable of iterables of items into an iterable of items.",
+        section="Traversals",
+    ),
 ]
 for cmd in more_commands:
     registry.add_cli(name=cmd.name)(cmd)

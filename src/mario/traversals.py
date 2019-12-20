@@ -94,6 +94,11 @@ async def sync_chain(iterable: AsyncIterable[Iterable], **_kwargs):
 
 
 @async_generator.asynccontextmanager
+async def async_chain(iterable: AsyncIterable[Iterable], **_kwargs):
+    yield (item async for subiterable in iterable async for item in subiterable)
+
+
+@async_generator.asynccontextmanager
 async def sync_filter(
     function: Callable,
     iterable: AsyncIterable,
