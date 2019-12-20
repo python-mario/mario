@@ -25,14 +25,24 @@ def write_csv_dicts(rows: t.Iterable[t.Dict], header: bool, dialect: str) -> str
     return file.getvalue()
 
 
-def write_csv_tuples(rows: t.Iterable[t.Tuple], dialect: str) -> str:
-    """Write iterable of tuples to csv."""
-    file = io.StringIO()
+async def write_csv_tuples(rows: t.AsyncIterable[t.Tuple], dialect: str) -> str:
+    """Write tuples to csv.
 
-    writer = csv.writer(file, dialect)
-    writer.writerows(rows)
+mario map 'str.split  '  apply list write-csv-tuples async-chain  <<EOF
+-rw-r-----  1 tmp  tmp  1.6K Dec 16 22:22 example.py
+-rw-r-----  1 tmp  tmp   150 Dec 17 13:08 foo.py
+-rw-r-----  1 tmp  tmp   427 Dec 17 11:49 bar.py
+EOF
+-rw-r-----,1,tmp,tmp,1.6K,Dec,16,22:22,example.py
+-rw-r-----,1,tmp,tmp,150,Dec,17,13:08,foo.py
+-rw-r-----,1,tmp,tmp,427,Dec,17,11:49,bar.py
 
-    return file.getvalue()
+"""
+    async for row in rows:
+        file = io.StringIO()
+        writer = csv.writer(file, dialect)
+        writer.writerow(row)
+        yield file.getvalue()[:-1]
 
 
 def write_yaml(data) -> str:
