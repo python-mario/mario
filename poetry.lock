@@ -996,7 +996,7 @@ description = "Sphinx extension to display JSON Schema"
 name = "sphinx-jsonschema"
 optional = true
 python-versions = "*"
-version = "1.12"
+version = "1.14"
 
 [package.dependencies]
 docutils = "*"
@@ -1945,7 +1945,7 @@ sphinx-click = [
     {file = "sphinx_click-2.3.1-py2.py3-none-any.whl", hash = "sha256:8c6274666730686a65efbae0b4465879b030372333de3114aeb63c44204da32e"},
 ]
 sphinx-jsonschema = [
-    {file = "sphinx-jsonschema-1.12.tar.gz", hash = "sha256:66a752df8bbd8693f6361ee1f05599a8d930dd381a306127ef98d11837660aac"},
+    {file = "sphinx-jsonschema-1.14.tar.gz", hash = "sha256:d9023aaccea1e0ff90c7904938956631892b37c42a2d86f4e329713c372af3e2"},
 ]
 sphinx-rtd-theme = [
     {file = "sphinx_rtd_theme-0.4.3-py2.py3-none-any.whl", hash = "sha256:00cf895504a7895ee433807c62094cf1e95f065843bf3acd17037c3e9a2becd4"},
