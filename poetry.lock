@@ -1296,7 +1296,7 @@ description = "Find dead code"
 name = "vulture"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "1.2"
+version = "1.4"
 
 [[package]]
 category = "dev"
@@ -1398,7 +1398,7 @@ testing = ["coverage", "nose", "zope.event"]
 docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinx-click", "marshmallow-jsonschema", "sphinx-jsonschema"]
 
 [metadata]
-content-hash = "827e9433ed0a796541ad33a7868865d85bc6d57805e534ab8653d9725ab3dc8c"
+content-hash = "6c770a6c3ef7dbbdad969171632f88d0374d4344ff16de0f5a8c92f2101db1ba"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -2072,8 +2072,8 @@ virtualenv = [
     {file = "virtualenv-16.7.9.tar.gz", hash = "sha256:0d62c70883c0342d59c11d0ddac0d954d0431321a41ab20851facf2b222598f3"},
 ]
 vulture = [
-    {file = "vulture-1.2-py2.py3-none-any.whl", hash = "sha256:d303d4778b44aebd4de76080138b9dd9b1c9c50b94bb9aaa5508f1abd7d94220"},
-    {file = "vulture-1.2.tar.gz", hash = "sha256:c200a01ec47c05d75c5feffe096aeb85a4d3f0e18563be125fae72c13b584ea5"},
+    {file = "vulture-1.4-py2.py3-none-any.whl", hash = "sha256:89f977c83043c9e01336eedc1b86346a82264d6c85498b7fab4722d914a5f171"},
+    {file = "vulture-1.4.tar.gz", hash = "sha256:7ed28f87e6b08e62675946c96788f30f44da6882ad07f4af50485b65a0fac77a"},
 ]
 watchdog = [
     {file = "watchdog-0.9.0.tar.gz", hash = "sha256:965f658d0732de3188211932aeb0bb457587f04f63ab4c1e33eab878e9de961d"},
