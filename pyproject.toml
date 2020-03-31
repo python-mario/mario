@@ -76,7 +76,7 @@ docutils = "0.14"
 pytest = "^5.0.0"
 importlib_metadata = "0.23"
 xmltodict = "0.12.0"
-pyyaml = "5.1.1"
+pyyaml = "5.3.1"
 pyrsistent = "0.14.11"
 sphinx = {version = "2.1.2", optional = true}
 sphinx-rtd-theme = {version = "^0.4.3", optional = true}
