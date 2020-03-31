@@ -72,7 +72,7 @@ description = "asks - async http"
 name = "asks"
 optional = false
 python-versions = "*"
-version = "2.3.6"
+version = "2.3.7"
 
 [package.dependencies]
 anyio = "*"
@@ -1398,7 +1398,7 @@ testing = ["coverage", "nose", "zope.event"]
 docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinx-click", "marshmallow-jsonschema", "sphinx-jsonschema"]
 
 [metadata]
-content-hash = "6c770a6c3ef7dbbdad969171632f88d0374d4344ff16de0f5a8c92f2101db1ba"
+content-hash = "dc195866384b1a7f200a8ec4957c0daae7fd20518791c3f818e61d810e5fd222"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1436,7 +1436,7 @@ argh = [
     {file = "argh-0.26.2.tar.gz", hash = "sha256:e9535b8c84dc9571a48999094fda7f33e63c3f1b74f3e5f3ac0105a58405bb65"},
 ]
 asks = [
-    {file = "asks-2.3.6.tar.gz", hash = "sha256:d7289cb5b7a28614e4fecab63b3734e2a4296d3c323e315f8dc4b546d64f71b7"},
+    {file = "asks-2.3.7.tar.gz", hash = "sha256:d0e6c926a1fd4670aa1168db501684ee960bec138996e840c3151991ff1889c1"},
 ]
 "aspy.yaml" = [
     {file = "aspy.yaml-1.3.0-py2.py3-none-any.whl", hash = "sha256:463372c043f70160a9ec950c3f1e4c3a82db5fca01d334b6bc89c7164d744bdc"},
