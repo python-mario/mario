@@ -62,7 +62,7 @@ python = "^3.7"
 click = "7.0"
 attrs = "19.3.0"
 parso = "0.5.1"
-bump2version = "0.5.11"
+bump2version = "1.0.0"
 trio = "0.13.0"
 async_generator = "1.10"
 async_exit_stack = "1.0.1"
@@ -88,7 +88,7 @@ toolz = "^0.10.0"
 
 
 [tool.poetry.dev-dependencies]
-bump2version = "^0.5.11"
+bump2version = "^1.0.0"
 coverage = "^4.5"
 hypothesis = "^4.32"
 requests = "^2.23"
