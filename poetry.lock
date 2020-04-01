@@ -217,8 +217,8 @@ category = "main"
 description = "Version-bump your software with a single command!"
 name = "bump2version"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "0.5.11"
+python-versions = ">=3.5"
+version = "1.0.0"
 
 [[package]]
 category = "main"
@@ -1398,7 +1398,7 @@ testing = ["coverage", "nose", "zope.event"]
 docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinx-click", "marshmallow-jsonschema", "sphinx-jsonschema"]
 
 [metadata]
-content-hash = "19c0f97186e23aa426c9d54b4d53338e8012987af1c3fb11d4f8eb8294d37017"
+content-hash = "dcc9fa960cfa266659d599dafb4176344017a793d58f0af9fc6544dbd7ad9906"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1483,8 +1483,8 @@ bleach = [
     {file = "bleach-3.1.4.tar.gz", hash = "sha256:e78e426105ac07026ba098f04de8abe9b6e3e98b5befbf89b51a5ef0a4292b03"},
 ]
 bump2version = [
-    {file = "bump2version-0.5.11-py2.py3-none-any.whl", hash = "sha256:bfcc051498dda9fd9ac8634689f4516e1c20fdeeace3278932cc6e1248418b36"},
-    {file = "bump2version-0.5.11.tar.gz", hash = "sha256:524bde030318fe2543038defe0f77739605636fef96924883813cb290cf79c1e"},
+    {file = "bump2version-1.0.0-py2.py3-none-any.whl", hash = "sha256:477f0e18a0d58e50bb3dbc9af7fcda464fd0ebfc7a6151d8888602d7153171a0"},
+    {file = "bump2version-1.0.0.tar.gz", hash = "sha256:cd4f3a231305e405ed8944d8ff35bd742d9bc740ad62f483bd0ca21ce7131984"},
 ]
 certifi = [
     {file = "certifi-2019.11.28-py2.py3-none-any.whl", hash = "sha256:017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3"},
