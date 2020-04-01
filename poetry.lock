@@ -1185,13 +1185,13 @@ description = "Static type checking support for Trio and related projects"
 name = "trio-typing"
 optional = false
 python-versions = "*"
-version = "0.2.0"
+version = "0.4.0"
 
 [package.dependencies]
-mypy = ">=0.660"
-mypy-extensions = ">=0.4.1"
-trio = ">=0.11.0"
-typing-extensions = ">=3.7.2"
+mypy = ">=0.750"
+mypy-extensions = ">=0.4.2"
+trio = ">=0.12.1"
+typing-extensions = ">=3.7.4"
 
 [[package]]
 category = "dev"
@@ -1398,7 +1398,7 @@ testing = ["coverage", "nose", "zope.event"]
 docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinx-click", "marshmallow-jsonschema", "sphinx-jsonschema"]
 
 [metadata]
-content-hash = "6eb0b8ac46af5e81a0f167c7b8db377aaea1f8401de93cb97f22ad44681f2612"
+content-hash = "4676195492e6102e992a02f6c1836a3639db2297b63b391109bf9bef2e4b90e8"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -2003,8 +2003,8 @@ trio = [
     {file = "trio-0.13.0.tar.gz", hash = "sha256:f1cf00054ad974c86d9b7afa187a65d79fd5995340abe01e8e4784d86f4acb30"},
 ]
 trio-typing = [
-    {file = "trio-typing-0.2.0.tar.gz", hash = "sha256:bdbba505d2ae5582438721109647a09e6f8a502b10093046c41ae7c79a560050"},
-    {file = "trio_typing-0.2.0-py3-none-any.whl", hash = "sha256:ba25d019626c5e00bb2e665cedc302afe94517fe71ebcbaecdc02a87083628f3"},
+    {file = "trio-typing-0.4.0.tar.gz", hash = "sha256:e4d8cc244686682acb314644667fbeb4c3fe1141ee1140a80431271d7532902d"},
+    {file = "trio_typing-0.4.0-py3-none-any.whl", hash = "sha256:3e869b3e62c9077f0ca5f27c17924af1f6ce875cb214455376733ff13b5f7b81"},
 ]
 twine = [
     {file = "twine-2.0.0-py3-none-any.whl", hash = "sha256:5319dd3e02ac73fcddcd94f035b9631589ab5d23e1f4699d57365199d85261e1"},
