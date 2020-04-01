@@ -111,7 +111,7 @@ marshmallow-jsonschema = "^0.8.0"
 pre-commit = "^1.18"
 black = {version = "^19.3b0", allow-prereleases = true}
 pytest-clarity = {version = "^0.1.0-alpha.1", allow-prereleases = true}
-pygments = {version = "^2.4", allow-prereleases = true}
+pygments = {version = "^2.6", allow-prereleases = true}
 
 [tool.poetry.extras]
 docs = [
