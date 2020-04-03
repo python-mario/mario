@@ -110,7 +110,7 @@ docshtest = "^0.0.2"
 marshmallow-jsonschema = "^0.8.0"
 pre-commit = "^2.2"
 black = {version = "^19.3b0", allow-prereleases = true}
-pytest-clarity = {version = "^0.1.0-alpha.1", allow-prereleases = true}
+pytest-clarity = {version = "^0.3.0a0", allow-prereleases = true}
 pygments = {version = "^2.6", allow-prereleases = true}
 
 [tool.poetry.extras]
