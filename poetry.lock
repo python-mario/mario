@@ -1131,11 +1131,11 @@ dev = ["py-make (>=0.1.0)", "twine", "argopt", "pydoc-markdown"]
 
 [[package]]
 category = "dev"
-description = "A requests-like API built on top of twisted.web's Agent"
+description = "High-level Twisted HTTP Client API"
 name = "treq"
 optional = false
 python-versions = "*"
-version = "18.6.0"
+version = "20.3.0"
 
 [package.dependencies]
 attrs = "*"
@@ -1145,7 +1145,8 @@ six = "*"
 
 [package.dependencies.Twisted]
 extras = ["tls"]
-version = ">=16.4.0"
+python = ">=3.7"
+version = ">=18.7.0"
 
 [package.extras]
 dev = ["mock", "pep8", "pyflakes", "sphinx", "httpbin (0.5.0)"]
@@ -1386,7 +1387,7 @@ testing = ["coverage", "nose", "zope.event"]
 docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinx-click", "marshmallow-jsonschema", "sphinx-jsonschema"]
 
 [metadata]
-content-hash = "c4cf829c8afa130ab7ed4b938e4a959db46cc768dbdf8549cbd82d542d898298"
+content-hash = "e6fefa2f4bbf96a467e6746801846b284a1133aa96d19cad6c0ff82ca87af884"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1979,8 +1980,8 @@ tqdm = [
     {file = "tqdm-4.40.2.tar.gz", hash = "sha256:f0ab01cf3ae5673d18f918700c0165e5fad0f26b5ebe4b34f62ead92686b5340"},
 ]
 treq = [
-    {file = "treq-18.6.0-py2.py3-none-any.whl", hash = "sha256:b936621beee3af98eca6dd74e0a8f939d8163c50714466a4994d22983a713ec2"},
-    {file = "treq-18.6.0.tar.gz", hash = "sha256:91e09ff6b524cc90aa5e934b909c8d0d1a9d36ebd618b6c38e37b17013e69f48"},
+    {file = "treq-20.3.0-py2.py3-none-any.whl", hash = "sha256:e7b00371fe28bafc819efd8f28f811f6dbd811f92ff1b14ec6ff4da7d1bbc82f"},
+    {file = "treq-20.3.0.tar.gz", hash = "sha256:a72d7587d6f81c7a32620b00175825b4334bafbde73d37098d139ac7b11dca98"},
 ]
 trio = [
     {file = "trio-0.13.0-py3-none-any.whl", hash = "sha256:a6d83c0cb4a177ec0f5179ce88e27914d5c8e6fd01c4285176b949e6ddc88c6c"},
