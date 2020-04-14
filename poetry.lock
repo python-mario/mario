@@ -971,11 +971,11 @@ description = "Sphinx extension that automatically documents click applications"
 name = "sphinx-click"
 optional = true
 python-versions = "*"
-version = "2.3.1"
+version = "2.3.2"
 
 [package.dependencies]
 pbr = ">=2.0"
-sphinx = ">=1.5,<3.0"
+sphinx = ">=1.5,<4.0"
 
 [[package]]
 category = "main"
@@ -1926,8 +1926,8 @@ sphinx-autodoc-typehints = [
     {file = "sphinx_autodoc_typehints-1.10.3-py3-none-any.whl", hash = "sha256:27c9e6ef4f4451766ab8d08b2d8520933b97beb21c913f3df9ab2e59b56e6c6c"},
 ]
 sphinx-click = [
-    {file = "sphinx-click-2.3.1.tar.gz", hash = "sha256:793c68b41c4a9435f953e2a27f9bf5883729037b7431f32b2776257c2966bd1b"},
-    {file = "sphinx_click-2.3.1-py2.py3-none-any.whl", hash = "sha256:8c6274666730686a65efbae0b4465879b030372333de3114aeb63c44204da32e"},
+    {file = "sphinx-click-2.3.2.tar.gz", hash = "sha256:1b649ebe9f7a85b78ef6545d1dc258da5abca850ac6375be104d484a6334a728"},
+    {file = "sphinx_click-2.3.2-py2.py3-none-any.whl", hash = "sha256:06952d5de6cbe2cb7d6dc656bc471652d2b484cf1e1b2d65edb7f4f2e867c7f6"},
 ]
 sphinx-jsonschema = [
     {file = "sphinx-jsonschema-1.14.tar.gz", hash = "sha256:d9023aaccea1e0ff90c7904938956631892b37c42a2d86f4e329713c372af3e2"},
