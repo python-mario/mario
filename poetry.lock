@@ -1135,10 +1135,11 @@ description = "High-level Twisted HTTP Client API"
 name = "treq"
 optional = false
 python-versions = "*"
-version = "20.3.0"
+version = "20.4.1"
 
 [package.dependencies]
 attrs = "*"
+hyperlink = ">=19.0.0"
 incremental = "*"
 requests = ">=2.1.0"
 six = "*"
@@ -1387,7 +1388,7 @@ testing = ["coverage", "nose", "zope.event"]
 docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinx-click", "marshmallow-jsonschema", "sphinx-jsonschema"]
 
 [metadata]
-content-hash = "080a7659fadb563be9c9ffdf068ebef315a08c1edd372e00a4300f89aec6df78"
+content-hash = "b57dc8f79e1e8f6624eb2a03a14f51638cb11c363fef3c20bd559080e6275ca2"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1980,8 +1981,8 @@ tqdm = [
     {file = "tqdm-4.40.2.tar.gz", hash = "sha256:f0ab01cf3ae5673d18f918700c0165e5fad0f26b5ebe4b34f62ead92686b5340"},
 ]
 treq = [
-    {file = "treq-20.3.0-py2.py3-none-any.whl", hash = "sha256:e7b00371fe28bafc819efd8f28f811f6dbd811f92ff1b14ec6ff4da7d1bbc82f"},
-    {file = "treq-20.3.0.tar.gz", hash = "sha256:a72d7587d6f81c7a32620b00175825b4334bafbde73d37098d139ac7b11dca98"},
+    {file = "treq-20.4.1-py2.py3-none-any.whl", hash = "sha256:c75244d850a2238615126ba4332ab4af9ed8d270db266fded487a02e0dd2cc0c"},
+    {file = "treq-20.4.1.tar.gz", hash = "sha256:68fee7d24c94b7f1432ad8077e22d0d15f957bf6fcf9cb771ff4c6acc7e2bc84"},
 ]
 trio = [
     {file = "trio-0.13.0-py3-none-any.whl", hash = "sha256:a6d83c0cb4a177ec0f5179ce88e27914d5c8e6fd01c4285176b949e6ddc88c6c"},
