@@ -38,7 +38,7 @@ description = "High level compatibility layer for multiple asynchronous event lo
 name = "anyio"
 optional = false
 python-versions = ">=3.5.3"
-version = "1.3.0"
+version = "1.3.1"
 
 [package.dependencies]
 async-generator = "*"
@@ -1407,7 +1407,7 @@ testing = ["coverage", "nose", "zope.event"]
 docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinx-click", "marshmallow-jsonschema", "sphinx-jsonschema"]
 
 [metadata]
-content-hash = "3c436ed9da8592fee7090359e9b885ca39d712f8d898b81261a9d743d679afa2"
+content-hash = "ec8ec2265ce5aa3dfebed232d05f0e1f9928463bb34184bc6dd73a9bafda919b"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1433,8 +1433,8 @@ ansicolors = [
     {file = "ansicolors-1.0.2.tar.gz", hash = "sha256:7664530bb992e3847b61e3aab1580b4df9ed00c5898e80194a9933bc9c80950a"},
 ]
 anyio = [
-    {file = "anyio-1.3.0-py3-none-any.whl", hash = "sha256:db2c3d21576870b95d4fd0b8f4a0f9c64057f777c578f3a8127179a17c8c067e"},
-    {file = "anyio-1.3.0.tar.gz", hash = "sha256:7deae0315dd10aa41c21528b83352e4b52f44e6153a21081a3d1cd8c03728e46"},
+    {file = "anyio-1.3.1-py3-none-any.whl", hash = "sha256:f21b4fafeec1b7db81e09a907e44e374a1e39718d782a488fdfcdcf949c8950c"},
+    {file = "anyio-1.3.1.tar.gz", hash = "sha256:a46bb2b7743455434afd9adea848a3c4e0b7321aee3e9d08844b11d348d3b5a0"},
 ]
 appdirs = [
     {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},
