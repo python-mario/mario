@@ -1139,29 +1139,6 @@ version = "4.40.2"
 dev = ["py-make (>=0.1.0)", "twine", "argopt", "pydoc-markdown"]
 
 [[package]]
-category = "dev"
-description = "High-level Twisted HTTP Client API"
-name = "treq"
-optional = false
-python-versions = "*"
-version = "20.4.1"
-
-[package.dependencies]
-attrs = "*"
-hyperlink = ">=19.0.0"
-incremental = "*"
-requests = ">=2.1.0"
-six = "*"
-
-[package.dependencies.Twisted]
-extras = ["tls"]
-python = ">=3.7"
-version = ">=18.7.0"
-
-[package.extras]
-dev = ["mock", "pep8", "pyflakes", "sphinx", "httpbin (0.5.0)"]
-
-[[package]]
 category = "main"
 description = "A friendly Python library for async concurrency and I/O"
 name = "trio"
@@ -1407,7 +1384,7 @@ testing = ["coverage", "nose", "zope.event"]
 docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinx-click", "marshmallow-jsonschema", "sphinx-jsonschema"]
 
 [metadata]
-content-hash = "e229183ad0dac6b0444522307c9a6af3ea16705f3b0088032d18f6e4e62f7bb4"
+content-hash = "b8e5fc7fba2d0eb3b91b6d0cfd8bcb54eee8b9174c7ef52cd47299301ed59d35"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1994,10 +1971,6 @@ tox = [
 tqdm = [
     {file = "tqdm-4.40.2-py2.py3-none-any.whl", hash = "sha256:7543892c59720e36e4212180274d8f58dde36803bc1f6370fd09afa20b8f5892"},
     {file = "tqdm-4.40.2.tar.gz", hash = "sha256:f0ab01cf3ae5673d18f918700c0165e5fad0f26b5ebe4b34f62ead92686b5340"},
-]
-treq = [
-    {file = "treq-20.4.1-py2.py3-none-any.whl", hash = "sha256:c75244d850a2238615126ba4332ab4af9ed8d270db266fded487a02e0dd2cc0c"},
-    {file = "treq-20.4.1.tar.gz", hash = "sha256:68fee7d24c94b7f1432ad8077e22d0d15f957bf6fcf9cb771ff4c6acc7e2bc84"},
 ]
 trio = [
     {file = "trio-0.14.0-py3-none-any.whl", hash = "sha256:0ce26b0b9abcbd99e16883b71f884578e96850214106db299fb223753b5bb95e"},
