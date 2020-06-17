@@ -63,7 +63,7 @@ class TerminatedFrameReceiver:
                 more_data = await self.stream.receive_some(_RECEIVE_SIZE)
                 if more_data == b"":
                     if self._buf:
-                        raise mario.exceptions.IncompleteFrame(
+                        raise mario.exceptions.IncompleteFrameError(
                             "Mario cannot parse an incomplete line. "
                             + "Usually this is caused by a missing line feed (\\n) at the end of the input. "
                         )
