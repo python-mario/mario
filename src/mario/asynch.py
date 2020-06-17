@@ -8,6 +8,8 @@ import typing
 
 import trio
 
+import mario.exceptions
+
 
 T = typing.TypeVar("T")
 U = typing.TypeVar("U")
@@ -61,7 +63,10 @@ class TerminatedFrameReceiver:
                 more_data = await self.stream.receive_some(_RECEIVE_SIZE)
                 if more_data == b"":
                     if self._buf:
-                        raise ValueError("incomplete frame")
+                        raise mario.exceptions.IncompleteFrameError(
+                            "Mario cannot parse an incomplete line. "
+                            + "Usually this is caused by a missing line feed (\\n) at the end of the input. "
+                        )
                     raise trio.EndOfChannel
                 self._buf += more_data
             else:
