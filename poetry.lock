@@ -72,7 +72,7 @@ description = "asks - async http"
 name = "asks"
 optional = false
 python-versions = "*"
-version = "2.3.7"
+version = "2.4.7"
 
 [package.dependencies]
 anyio = "*"
@@ -1387,7 +1387,7 @@ testing = ["coverage", "nose", "zope.event"]
 docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinx-click", "marshmallow-jsonschema", "sphinx-jsonschema"]
 
 [metadata]
-content-hash = "fae9af7fe4912ddc3e5ca9a6d2a91d6a56c8384e41ef8b667e8901c589994c8b"
+content-hash = "d972665328aff6a46fc9e5b9bf928f3061dd3eb94e201a9fd2e1c97635fa0875"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1425,7 +1425,7 @@ argh = [
     {file = "argh-0.26.2.tar.gz", hash = "sha256:e9535b8c84dc9571a48999094fda7f33e63c3f1b74f3e5f3ac0105a58405bb65"},
 ]
 asks = [
-    {file = "asks-2.3.7.tar.gz", hash = "sha256:d0e6c926a1fd4670aa1168db501684ee960bec138996e840c3151991ff1889c1"},
+    {file = "asks-2.4.7.tar.gz", hash = "sha256:60ecdbfef2aa499c699b1a9ce0c0167db53042f908d0c8fbecf85f85572c7f98"},
 ]
 astroid = [
     {file = "astroid-2.3.3-py3-none-any.whl", hash = "sha256:840947ebfa8b58f318d42301cf8c0a20fd794a33b61cc4638e28e9e61ba32f42"},
