@@ -359,7 +359,7 @@ description = "A library for property-based testing"
 name = "hypothesis"
 optional = false
 python-versions = ">=3.5.2"
-version = "5.16.1"
+version = "5.24.2"
 
 [package.dependencies]
 attrs = ">=19.2.0"
@@ -1387,7 +1387,7 @@ testing = ["coverage", "nose", "zope.event"]
 docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinx-click", "marshmallow-jsonschema", "sphinx-jsonschema"]
 
 [metadata]
-content-hash = "d972665328aff6a46fc9e5b9bf928f3061dd3eb94e201a9fd2e1c97635fa0875"
+content-hash = "c6fc8f71a00bdb9f10fbe4f2a056d5725efb4452d7e9254577c1350f34c825cb"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1586,8 +1586,8 @@ hyperlink = [
     {file = "hyperlink-19.0.0.tar.gz", hash = "sha256:4288e34705da077fada1111a24a0aa08bb1e76699c9ce49876af722441845654"},
 ]
 hypothesis = [
-    {file = "hypothesis-5.16.1-py3-none-any.whl", hash = "sha256:8e7ee0101086d95157f4886abd190cc582783b3310c803eb2387e505427e8cbe"},
-    {file = "hypothesis-5.16.1.tar.gz", hash = "sha256:dcd97367571657e9155d78ea0b6c3abf67acf4eaa6440e861213cd1beab02714"},
+    {file = "hypothesis-5.24.2-py3-none-any.whl", hash = "sha256:13cdb53377a68da9d863a5f3ee14d1fa7dd70172a5c6dc2008ea1ce8e9beb7e9"},
+    {file = "hypothesis-5.24.2.tar.gz", hash = "sha256:abf041341b7da81666dce36c2741e0f53d8a34ee68a17c85fb099bc6759fde16"},
 ]
 identify = [
     {file = "identify-1.4.8-py2.py3-none-any.whl", hash = "sha256:9e7521e9abeaede4d2d1092a106e418c65ddf6b3182b43930bcb3c8cfb974488"},
