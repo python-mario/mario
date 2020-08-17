@@ -90,7 +90,7 @@ toolz = "^0.10.0"
 [tool.poetry.dev-dependencies]
 bump2version = "^1.0.0"
 coverage = "^4.5"
-hypothesis = "^5.16"
+hypothesis = "^5.26"
 requests = "^2.24"
 yapf = "^0.30.0"
 pylint = "^2.3"
