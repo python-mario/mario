@@ -107,7 +107,7 @@ pytest-sugar = "^0.9.3"
 lxml = "^4.5"
 docshtest = "^0.0.2"
 marshmallow-jsonschema = "^0.8.0"
-pre-commit = "^2.5"
+pre-commit = "^2.9"
 black = {version = "^19.3b0", allow-prereleases = true}
 pytest-clarity = {version = "^0.3.0a0", allow-prereleases = true}
 pygments = {version = "^2.6", allow-prereleases = true}
